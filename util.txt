@@ -1,0 +1,6 @@
+https://github.com/twinssbc/Ionic2-Calendar
+https://ionicframework.com/docs/native/calendar
+
+https://devdactic.com/ionic-4-calendar-app/
+https://www.youtube.com/watch?v=bU3tk2GHx3c
+https://devdactic.com/ionic-4-drag-drop/

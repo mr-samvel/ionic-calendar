@@ -1,0 +1,22 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Home</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content *ngIf="!this.isLogged()">
+  <ion-item class="ion-text-center">
+    <ion-label>Welcome! Please <a (click)="this.goToLogin()">login</a> to proceed.</ion-label>
+  </ion-item>
+  <br>
+</ion-content>
+
+<ion-content *ngIf="this.isLogged()">
+  <ion-card>
+    <ion-card-header>
+      <ion-card-subtitle>Welcome, {{ this.getUsername() }}!</ion-card-subtitle>
+    </ion-card-header>
+
+    <ion-button (click)="this.logoff()">Logoff</ion-button>
+  </ion-card>
+</ion-content>

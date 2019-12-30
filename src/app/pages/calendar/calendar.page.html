@@ -1,0 +1,39 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Calendar</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <ion-item color="light" lines="none">
+    <ion-label class="ion-text-center">
+      {{ pickedDay }}
+    </ion-label>
+  </ion-item>
+
+  <ion-toolbar color="light">
+    <ion-buttons slot="start">
+      <ion-button (click)="today()">Today</ion-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button (click)="changeMode('month')">Month</ion-button>
+      <ion-button (click)="changeMode('week')">Week</ion-button>
+      <ion-button (click)="changeMode('day')">Day</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+
+  <calendar 
+    [eventSource]="eventSource" 
+    [calendarMode]="calendar.mode" 
+    [currentDate]="calendar.currentDate"
+    (onEventSelected)="onEventSelected($event)"
+    (onTitleChanged)="onViewTitleChanged($event)"
+    (onTimeSelected)="onTimeSelected($event)" 
+    startHour="6"
+    endHour="20"
+    step="30"
+    startingDayWeek="0">
+  </calendar>
+
+</ion-content>
