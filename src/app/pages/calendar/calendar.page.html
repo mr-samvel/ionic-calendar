@@ -6,13 +6,13 @@
 
 <ion-content>
 
-  <ion-item color="light" lines="none">
-    <ion-label class="ion-text-center">
-      {{ pickedDay }}
+  <ion-item color="light" lines="none" style="--min-height: 20px;">
+    <ion-label class="ion-text-center" style="margin: 0; margin-top: 10px; margin-bottom: 5px;">
+      {{ viewTitle }}
     </ion-label>
   </ion-item>
 
-  <ion-toolbar color="light">
+  <ion-toolbar color="light" style="--min-height: 20px; --padding-top: 0px; --padding-bottom: 0px;">
     <ion-buttons slot="start">
       <ion-button (click)="today()">Today</ion-button>
     </ion-buttons>
@@ -23,17 +23,45 @@
     </ion-buttons>
   </ion-toolbar>
 
-  <calendar 
-    [eventSource]="eventSource" 
-    [calendarMode]="calendar.mode" 
-    [currentDate]="calendar.currentDate"
-    (onEventSelected)="onEventSelected($event)"
-    (onTitleChanged)="onViewTitleChanged($event)"
-    (onTimeSelected)="onTimeSelected($event)" 
-    startHour="6"
-    endHour="20"
-    step="30"
-    startingDayWeek="0">
+  <ion-button color="light" expand="full" style="margin: 0;" size="small"
+    (click)="this.collapseEvent = !this.collapseEvent">
+    <ion-icon *ngIf="this.collapseEvent" name="arrow-dropdown"></ion-icon>
+    <ion-icon *ngIf="!this.collapseEvent" name="arrow-dropup"></ion-icon>
+    New Event
+  </ion-button>
+
+  <ion-list style="margin-bottom: 0px; --ion-background-color: #f4f5f8" *ngIf="!this.collapseEvent">
+    <ion-item>
+      <ion-input type="text" placeholder="Title" [(ngModel)]="event.title"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-input type="text" placeholder="Description" [(ngModel)]="event.desc"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label>Start</ion-label>
+      <ion-datetime displayFormat="MM/DD/YYYY HH:mm" pickerFormat="MMM D:HH:mm" [(ngModel)]="event.startTime"
+        [min]="minDate"></ion-datetime>
+    </ion-item>
+    <ion-item>
+      <ion-label>End</ion-label>
+      <ion-datetime displayFormat="MM/DD/YYYY HH:mm" pickerFormat="MMM D:HH:mm" [(ngModel)]="event.endTime"
+        [min]="minDate"></ion-datetime>
+    </ion-item>
+    <ion-item>
+      <ion-label>All Day?</ion-label>
+      <ion-checkbox [(ngModel)]="event.allDay"></ion-checkbox>
+    </ion-item>
+    <ion-button fill="outline" expand="block" (click)="addEvent()" [disabled]="event.title == ''">Add Event</ion-button>
+  </ion-list>
+
+  <ng-template #monthDisplay let-view="view" let-row="row" let-col="col">
+    {{view.dates[row*7+col].label}}
+  </ng-template>
+
+  <calendar [eventSource]="eventSource" [calendarMode]="calendar.mode" [currentDate]="calendar.currentDate"
+    (onEventSelected)="onEventSelected($event)" (onTitleChanged)="onViewTitleChanged($event)"
+    (onTimeSelected)="onTimeSelected($event)" startHour="6" endHour="20" step="30" startingDayWeek="0"
+    [monthviewDisplayEventTemplate]="monthDisplay" [monthviewInactiveDisplayEventTemplate]="monthDisplay">
   </calendar>
 
 </ion-content>

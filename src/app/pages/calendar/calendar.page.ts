@@ -1,5 +1,6 @@
-import { Component, OnInit, ViewChildren } from '@angular/core';
+import { Component, OnInit, ViewChild, Inject, LOCALE_ID } from '@angular/core';
 import { CalendarComponent } from 'ionic2-calendar/calendar';
+import { formatDate } from '@angular/common';
 
 @Component({
   selector: 'app-calendar',
@@ -7,29 +8,59 @@ import { CalendarComponent } from 'ionic2-calendar/calendar';
   styleUrls: ['./calendar.page.scss'],
 })
 export class CalendarPage implements OnInit {
-  @ViewChildren(CalendarComponent) calendarComponent: CalendarComponent;
+  @ViewChild(CalendarComponent, {static: false}) calendarComponent: CalendarComponent;
 
   minDate: string = new Date().toISOString();
   eventSource: Array<object> = new Array();
-  pickedDay: string;
+  viewTitle: string;
   calendar = {
     mode: 'month',
     currentDate: new Date()
   };
+  collapseEvent: boolean = true;
+  event = {
+    title: '',
+    desc: '',
+    startTime: '',
+    endTime: '',
+    allDay: false
+  }
 
-  constructor() { }
+  constructor(@Inject(LOCALE_ID) private locale: string) { }
 
   ngOnInit() {
     this.resetEvent();
-    // TODO: pegar eventos
-  }
-
-  addEvent() {
-    //TODO
   }
 
   resetEvent() {
-    //TODO
+    this.collapseEvent = true;
+    this.event.title = '';
+    this.event.desc = '';
+    this.event.startTime = '';
+    this.event.endTime = '';
+    this.event.allDay = false;
+  }
+
+  addEvent() {
+    let eventCopy = {
+      title: this.event.title,
+      startTime:  new Date(this.event.startTime),
+      endTime: new Date(this.event.endTime),
+      allDay: this.event.allDay,
+      desc: this.event.desc
+    }
+ 
+    if (eventCopy.allDay) {
+      let start = eventCopy.startTime;
+      let end = eventCopy.endTime;
+ 
+      eventCopy.startTime = new Date(Date.UTC(start.getUTCFullYear(), start.getUTCMonth(), start.getUTCDate()));
+      eventCopy.endTime = new Date(Date.UTC(end.getUTCFullYear(), end.getUTCMonth(), end.getUTCDate() + 1));
+    }
+ 
+    this.eventSource.push(eventCopy);
+    this.calendarComponent.loadEvents()
+    this.resetEvent();
   }
 
   today() {
@@ -41,14 +72,20 @@ export class CalendarPage implements OnInit {
   }
 
   onViewTitleChanged(title) {
-    this.pickedDay = title;
+    this.viewTitle = title;
   }
 
   onEventSelected(event) {
-    //TODO
+    let start = formatDate(event.startTime, 'medium', this.locale);
+    let end = formatDate(event.endTime, 'medium', this.locale);
+    console.log(event, start, end)
   }
 
   onTimeSelected(event) {
-    //TODO
+    let selected = new Date(event.selectedTime);
+    this.event.startTime = selected.toISOString();
+
+    selected.setHours(selected.getHours() + 1);
+    this.event.endTime = (selected.toISOString());
   }
 }
