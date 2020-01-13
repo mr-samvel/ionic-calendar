@@ -4,3 +4,12 @@ https://ionicframework.com/docs/native/calendar
 https://devdactic.com/ionic-4-calendar-app/
 https://www.youtube.com/watch?v=bU3tk2GHx3c
 https://devdactic.com/ionic-4-drag-drop/
+
+https://alligator.io/angular/drag-drop/
+https://www.positronx.io/angular-8-drag-and-drop-tutorial-with-example/
+
+
+
+https://devdactic.com/ionic-calendar-angular-calendar/
+https://github.com/fullcalendar/fullcalendar-angular
+https://www.google.com/search?q=ionic+4+fullcalendar&oq=ionic+4+fullcalendar&aqs=chrome..69i57j0.4442j0j4&sourceid=chrome&ie=UTF-8
