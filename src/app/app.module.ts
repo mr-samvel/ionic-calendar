@@ -10,6 +10,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AuthenticationService } from './services/authentication.service';
 import { UserContainerService } from './services/user-container.service';
+import { CalendarService } from './services/calendar.service';
 
 @NgModule({
   declarations: [AppComponent],
@@ -20,6 +21,7 @@ import { UserContainerService } from './services/user-container.service';
     SplashScreen,
     AuthenticationService,
     UserContainerService,
+    CalendarService,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]

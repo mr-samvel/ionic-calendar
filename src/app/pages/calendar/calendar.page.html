@@ -14,12 +14,12 @@
 
   <ion-toolbar color="light" style="--min-height: 20px; --padding-top: 0px; --padding-bottom: 0px;">
     <ion-buttons slot="start">
-      <ion-button (click)="today()">Today</ion-button>
+      <ion-button (click)="this.calendarService.today()">Today</ion-button>
     </ion-buttons>
     <ion-buttons slot="end">
-      <ion-button (click)="changeMode('month')">Month</ion-button>
-      <ion-button (click)="changeMode('week')">Week</ion-button>
-      <ion-button (click)="changeMode('day')">Day</ion-button>
+      <ion-button (click)="this.calendarService.changeMode('month')">Month</ion-button>
+      <ion-button (click)="this.calendarService.changeMode('week')">Week</ion-button>
+      <ion-button (click)="this.calendarService.changeMode('day')">Day</ion-button>
     </ion-buttons>
   </ion-toolbar>
 
@@ -54,14 +54,9 @@
     <ion-button fill="outline" expand="block" (click)="addEvent()" [disabled]="event.title == ''">Add Event</ion-button>
   </ion-list>
 
-  <ng-template #monthDisplay let-view="view" let-row="row" let-col="col">
-    {{view.dates[row*7+col].label}}
-  </ng-template>
-
-  <calendar [eventSource]="eventSource" [calendarMode]="calendar.mode" [currentDate]="calendar.currentDate"
-    (onEventSelected)="onEventSelected($event)" (onTitleChanged)="onViewTitleChanged($event)"
-    (onTimeSelected)="onTimeSelected($event)" startHour="6" endHour="20" step="30" startingDayWeek="0"
-    [monthviewDisplayEventTemplate]="monthDisplay" [monthviewInactiveDisplayEventTemplate]="monthDisplay">
+  <calendar [eventSource]="this.calendarService.getEventSource()" [calendarMode]="this.calendarService.getCalendarMode()" [currentDate]="this.calendarService.getCurrentDate()"
+    (onEventSelected)="this.calendarService.onEventSelected($event)" (onTitleChanged)="this.calendarService.onViewTitleChanged($event)"
+    (onTimeSelected)="this.calendarService.onTimeSelected($event)" startHour="6" endHour="20" step="30" startingDayWeek="0">
   </calendar>
 
 </ion-content>
