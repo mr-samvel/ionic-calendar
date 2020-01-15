@@ -12,31 +12,10 @@ export class CalendarPage implements OnInit {
   @ViewChild(CalendarComponent, {static: false}) calendarComponent: CalendarComponent;
 
   collapseEvent: boolean = true;
+  minDate: string = new Date().toISOString();
   
-  event: IEvent = {
-    allDay: false,
-    startTime: new Date(),
-    endTime: new Date(),
-    title: ''
-  };
+  constructor(private calendarService: CalendarService) { }
 
-  constructor(@Inject(LOCALE_ID) private locale: string, private calendarService: CalendarService) { }
-
-  ngOnInit() {
-    this.resetEvent();
-  }
-
-  resetEvent() {
-    this.collapseEvent = true;
-    this.event.title = '';
-    this.event.startTime = new Date();
-    this.event.endTime = new Date();
-    this.event.allDay = false;
-  }
-
-  addEvent() {
-    this.calendarService.addEvent(this.event);
-    this.calendarComponent.loadEvents();
-    this.resetEvent();
-  }
+  ngOnInit() { }
+  
 }

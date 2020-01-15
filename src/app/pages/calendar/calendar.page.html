@@ -32,26 +32,26 @@
 
   <ion-list style="margin-bottom: 0px; --ion-background-color: #f4f5f8" *ngIf="!this.collapseEvent">
     <ion-item>
-      <ion-input type="text" placeholder="Title" [(ngModel)]="event.title"></ion-input>
+      <ion-input type="text" placeholder="Title" [(ngModel)]="this.calendarService.event.title"></ion-input>
     </ion-item>
     <ion-item>
-      <ion-input type="text" placeholder="Description" [(ngModel)]="event.desc"></ion-input>
+      <ion-input type="text" placeholder="Description" [(ngModel)]="this.calendarService.event.desc"></ion-input>
     </ion-item>
     <ion-item>
       <ion-label>Start</ion-label>
-      <ion-datetime displayFormat="MM/DD/YYYY HH:mm" pickerFormat="MMM D:HH:mm" [(ngModel)]="event.startTime"
+      <ion-datetime displayFormat="MM/DD/YYYY HH:mm" pickerFormat="MMM D:HH:mm" [(ngModel)]="this.calendarService.event.startTime.toISOString()"
         [min]="minDate"></ion-datetime>
     </ion-item>
     <ion-item>
       <ion-label>End</ion-label>
-      <ion-datetime displayFormat="MM/DD/YYYY HH:mm" pickerFormat="MMM D:HH:mm" [(ngModel)]="event.endTime"
+      <ion-datetime displayFormat="MM/DD/YYYY HH:mm" pickerFormat="MMM D:HH:mm" [(ngModel)]="this.calendarService.event.endTime.toISOString()"
         [min]="minDate"></ion-datetime>
     </ion-item>
     <ion-item>
       <ion-label>All Day?</ion-label>
-      <ion-checkbox [(ngModel)]="event.allDay"></ion-checkbox>
+      <ion-checkbox [(ngModel)]="this.calendarService.event.allDay"></ion-checkbox>
     </ion-item>
-    <ion-button fill="outline" expand="block" (click)="addEvent()" [disabled]="event.title == ''">Add Event</ion-button>
+    <ion-button fill="outline" expand="block" (click)="this.calendarService.addEvent()" [disabled]="this.calendarService.event.title == ''">Add Event</ion-button>
   </ion-list>
 
   <calendar [eventSource]="this.calendarService.getEventSource()" [calendarMode]="this.calendarService.getCalendarMode()" [currentDate]="this.calendarService.getCurrentDate()"
