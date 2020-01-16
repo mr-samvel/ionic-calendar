@@ -9,49 +9,56 @@ import { EventModel } from '../models/event.model';
   providedIn: 'root'
 })
 export class CalendarService {
+  public event: EventModel;
+  private eventSourceSubject: BehaviorSubject<EventModel[]>;
   private eventSource: Array<EventModel> = new Array();
   private calendarOptions: { viewTitle: string, mode: 'month' | 'week' | 'day', currentDate: Date } = {
     viewTitle: '',
     mode: 'week',
     currentDate: new Date()
   };
-  public event: EventModel = new EventModel('', new Date(), new Date(), false);
-
-  constructor(@Inject(LOCALE_ID) private locale: string) { }
+  
+  constructor(@Inject(LOCALE_ID) private locale: string) {
+    this.resetEvent();
+    this.eventSourceSubject = new BehaviorSubject<EventModel[]>(this.eventSource);
+  }
 
   resetEvent() {
-    this.event.title = '';
-    this.event.startTime = new Date();
-    // this.event.endTime = this.event.startTime.setHours(this.event.startTime.getHours() + 1);
-    this.event.allDay = false;
-  } 
+    let start = new Date();
+    let end = this.addHourToDate(start, 1);
+    this.event = new EventModel('', start, end, start.toISOString(), end.toISOString(), false);
+  }
 
-  addScale() {
-    // TODO
+  private addHourToDate(date: Date, h: number): Date {
+    let d = new Date(date);
+    d.setHours(d.getHours() + h);
+    return d;
   }
 
   addEvent() {
-    let eventCopy: EventModel = {
-      title: this.event.title,
-      startTime: new Date(this.event.startTime),
-      endTime: new Date(this.event.endTime),
-      allDay: this.event.allDay
-    }
+    let eventCopy: EventModel = Object.assign({}, this.event);
+
     if (this.event.allDay) {
       let start = eventCopy.startTime;
       let end = eventCopy.endTime;
 
       eventCopy.startTime = new Date(Date.UTC(start.getUTCFullYear(), start.getUTCMonth(), start.getUTCDate()));
       eventCopy.endTime = new Date(Date.UTC(end.getUTCFullYear(), end.getUTCMonth(), end.getUTCDate() + 1));
+      eventCopy.strStartTime = eventCopy.startTime.toISOString();
+      eventCopy.strEndTime = eventCopy.endTime.toISOString();
     }
 
     this.eventSource.push(eventCopy);
+    this.eventSourceSubject.next(this.eventSource);
     this.resetEvent();
-    // observer? onEventAdd -> calendarComponent.loadEvents();
   }
 
   getEventSource() {
     return this.eventSource;
+  }
+
+  getEventSourceObservable() {
+    return this.eventSourceSubject;
   }
 
   getCalendarMode() {
@@ -83,8 +90,8 @@ export class CalendarService {
   onTimeSelected(event) {
     let selected = new Date(event.selectedTime);
     this.event.startTime = selected;
-
-    selected.setHours(selected.getHours() + 1);
-    this.event.endTime = selected;
+    this.event.endTime = this.addHourToDate(selected, 1);
+    this.event.strStartTime = this.event.startTime.toISOString();
+    this.event.strEndTime = this.event.endTime.toISOString();
   }
 }

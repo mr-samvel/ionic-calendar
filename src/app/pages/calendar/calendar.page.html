@@ -39,13 +39,13 @@
     </ion-item>
     <ion-item>
       <ion-label>Start</ion-label>
-      <ion-datetime displayFormat="MM/DD/YYYY HH:mm" pickerFormat="MMM D:HH:mm" [(ngModel)]="this.calendarService.event.startTime.toISOString()"
-        [min]="minDate"></ion-datetime>
+      <ion-datetime displayFormat="MM/DD/YYYY HH:mm" pickerFormat="MMM D:HH:mm" [(ngModel)]="this.calendarService.event.strStartTime"
+        [min]="minDate" [disabled]="this.calendarService.event.allDay"></ion-datetime>
     </ion-item>
     <ion-item>
       <ion-label>End</ion-label>
-      <ion-datetime displayFormat="MM/DD/YYYY HH:mm" pickerFormat="MMM D:HH:mm" [(ngModel)]="this.calendarService.event.endTime.toISOString()"
-        [min]="minDate"></ion-datetime>
+      <ion-datetime displayFormat="MM/DD/YYYY HH:mm" pickerFormat="MMM D:HH:mm" [(ngModel)]="this.calendarService.event.strEndTime"
+        [min]="minDate" [disabled]="this.calendarService.event.allDay"></ion-datetime>
     </ion-item>
     <ion-item>
       <ion-label>All Day?</ion-label>

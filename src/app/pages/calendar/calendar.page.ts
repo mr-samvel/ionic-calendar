@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, Inject, LOCALE_ID } from '@angular/core';
+import { Component, OnInit, ViewChild, Inject, LOCALE_ID, AfterViewInit } from '@angular/core';
 import { CalendarComponent, IEvent } from 'ionic2-calendar/calendar';
 import { formatDate } from '@angular/common';
 import { CalendarService } from 'src/app/services/calendar.service';
@@ -8,14 +8,22 @@ import { CalendarService } from 'src/app/services/calendar.service';
   templateUrl: './calendar.page.html',
   styleUrls: ['./calendar.page.scss'],
 })
-export class CalendarPage implements OnInit {
+export class CalendarPage implements AfterViewInit {
   @ViewChild(CalendarComponent, {static: false}) calendarComponent: CalendarComponent;
-
+  
   collapseEvent: boolean = true;
   minDate: string = new Date().toISOString();
   
   constructor(private calendarService: CalendarService) { }
 
-  ngOnInit() { }
+  ngAfterViewInit() {
+    this.loadEventsOnSourceChange();
+  }
+
+  private loadEventsOnSourceChange() {
+    this.calendarService.getEventSourceObservable().subscribe( eventSrc => {
+      this.calendarComponent.loadEvents();
+    });
+  }
   
 }
