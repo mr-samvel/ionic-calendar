@@ -22,17 +22,33 @@ export class CalendarService {
     this.resetEvent();
     this.eventSourceSubject = new BehaviorSubject<EventModel[]>(this.eventSource);
   }
+  
+  private addHourToDate(date: Date, h: number): Date {
+    let d = new Date(date);
+    d.setHours(d.getHours() + h);
+    return d;
+  }
+
+  getEventSource() {
+    return this.eventSource;
+  }
+  getEventSourceObservable() {
+    return this.eventSourceSubject;
+  }
+  getCalendarMode() {
+    return this.calendarOptions.mode;
+  }
+  getCurrentDate() {
+    return this.calendarOptions.currentDate;
+  }
+  getViewTitle() {
+    return this.calendarOptions.viewTitle;
+  }
 
   resetEvent() {
     let start = new Date();
     let end = this.addHourToDate(start, 1);
     this.event = new EventModel('', start, end, start.toISOString(), end.toISOString(), false);
-  }
-
-  private addHourToDate(date: Date, h: number): Date {
-    let d = new Date(date);
-    d.setHours(d.getHours() + h);
-    return d;
   }
 
   addEvent() {
@@ -51,22 +67,6 @@ export class CalendarService {
     this.eventSource.push(eventCopy);
     this.eventSourceSubject.next(this.eventSource);
     this.resetEvent();
-  }
-
-  getEventSource() {
-    return this.eventSource;
-  }
-
-  getEventSourceObservable() {
-    return this.eventSourceSubject;
-  }
-
-  getCalendarMode() {
-    return this.calendarOptions.mode;
-  }
-
-  getCurrentDate() {
-    return this.calendarOptions.currentDate;
   }
 
   today() {

@@ -25,5 +25,10 @@ export class CalendarPage implements AfterViewInit {
       this.calendarComponent.loadEvents();
     });
   }
+
+  addEvent() {
+    // TODO
+    console.log('TODO')
+  }
   
 }

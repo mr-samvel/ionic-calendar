@@ -1,12 +1,14 @@
-import { BehaviorSubject } from 'rxjs';
+import { IEvent } from 'ionic2-calendar/calendar';
 
-export class EventModel {
+export class EventModel implements IEvent {
+    // Esses atributos implementam a interface IEvent -> essencial para o funcionamento do calendario
     title: string;
     startTime: Date; 
     endTime: Date;
+    allDay: boolean;
+    
     strStartTime: string; // Date em formato ISO8601
     strEndTime: string; // Date em formato ISO8601
-    allDay: boolean;
 
     constructor(title: string, startTime: Date, endTime: Date, strStart: string, strEnd: string, allDay: boolean) {
         this.title = title;

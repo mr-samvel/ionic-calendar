@@ -8,18 +8,18 @@
 
   <ion-item color="light" lines="none" style="--min-height: 20px;">
     <ion-label class="ion-text-center" style="margin: 0; margin-top: 10px; margin-bottom: 5px;">
-      {{ viewTitle }}
+      {{ this.calendarService.getViewTitle() }}
     </ion-label>
   </ion-item>
 
   <ion-toolbar color="light" style="--min-height: 20px; --padding-top: 0px; --padding-bottom: 0px;">
     <ion-buttons slot="start">
-      <ion-button (click)="this.calendarService.today()">Today</ion-button>
+      <ion-button (click)="this.calendarService.today()">Hoje</ion-button>
     </ion-buttons>
     <ion-buttons slot="end">
-      <ion-button (click)="this.calendarService.changeMode('month')">Month</ion-button>
-      <ion-button (click)="this.calendarService.changeMode('week')">Week</ion-button>
-      <ion-button (click)="this.calendarService.changeMode('day')">Day</ion-button>
+      <ion-button (click)="this.calendarService.changeMode('month')">Mês</ion-button>
+      <ion-button (click)="this.calendarService.changeMode('week')">Semana</ion-button>
+      <ion-button (click)="this.calendarService.changeMode('day')">Dia</ion-button>
     </ion-buttons>
   </ion-toolbar>
 
@@ -27,10 +27,65 @@
     (click)="this.collapseEvent = !this.collapseEvent">
     <ion-icon *ngIf="this.collapseEvent" name="arrow-dropdown"></ion-icon>
     <ion-icon *ngIf="!this.collapseEvent" name="arrow-dropup"></ion-icon>
-    New Event
+    Novo Evento
   </ion-button>
 
-  <ion-list style="margin-bottom: 0px; --ion-background-color: #f4f5f8" *ngIf="!this.collapseEvent">
+  <ion-list style="margin-bottom: 0px; --ion-background-color: #f4f5f8;" *ngIf="!this.collapseEvent">
+    <ion-item>
+      <ion-label>Profissional:</ion-label>
+      <ion-input type="text"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Dias:</ion-label>
+      <div class="weekDays-selector">
+        <input type="checkbox" id="weekday-dom" class="weekday" />
+        <label for="weekday-dom">D</label>
+        <input type="checkbox" id="weekday-seg" class="weekday" />
+        <label for="weekday-seg">S</label>
+        <input type="checkbox" id="weekday-ter" class="weekday" />
+        <label for="weekday-ter">T</label>
+        <input type="checkbox" id="weekday-qua" class="weekday" />
+        <label for="weekday-qua">Q</label>
+        <input type="checkbox" id="weekday-qui" class="weekday" />
+        <label for="weekday-qui">Q</label>
+        <input type="checkbox" id="weekday-sex" class="weekday" />
+        <label for="weekday-sex">S</label>
+        <input type="checkbox" id="weekday-sab" class="weekday" />
+        <label for="weekday-sab">S</label>
+      </div>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Duração:</ion-label>
+      <ion-input type="number"></ion-input>
+      <ion-label>min</ion-label>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Início:</ion-label>
+      <ion-datetime displayFormat="HH:mm" pickerFormat="HH:mm"></ion-datetime>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Qtd. de aulas:</ion-label>
+      <ion-input type="number"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Modalidade:</ion-label>
+      <ion-input type="text"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Qtd. de alunos:</ion-label>
+      <ion-input type="number"></ion-input>
+    </ion-item>
+
+    <ion-button fill="outline" expand="block" (click)="addEvent()" [disabled]="false">Adicionar Evento</ion-button>
+  </ion-list>
+
+  <!-- <ion-list style="margin-bottom: 0px; --ion-background-color: #f4f5f8" *ngIf="!this.collapseEvent">
     <ion-item>
       <ion-input type="text" placeholder="Title" [(ngModel)]="this.calendarService.event.title"></ion-input>
     </ion-item>
@@ -39,12 +94,12 @@
     </ion-item>
     <ion-item>
       <ion-label>Start</ion-label>
-      <ion-datetime displayFormat="MM/DD/YYYY HH:mm" pickerFormat="MMM D:HH:mm" [(ngModel)]="this.calendarService.event.strStartTime"
+      <ion-datetime displayFormat="MM/DD/YYYY HH:mm" pickerFormat="MMM DD, HH:mm" [(ngModel)]="this.calendarService.event.strStartTime"
         [min]="minDate" [disabled]="this.calendarService.event.allDay"></ion-datetime>
     </ion-item>
     <ion-item>
       <ion-label>End</ion-label>
-      <ion-datetime displayFormat="MM/DD/YYYY HH:mm" pickerFormat="MMM D:HH:mm" [(ngModel)]="this.calendarService.event.strEndTime"
+      <ion-datetime displayFormat="MM/DD/YYYY HH:mm" pickerFormat="MMM DD, HH:mm" [(ngModel)]="this.calendarService.event.strEndTime"
         [min]="minDate" [disabled]="this.calendarService.event.allDay"></ion-datetime>
     </ion-item>
     <ion-item>
@@ -52,11 +107,14 @@
       <ion-checkbox [(ngModel)]="this.calendarService.event.allDay"></ion-checkbox>
     </ion-item>
     <ion-button fill="outline" expand="block" (click)="this.calendarService.addEvent()" [disabled]="this.calendarService.event.title == ''">Add Event</ion-button>
-  </ion-list>
+  </ion-list> -->
 
-  <calendar [eventSource]="this.calendarService.getEventSource()" [calendarMode]="this.calendarService.getCalendarMode()" [currentDate]="this.calendarService.getCurrentDate()"
-    (onEventSelected)="this.calendarService.onEventSelected($event)" (onTitleChanged)="this.calendarService.onViewTitleChanged($event)"
-    (onTimeSelected)="this.calendarService.onTimeSelected($event)" startHour="6" endHour="20" step="30" startingDayWeek="0">
+  <calendar [eventSource]="this.calendarService.getEventSource()"
+    [calendarMode]="this.calendarService.getCalendarMode()" [currentDate]="this.calendarService.getCurrentDate()"
+    (onEventSelected)="this.calendarService.onEventSelected($event)"
+    (onTitleChanged)="this.calendarService.onViewTitleChanged($event)"
+    (onTimeSelected)="this.calendarService.onTimeSelected($event)" startHour="6" endHour="20" step="60"
+    startingDayWeek="0">
   </calendar>
 
 </ion-content>

@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, LOCALE_ID } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
 
@@ -11,7 +11,10 @@ import { AppComponent } from './app.component';
 import { AuthenticationService } from './services/authentication.service';
 import { UserContainerService } from './services/user-container.service';
 import { CalendarService } from './services/calendar.service';
+import { registerLocaleData } from '@angular/common';
+import ptBr from '@angular/common/locales/pt';
 
+registerLocaleData(ptBr);
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
@@ -22,7 +25,8 @@ import { CalendarService } from './services/calendar.service';
     AuthenticationService,
     UserContainerService,
     CalendarService,
-    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
+    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+    { provide: LOCALE_ID, useValue: 'pt'}
   ],
   bootstrap: [AppComponent]
 })
