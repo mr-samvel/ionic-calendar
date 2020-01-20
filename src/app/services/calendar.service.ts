@@ -48,7 +48,7 @@ export class CalendarService {
   resetEvent() {
     let start = new Date();
     let end = this.addHourToDate(start, 1);
-    this.event = new EventModel('', start, end, start.toISOString(), end.toISOString(), false);
+    this.event = new EventModel('', start, end, false);
   }
 
   addEvent() {
@@ -60,8 +60,6 @@ export class CalendarService {
 
       eventCopy.startTime = new Date(Date.UTC(start.getUTCFullYear(), start.getUTCMonth(), start.getUTCDate()));
       eventCopy.endTime = new Date(Date.UTC(end.getUTCFullYear(), end.getUTCMonth(), end.getUTCDate() + 1));
-      eventCopy.strStartTime = eventCopy.startTime.toISOString();
-      eventCopy.strEndTime = eventCopy.endTime.toISOString();
     }
 
     this.eventSource.push(eventCopy);
@@ -91,7 +89,5 @@ export class CalendarService {
     let selected = new Date(event.selectedTime);
     this.event.startTime = selected;
     this.event.endTime = this.addHourToDate(selected, 1);
-    this.event.strStartTime = this.event.startTime.toISOString();
-    this.event.strEndTime = this.event.endTime.toISOString();
   }
 }

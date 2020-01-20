@@ -10,25 +10,54 @@ import { CalendarService } from 'src/app/services/calendar.service';
 })
 export class CalendarPage implements AfterViewInit {
   @ViewChild(CalendarComponent, {static: false}) calendarComponent: CalendarComponent;
+
+  public inputTemplate: {
+    professional: string,
+    days: Array<boolean>,
+    duration: number,
+    startTime: string,
+    classQt: number,
+    modality: string,
+    studentQt: number 
+  };
   
-  collapseEvent: boolean = true;
-  minDate: string = new Date().toISOString();
+  public collapseEvent: boolean = true;
+  public minDate: string = new Date().toISOString();
   
-  constructor(private calendarService: CalendarService) { }
+  constructor(private calendarService: CalendarService) { 
+    this.resetInputTemplate();
+  }
 
   ngAfterViewInit() {
     this.loadEventsOnSourceChange();
   }
-
+  
   private loadEventsOnSourceChange() {
     this.calendarService.getEventSourceObservable().subscribe( eventSrc => {
       this.calendarComponent.loadEvents();
     });
   }
 
+  private validateForm() {
+    // TODO
+    return true;
+  }
+
+  resetInputTemplate() {
+    this.inputTemplate = {
+      professional: '',
+      days: new Array<boolean>(false, false, false, false, false, false, false),
+      duration: 0,
+      startTime: '',
+      classQt: 0,
+      modality: '',
+      studentQt: 0
+    };
+  }
+  
   addEvent() {
     // TODO
-    console.log('TODO')
+    console.log(this.inputTemplate);
   }
   
 }

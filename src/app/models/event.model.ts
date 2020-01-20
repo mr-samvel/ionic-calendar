@@ -6,16 +6,17 @@ export class EventModel implements IEvent {
     startTime: Date; 
     endTime: Date;
     allDay: boolean;
-    
-    strStartTime: string; // Date em formato ISO8601
-    strEndTime: string; // Date em formato ISO8601
 
-    constructor(title: string, startTime: Date, endTime: Date, strStart: string, strEnd: string, allDay: boolean) {
+    // P/ novo tipo
+    start: Date;
+    duration: number;
+    studentQt: number;
+    modality: string;
+
+    constructor(title: string, startTime: Date, endTime: Date, allDay: boolean) {
         this.title = title;
         this.startTime = startTime;
         this.endTime = endTime;
-        this.strStartTime = strStart;
-        this.strEndTime = strEnd;
         this.allDay = allDay;
     }
  }
