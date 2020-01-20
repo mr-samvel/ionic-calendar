@@ -1,26 +1,22 @@
-import { Injectable, Inject, LOCALE_ID } from '@angular/core';
-import { CalendarComponent, IEvent } from 'ionic2-calendar/calendar';
-import { formatDate } from '@angular/common';
+import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { EventModel } from '../models/event.model';
+import { ClassModel } from '../models/event.model';
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class CalendarService {
-  public event: EventModel;
-  private eventSourceSubject: BehaviorSubject<EventModel[]>;
-  private eventSource: Array<EventModel> = new Array();
+  private eventSourceSubject: BehaviorSubject<ClassModel[]>;
+  private eventSource: Array<ClassModel> = new Array();
   private calendarOptions: { viewTitle: string, mode: 'month' | 'week' | 'day', currentDate: Date } = {
     viewTitle: '',
     mode: 'week',
     currentDate: new Date()
   };
   
-  constructor(@Inject(LOCALE_ID) private locale: string) {
-    this.resetEvent();
-    this.eventSourceSubject = new BehaviorSubject<EventModel[]>(this.eventSource);
+  constructor() {
+    this.eventSourceSubject = new BehaviorSubject<ClassModel[]>(this.eventSource);
   }
   
   private addHourToDate(date: Date, h: number): Date {
@@ -29,42 +25,22 @@ export class CalendarService {
     return d;
   }
 
-  getEventSource() {
-    return this.eventSource;
-  }
-  getEventSourceObservable() {
+  getEventSourceObservable(): BehaviorSubject<ClassModel[]> {
     return this.eventSourceSubject;
   }
-  getCalendarMode() {
+  getCalendarMode(): 'month' | 'week' | 'day' {
     return this.calendarOptions.mode;
   }
-  getCurrentDate() {
+  getCurrentDate(): Date {
     return this.calendarOptions.currentDate;
   }
-  getViewTitle() {
+  getViewTitle(): string {
     return this.calendarOptions.viewTitle;
   }
 
-  resetEvent() {
-    let start = new Date();
-    let end = this.addHourToDate(start, 1);
-    this.event = new EventModel('', start, end, false);
-  }
-
-  addEvent() {
-    let eventCopy: EventModel = Object.assign({}, this.event);
-
-    if (this.event.allDay) {
-      let start = eventCopy.startTime;
-      let end = eventCopy.endTime;
-
-      eventCopy.startTime = new Date(Date.UTC(start.getUTCFullYear(), start.getUTCMonth(), start.getUTCDate()));
-      eventCopy.endTime = new Date(Date.UTC(end.getUTCFullYear(), end.getUTCMonth(), end.getUTCDate() + 1));
-    }
-
-    this.eventSource.push(eventCopy);
+  addClass(event: ClassModel) {
+    this.eventSource.push(event);
     this.eventSourceSubject.next(this.eventSource);
-    this.resetEvent();
   }
 
   today() {
@@ -80,14 +56,11 @@ export class CalendarService {
   }
 
   onEventSelected(event) {
-    let start = formatDate(event.startTime, 'medium', this.locale);
-    let end = formatDate(event.endTime, 'medium', this.locale);
-    console.log(event, start, end);
+    // TODO
+    console.log('Event selected:', event);
   }
 
   onTimeSelected(event) {
-    let selected = new Date(event.selectedTime);
-    this.event.startTime = selected;
-    this.event.endTime = this.addHourToDate(selected, 1);
+    // TODO
   }
 }
