@@ -6,8 +6,6 @@
 
 <ion-content>
 
-  <ion-button (click)="getDay()">asdadadsa</ion-button>
-
   <ion-item color="light" lines="none" style="--min-height: 20px;">
     <ion-label class="ion-text-center" style="margin: 0; margin-top: 10px; margin-bottom: 5px;">
       {{ this.calendarService.getViewTitle() }}
@@ -35,7 +33,7 @@
   <ion-list style="margin-bottom: 0px; --ion-background-color: #f4f5f8;" *ngIf="!this.collapseEvent">
     <ion-item>
       <ion-label>Profissional:</ion-label>
-      <ion-input type="text" [(ngModel)]="this.inputTemplate.professional"></ion-input>
+      <ion-input type="text" [(ngModel)]="this.inputTemplate.professional" placeholder="Ex.: Marcos"></ion-input>
     </ion-item>
 
     <ion-item>
@@ -59,7 +57,7 @@
     </ion-item>
 
     <ion-item>
-      <ion-label>Repetir por:</ion-label>
+      <ion-label>Repetir pelas próximas:</ion-label>
       <ion-input type="number" [(ngModel)]="this.inputTemplate.weekRepeat"></ion-input>
       <ion-label>semanas</ion-label>
     </ion-item>
@@ -82,7 +80,7 @@
 
     <ion-item>
       <ion-label>Modalidade:</ion-label>
-      <ion-input type="text" [(ngModel)]="this.inputTemplate.modality"></ion-input>
+      <ion-input type="text" [(ngModel)]="this.inputTemplate.modality" placeholder="Ex.: Pilates"></ion-input>
     </ion-item>
 
     <ion-item>

@@ -30,57 +30,67 @@ export class CalendarPage implements AfterViewInit {
     this.resetInputTemplate();
   }
 
-  getDay() {
-  }
-
   ngAfterViewInit() {
-    this.loadEventsOnSourceChange();
+    this.subscribeToEventChange();
   }
 
-  private loadEventsOnSourceChange() {
+  private subscribeToEventChange() {
     this.calendarService.getEventSourceObservable().subscribe(eventSrc => {
       this.eventSource = eventSrc;
+      console.log(this.eventSource);
       this.calendarComponent.loadEvents();
     });
   }
 
-  private validateForm() {
-    // TODO
-    return true;
+  public validateForm() {
+    let vProf = this.inputTemplate.professional != '';
+    let vDays = this.inputTemplate.days != [false, false, false, false, false, false, false];
+    let vDuration = this.inputTemplate.duration > 0;
+    let vClassQt = this.inputTemplate.classQt > 0;
+    let vMod = this.inputTemplate.modality != '';
+    let vStudentQt = this.inputTemplate.studentQt > 0;
+    if(vProf && vDays && vDuration && vClassQt && vMod && vStudentQt)
+      return true;
+    return false;
   }
 
   resetInputTemplate() {
     this.inputTemplate = {
-      professional: 'ex.: Marcos',
+      professional: '',
       days: new Array<boolean>(false, false, false, false, false, false, false),
       weekRepeat: 0,
       duration: 0,
       startTime: new Date().toISOString(),
       classQt: 0,
-      modality: 'ex.: Pilates',
+      modality: '',
       studentQt: 0
     };
   }
 
   addEvent() {
+    let classes: ClassModel[] = [];
     this.inputTemplate.days.forEach((dayValue, dayIndex) => {
       if (dayValue) {
         for (let i = 0; i < this.inputTemplate.weekRepeat + 1; i++) {
-          let d = new Date()
-          d.setDate(d.getDate() + (((7 - d.getDay()) % 7 + dayIndex) % 7) + i*7);
-          console.log(d);
+          let start = new Date();
+          start.setHours(+this.inputTemplate.startTime.slice(11, 13), +this.inputTemplate.startTime.slice(14, 16))
+          start.setDate(start.getDate() + (((7 - start.getDay()) % 7 + dayIndex) % 7) + i * 7);
+          let end = new Date(start);
+          end.setMinutes(this.inputTemplate.duration * this.inputTemplate.classQt);
+
+          let newClass = new ClassModel(
+            this.inputTemplate.professional,
+            start, end,
+            this.inputTemplate.modality,
+            [''],
+            this.inputTemplate.studentQt
+          );
+          classes.push(newClass);
         }
       }
     });
-    // let newClass = new ClassModel(
-    //   this.inputTemplate.professional,
-    //   new Date(), new Date(),
-    //   this.inputTemplate.modality,
-    //   [''],
-    //   this.inputTemplate.studentQt
-    // );
-    // this.resetInputTemplate();
-    // console.log(this.inputTemplate);
+    this.calendarService.addClasses(classes);
+    this.resetInputTemplate();
   }
 
   onTimeSelected(event) {

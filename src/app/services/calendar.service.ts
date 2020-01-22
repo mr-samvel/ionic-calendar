@@ -14,11 +14,11 @@ export class CalendarService {
     mode: 'week',
     currentDate: new Date()
   };
-  
+
   constructor() {
     this.eventSourceSubject = new BehaviorSubject<ClassModel[]>(this.eventSource);
   }
-  
+
   private addHourToDate(date: Date, h: number): Date {
     let d = new Date(date);
     d.setHours(d.getHours() + h);
@@ -38,8 +38,10 @@ export class CalendarService {
     return this.calendarOptions.viewTitle;
   }
 
-  addClass(event: ClassModel) {
-    this.eventSource.push(event);
+  addClasses(events: Array<ClassModel>) {
+    for (let event of events) {
+      this.eventSource.push(event);
+    }
     this.eventSourceSubject.next(this.eventSource);
   }
 
