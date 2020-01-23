@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, Inject, LOCALE_ID, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, Inject, LOCALE_ID, AfterViewInit, ViewEncapsulation } from '@angular/core';
 import { CalendarComponent, IEvent } from 'ionic2-calendar/calendar';
 import { formatDate } from '@angular/common';
 import { CalendarService } from 'src/app/services/calendar.service';
@@ -8,6 +8,7 @@ import { ClassModel } from 'src/app/models/event.model';
   selector: 'app-calendar',
   templateUrl: './calendar.page.html',
   styleUrls: ['./calendar.page.scss'],
+  encapsulation: ViewEncapsulation.None
 })
 export class CalendarPage implements AfterViewInit {
   @ViewChild(CalendarComponent, { static: false }) calendarComponent: CalendarComponent;
@@ -43,27 +44,28 @@ export class CalendarPage implements AfterViewInit {
   }
 
   public validateForm() {
-    let vProf = this.inputTemplate.professional != '';
+    let vProf = this.inputTemplate.professional != null;
     let vDays = this.inputTemplate.days != [false, false, false, false, false, false, false];
+    let vStartTime = this.inputTemplate.startTime != null
     let vDuration = this.inputTemplate.duration > 0;
     let vClassQt = this.inputTemplate.classQt > 0;
-    let vMod = this.inputTemplate.modality != '';
+    let vMod = this.inputTemplate.modality != null;
     let vStudentQt = this.inputTemplate.studentQt > 0;
-    if(vProf && vDays && vDuration && vClassQt && vMod && vStudentQt)
+    if (vProf && vDays && vStartTime && vDuration && vClassQt && vMod && vStudentQt)
       return true;
     return false;
   }
 
   resetInputTemplate() {
     this.inputTemplate = {
-      professional: '',
+      professional: null,
       days: new Array<boolean>(false, false, false, false, false, false, false),
-      weekRepeat: 0,
-      duration: 0,
-      startTime: new Date().toISOString(),
-      classQt: 0,
-      modality: '',
-      studentQt: 0
+      weekRepeat: null,
+      duration: null,
+      startTime: null,
+      classQt: null,
+      modality: null,
+      studentQt: null
     };
   }
 
@@ -96,5 +98,15 @@ export class CalendarPage implements AfterViewInit {
   onTimeSelected(event) {
     let selected = new Date(event.selectedTime);
     this.inputTemplate.startTime = selected.toISOString();
+  }
+
+  showClassDetails(event) {
+    console.log(event);
+  }
+
+  log(...args) {
+    for (let arg of args) {
+      console.log(arg);
+    }
   }
 }
