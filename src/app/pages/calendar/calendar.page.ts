@@ -24,6 +24,7 @@ export class CalendarPage implements AfterViewInit {
     studentQt: number
   };
 
+  public bgColor: string;
   public collapseEvent: boolean = true;
   public eventSource: Array<ClassModel>;
 
@@ -43,7 +44,13 @@ export class CalendarPage implements AfterViewInit {
     });
   }
 
-  public validateForm() {
+  private randomColorHex():string {
+    let c = "#" + (Math.random().toString(16) + "000000").slice(2, 8);
+    console.log(c);
+    return c;
+  }
+
+  validateForm() {
     let vProf = this.inputTemplate.professional != null;
     let vDays = this.inputTemplate.days != [false, false, false, false, false, false, false];
     let vStartTime = this.inputTemplate.startTime != null
@@ -70,6 +77,7 @@ export class CalendarPage implements AfterViewInit {
   }
 
   addEvent() {
+    this.bgColor = this.randomColorHex();
     let classes: ClassModel[] = [];
     this.inputTemplate.days.forEach((dayValue, dayIndex) => {
       if (dayValue) {
@@ -84,7 +92,7 @@ export class CalendarPage implements AfterViewInit {
             this.inputTemplate.professional,
             start, end,
             this.inputTemplate.modality,
-            [''],
+            [],
             this.inputTemplate.studentQt
           );
           classes.push(newClass);
@@ -97,7 +105,7 @@ export class CalendarPage implements AfterViewInit {
 
   onTimeSelected(event) {
     let selected = new Date(event.selectedTime);
-    this.inputTemplate.startTime = selected.toISOString();
+    // this.inputTemplate.startTime = selected.toISOString();
   }
 
   showClassDetails(event) {

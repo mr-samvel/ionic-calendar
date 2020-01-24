@@ -20,13 +20,8 @@
 }
 
 ion-input {
-  color: #86888f;  
   --padding-end: 3px; 
   text-align: right;
-}
-
-ion-datetime {
-  color: #86888f;
 }
 
 calendar {
@@ -37,15 +32,11 @@ calendar {
   .weekview-normal-event-container{
     margin-top: 37px;
   }
-  .dayview-allday-label{
+  .dayview-allday-table {
     display: none;
   }
   .dayview-normal-event-container{
     margin-top: 0px;
-  }
-  .dayview-allday-content-wrapper{
-    height: 0px;
-  }
-  
+  }  
   // resto
 }

@@ -98,7 +98,9 @@
     [currentDate]="this.calendarService.getCurrentDate()"
     (onEventSelected)="this.calendarService.onEventSelected($event)"
     (onTitleChanged)="this.calendarService.onViewTitleChanged($event)" (onTimeSelected)="this.onTimeSelected($event)"
-    startHour="6" endHour="20" step="60" startingDayWeek="0" [monthviewEventDetailTemplate]="monthviewEventDetail">
+    startHour="6" endHour="20" step="60" startingDayWeek="0" 
+    [monthviewEventDetailTemplate]="monthviewEventDetail" [weekviewNormalEventTemplate]="weekviewNormalEventTemplate"
+    [dayviewNormalEventTemplate]="dayviewNormalEventTemplate">
   </calendar>
 
   <!----------------- TEMPLATES ----------------->
@@ -116,7 +118,17 @@
 
   <!-- template do evento na visao de semana -->
   <ng-template #weekviewNormalEventTemplate let-displayEvent="displayEvent">
-    <div>{{displayEvent.event.modality}}</div>
+    <div class="calendar-event-inner" [ngStyle]="{'background-color': bgColor}">{{displayEvent.event.modality}}</div>
+  </ng-template>
+
+  <!-- template do evento na visao de dia -->
+  <ng-template #dayviewNormalEventTemplate let-displayEvent="displayEvent">
+    <div class="calendar-event-inner" [ngStyle]="{'background-color': bgColor}">
+      <ion-grid>
+        <ion-row>{{displayEvent.event.modality}} - {{displayEvent.event.professional}}</ion-row>
+        <ion-row>{{displayEvent.event.students.length}}/{{displayEvent.event.studentQt}} estudantes</ion-row>
+      </ion-grid>
+    </div>
   </ng-template>
 
 </ion-content>
