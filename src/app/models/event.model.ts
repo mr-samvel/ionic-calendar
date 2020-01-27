@@ -1,7 +1,7 @@
 import { IEvent } from 'ionic2-calendar/calendar';
 
 export class EventModel implements IEvent {
-    // Esses atributos implementam a interface IEvent -> essencial para o funcionamento do calendario
+    // Esses atributos implementam a interface IEvent do componente ionic2-calendar
     title: string;
     startTime: Date;
     endTime: Date;
@@ -16,6 +16,7 @@ export class EventModel implements IEvent {
 }
 
 export class ClassModel {
+    // implementar isso é o que nos interessa.
     professional: string;
     startTime: Date;
     endTime: Date;

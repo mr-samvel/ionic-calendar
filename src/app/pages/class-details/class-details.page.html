@@ -1,0 +1,29 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Detalhes da Aula</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  
+    <ion-list>
+      <ion-list-header style="justify-content: center;" color="light">
+        <ion-label style="font-size: larger;">{{ this.event.modality }}</ion-label>
+      </ion-list-header>
+      <ion-item>Profissional: {{ this.event.professional }}</ion-item>
+      <ion-item>Início: {{ this.event.startTime.toLocaleTimeString().slice(0,5) }}</ion-item>
+      <ion-item>Fim: {{ this.event.endTime.toLocaleTimeString().slice(0,5) }}</ion-item>
+    </ion-list>
+    <ion-list>
+      <ion-list-header>
+        <ion-label>Alunos</ion-label>
+      </ion-list-header>
+      <ion-item *ngIf="this.event.students.length == 0">Nenhum, por enquanto :)</ion-item>
+      <ion-item *ngFor="let student of this.event.students">
+        {{ student }}
+      </ion-item>
+    </ion-list>
+  
+
+  <ion-button (click)="closeModal()">Fechar</ion-button>
+</ion-content>

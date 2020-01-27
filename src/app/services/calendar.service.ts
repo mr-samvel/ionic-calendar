@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { ClassModel } from '../models/event.model';
+import { ModalController } from '@ionic/angular';
+import { ClassDetailsPage } from '../pages/class-details/class-details.page';
 
 
 @Injectable({
@@ -15,14 +17,21 @@ export class CalendarService {
     currentDate: new Date()
   };
 
-  constructor() {
+  constructor(private modalController: ModalController) {
     this.eventSourceSubject = new BehaviorSubject<ClassModel[]>(this.eventSource);
   }
 
-  private addHourToDate(date: Date, h: number): Date {
-    let d = new Date(date);
-    d.setHours(d.getHours() + h);
-    return d;
+  private async showClassDetailsModal(event: ClassModel) {
+    const modal = await this.modalController.create({
+      component: ClassDetailsPage,
+      componentProps: {
+        'event': event
+      }
+    });
+    modal.onDidDismiss().then((returnedData) => {
+      console.log(returnedData);
+    });
+    return await modal.present();
   }
 
   getEventSourceObservable(): BehaviorSubject<ClassModel[]> {
@@ -58,11 +67,12 @@ export class CalendarService {
   }
 
   onEventSelected(event) {
-    // TODO
+    // TODO: show class modal
+    this.showClassDetailsModal(event);
     console.log('Event selected:', event);
   }
 
   onTimeSelected(event) {
-    // TODO
+    // TODO (?)
   }
 }

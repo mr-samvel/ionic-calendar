@@ -24,7 +24,7 @@ export class CalendarPage implements AfterViewInit {
     studentQt: number
   };
 
-  public bgColor: string;
+  public bgColor: string = '#3a87ad';
   public collapseEvent: boolean = true;
   public eventSource: Array<ClassModel>;
 
@@ -76,40 +76,34 @@ export class CalendarPage implements AfterViewInit {
     };
   }
 
-  addEvent() {
-    this.bgColor = this.randomColorHex();
+  addEvent() {    
     let classes: ClassModel[] = [];
     this.inputTemplate.days.forEach((dayValue, dayIndex) => {
       if (dayValue) {
         for (let i = 0; i < this.inputTemplate.weekRepeat + 1; i++) {
-          let start = new Date();
-          start.setHours(+this.inputTemplate.startTime.slice(11, 13), +this.inputTemplate.startTime.slice(14, 16))
-          start.setDate(start.getDate() + (((7 - start.getDay()) % 7 + dayIndex) % 7) + i * 7);
-          let end = new Date(start);
-          end.setMinutes(this.inputTemplate.duration * this.inputTemplate.classQt);
-
-          let newClass = new ClassModel(
-            this.inputTemplate.professional,
-            start, end,
-            this.inputTemplate.modality,
-            [],
-            this.inputTemplate.studentQt
-          );
-          classes.push(newClass);
+          for (let j = 0; j < this.inputTemplate.classQt; j++) {
+            let start = new Date();
+            start.setDate(start.getDate() + (((7 - start.getDay()) % 7 + dayIndex) % 7) + i * 7);
+            start.setHours(+this.inputTemplate.startTime.slice(11, 13));
+            start.setMinutes(+this.inputTemplate.startTime.slice(14, 16) + this.inputTemplate.duration * j);
+            start.setSeconds(55, 0);
+            let end = new Date(start);
+            end.setMinutes(start.getMinutes() + this.inputTemplate.duration, 0, 0);
+            
+            let newClass = new ClassModel(
+              this.inputTemplate.professional,
+              start, end,
+              this.inputTemplate.modality,
+              [],
+              this.inputTemplate.studentQt
+            );
+            classes.push(newClass);
+          }
         }
       }
     });
     this.calendarService.addClasses(classes);
     this.resetInputTemplate();
-  }
-
-  onTimeSelected(event) {
-    let selected = new Date(event.selectedTime);
-    // this.inputTemplate.startTime = selected.toISOString();
-  }
-
-  showClassDetails(event) {
-    console.log(event);
   }
 
   log(...args) {

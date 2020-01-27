@@ -97,10 +97,11 @@
   <calendar [eventSource]="this.eventSource" [calendarMode]="this.calendarService.getCalendarMode()"
     [currentDate]="this.calendarService.getCurrentDate()"
     (onEventSelected)="this.calendarService.onEventSelected($event)"
-    (onTitleChanged)="this.calendarService.onViewTitleChanged($event)" (onTimeSelected)="this.onTimeSelected($event)"
-    startHour="6" endHour="20" step="60" startingDayWeek="0" 
-    [monthviewEventDetailTemplate]="monthviewEventDetail" [weekviewNormalEventTemplate]="weekviewNormalEventTemplate"
-    [dayviewNormalEventTemplate]="dayviewNormalEventTemplate">
+    (onTitleChanged)="this.calendarService.onViewTitleChanged($event)" (onTimeSelected)="this.calendarService.onTimeSelected($event)"
+    startHour="6" endHour="20" step="0.5" startingDayWeek="0" 
+    [monthviewEventDetailTemplate]="monthviewEventDetail"
+    [weekviewNormalEventSectionTemplate]="weekviewNormalEventSectionTemplate" [weekviewNormalEventTemplate]="weekviewNormalEventTemplate"
+    [dayviewNormalEventSectionTemplate]="dayviewNormalEventSectionTemplate" [dayviewNormalEventTemplate]="dayviewNormalEventTemplate">
   </calendar>
 
   <!----------------- TEMPLATES ----------------->
@@ -111,17 +112,50 @@
       {{ noEventsLabel }}
     </ion-item>
     <ion-item *ngFor="let event of selectedDate.events" (click)="showClassDetails(event)">
-      {{ event.startTime.toISOString().slice(11,16) }} - {{ event.endTime.toISOString().slice(11,16) }} |
-      {{ event.modality }}
+      {{ event.startTime.toLocaleTimeString().slice(0,5) }} - {{ event.endTime.toLocaleTimeString().slice(0,5) }} |
+      {{ event.modality }}: {{ event.professional }}
     </ion-item>
   </ng-template>
 
   <!-- template do evento na visao de semana -->
+  <!-- seçao/bloco -->
+  <ng-template #weekviewNormalEventSectionTemplate let-tm="tm" let-hourParts="hourParts"
+    let-eventTemplate="eventTemplate">
+    <div [ngClass]="{'calendar-event-wrap': tm.events}" *ngIf="tm.events">
+      <div *ngFor="let displayEvent of tm.events" class="calendar-event" tappable
+        (click)="this.calendarService.onEventSelected(displayEvent.event);"
+        [ngStyle]="{top: (37*displayEvent.startOffset/hourParts)+'px',
+        left: 100/displayEvent.overlapNumber*displayEvent.position+'%', 
+        width: 100/displayEvent.overlapNumber+'%', 
+        height: 37 * (displayEvent.endIndex - displayEvent.startIndex - (displayEvent.endOffset + displayEvent.startOffset) / hourParts) + 'px'}">
+        <ng-template [ngTemplateOutlet]="eventTemplate" [ngTemplateOutletContext]="{displayEvent:displayEvent}">
+        </ng-template>
+      </div>
+    </div>
+  </ng-template>
+  <!-- inner evento -->
   <ng-template #weekviewNormalEventTemplate let-displayEvent="displayEvent">
-    <div class="calendar-event-inner" [ngStyle]="{'background-color': bgColor}">{{displayEvent.event.modality}}</div>
+    <div class="calendar-event-inner" [ngStyle]="{'background-color': bgColor}">
+      {{displayEvent.event.modality}}
+    </div>
   </ng-template>
 
   <!-- template do evento na visao de dia -->
+  <!-- secao/bloco -->
+  <ng-template #dayviewNormalEventSectionTemplate let-tm="tm" let-hourParts="hourParts" let-eventTemplate="eventTemplate">
+    <div [ngClass]="{'calendar-event-wrap': tm.events}" *ngIf="tm.events">
+      <div *ngFor="let displayEvent of tm.events" class="calendar-event" tappable
+        (click)="this.calendarService.onEventSelected(displayEvent.event)"
+        [ngStyle]="{top: (37*displayEvent.startOffset/hourParts)+'px',
+        left: 100/displayEvent.overlapNumber*displayEvent.position+'%', 
+        width: 100/displayEvent.overlapNumber+'%', 
+        height: 37 * (displayEvent.endIndex - displayEvent.startIndex - (displayEvent.endOffset + displayEvent.startOffset) / hourParts) + 'px'}">
+        <ng-template [ngTemplateOutlet]="eventTemplate" [ngTemplateOutletContext]="{displayEvent:displayEvent}">
+        </ng-template>
+      </div>
+    </div>
+  </ng-template>
+  <!-- inner evento -->
   <ng-template #dayviewNormalEventTemplate let-displayEvent="displayEvent">
     <div class="calendar-event-inner" [ngStyle]="{'background-color': bgColor}">
       <ion-grid>

@@ -39,4 +39,20 @@ calendar {
     margin-top: 0px;
   }  
   // resto
+
+  .calendar-event-inner {
+    overflow: hidden;
+    height: 100%;
+    width: 100%;
+    padding: 2px;
+    line-height: 15px;
+    text-align: initial;
+    vertical-align: top;
+  }
+
+  @media (max-width: 750px) {
+    .calendar-event-inner {
+      font-size: 12px;
+    }
+  }
 }

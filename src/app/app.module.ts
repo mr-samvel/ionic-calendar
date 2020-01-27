@@ -13,12 +13,18 @@ import { UserContainerService } from './services/user-container.service';
 import { CalendarService } from './services/calendar.service';
 import { registerLocaleData } from '@angular/common';
 import ptBr from '@angular/common/locales/pt';
+import { ClassDetailsPageModule } from './pages/class-details/class-details.module';
 
 registerLocaleData(ptBr);
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
-  imports: [BrowserModule, IonicModule.forRoot(), AppRoutingModule],
+  imports: [
+    BrowserModule,
+    IonicModule.forRoot(), 
+    AppRoutingModule,
+    ClassDetailsPageModule
+  ],
   providers: [
     StatusBar,
     SplashScreen,
@@ -26,8 +32,8 @@ registerLocaleData(ptBr);
     UserContainerService,
     CalendarService,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-    { provide: LOCALE_ID, useValue: 'pt'}
+    { provide: LOCALE_ID, useValue: 'pt' }
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule {}
+export class AppModule { }
