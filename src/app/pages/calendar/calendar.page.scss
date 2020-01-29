@@ -1,0 +1,58 @@
+.weekDays-selector input {
+  display: none!important;
+}
+
+.weekDays-selector input[type=checkbox] + label {
+  display: inline-block;
+  border-radius: 6px;
+  background: #dddddd;
+  height: 40px;
+  width: 30px;
+  margin-right: 3px;
+  line-height: 40px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.weekDays-selector input[type=checkbox]:checked + label {
+  background: #2AD705;
+  color: #ffffff;
+}
+
+ion-input {
+  --padding-end: 3px; 
+  text-align: right;
+}
+
+calendar {
+  // Tirar a secao all day
+  .weekview-allday-table{
+    display: none;
+  } 
+  .weekview-normal-event-container{
+    margin-top: 37px;
+  }
+  .dayview-allday-table {
+    display: none;
+  }
+  .dayview-normal-event-container{
+    margin-top: 0px;
+  }  
+  // resto
+
+  .calendar-event-inner {
+    overflow: hidden;
+    height: 100%;
+    width: 100%;
+    padding: 2px;
+    line-height: 15px;
+    text-align: initial;
+    vertical-align: top;
+  }
+
+  @media (max-width: 750px) {
+    .calendar-event-inner {
+      font-size: 12px;
+    }
+  }
+}

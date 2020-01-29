@@ -1,91 +1,114 @@
-import { Component, OnInit, ViewChild, Inject, LOCALE_ID } from '@angular/core';
-import { CalendarComponent } from 'ionic2-calendar/calendar';
+import { Component, OnInit, ViewChild, Inject, LOCALE_ID, AfterViewInit, ViewEncapsulation } from '@angular/core';
+import { CalendarComponent, IEvent } from 'ionic2-calendar/calendar';
 import { formatDate } from '@angular/common';
+import { CalendarService } from 'src/app/services/calendar.service';
+import { ClassModel } from 'src/app/models/event.model';
 
 @Component({
   selector: 'app-calendar',
   templateUrl: './calendar.page.html',
   styleUrls: ['./calendar.page.scss'],
+  encapsulation: ViewEncapsulation.None
 })
-export class CalendarPage implements OnInit {
-  @ViewChild(CalendarComponent, {static: false}) calendarComponent: CalendarComponent;
+export class CalendarPage implements AfterViewInit {
+  @ViewChild(CalendarComponent, { static: false }) calendarComponent: CalendarComponent;
 
-  minDate: string = new Date().toISOString();
-  eventSource: Array<object> = new Array();
-  viewTitle: string;
-  calendar = {
-    mode: 'month',
-    currentDate: new Date()
+  public inputTemplate: {
+    professional: string,
+    days: Array<boolean>,
+    weekRepeat: number,
+    duration: number,
+    startTime: string,
+    classQt: number,
+    modality: string,
+    studentQt: number
   };
-  collapseEvent: boolean = true;
-  event = {
-    title: '',
-    desc: '',
-    startTime: '',
-    endTime: '',
-    allDay: false
+
+  public bgColor: string = '#3a87ad';
+  public collapseEvent: boolean = true;
+  public eventSource: Array<ClassModel>;
+
+  constructor(private calendarService: CalendarService) {
+    this.resetInputTemplate();
   }
 
-  constructor(@Inject(LOCALE_ID) private locale: string) { }
-
-  ngOnInit() {
-    this.resetEvent();
+  ngAfterViewInit() {
+    this.subscribeToEventChange();
   }
 
-  resetEvent() {
-    this.collapseEvent = true;
-    this.event.title = '';
-    this.event.desc = '';
-    this.event.startTime = '';
-    this.event.endTime = '';
-    this.event.allDay = false;
+  private subscribeToEventChange() {
+    this.calendarService.getEventSourceObservable().subscribe(eventSrc => {
+      this.eventSource = eventSrc;
+      console.log(this.eventSource);
+      this.calendarComponent.loadEvents();
+    });
   }
 
-  addEvent() {
-    let eventCopy = {
-      title: this.event.title,
-      startTime:  new Date(this.event.startTime),
-      endTime: new Date(this.event.endTime),
-      allDay: this.event.allDay,
-      desc: this.event.desc
+  private randomColorHex():string {
+    let c = "#" + (Math.random().toString(16) + "000000").slice(2, 8);
+    console.log(c);
+    return c;
+  }
+
+  validateForm() {
+    let vProf = this.inputTemplate.professional != null;
+    let vDays = this.inputTemplate.days != [false, false, false, false, false, false, false];
+    let vStartTime = this.inputTemplate.startTime != null
+    let vDuration = this.inputTemplate.duration > 0;
+    let vClassQt = this.inputTemplate.classQt > 0;
+    let vMod = this.inputTemplate.modality != null;
+    let vStudentQt = this.inputTemplate.studentQt > 0;
+    if (vProf && vDays && vStartTime && vDuration && vClassQt && vMod && vStudentQt)
+      return true;
+    return false;
+  }
+
+  resetInputTemplate() {
+    this.inputTemplate = {
+      professional: null,
+      days: new Array<boolean>(false, false, false, false, false, false, false),
+      weekRepeat: null,
+      duration: null,
+      startTime: null,
+      classQt: null,
+      modality: null,
+      studentQt: null
+    };
+  }
+
+  addEvent() {    
+    let classes: ClassModel[] = [];
+    this.inputTemplate.days.forEach((dayValue, dayIndex) => {
+      if (dayValue) {
+        for (let i = 0; i < this.inputTemplate.weekRepeat + 1; i++) {
+          for (let j = 0; j < this.inputTemplate.classQt; j++) {
+            let start = new Date();
+            start.setDate(start.getDate() + (((7 - start.getDay()) % 7 + dayIndex) % 7) + i * 7);
+            start.setHours(+this.inputTemplate.startTime.slice(11, 13));
+            start.setMinutes(+this.inputTemplate.startTime.slice(14, 16) + this.inputTemplate.duration * j);
+            start.setSeconds(55, 0);
+            let end = new Date(start);
+            end.setMinutes(start.getMinutes() + this.inputTemplate.duration, 0, 0);
+            
+            let newClass = new ClassModel(
+              this.inputTemplate.professional,
+              start, end,
+              this.inputTemplate.modality,
+              [],
+              this.inputTemplate.studentQt
+            );
+            classes.push(newClass);
+          }
+        }
+      }
+    });
+    this.calendarService.addClasses(classes);
+    this.resetInputTemplate();
+  }
+
+  log(...args) {
+    for (let arg of args) {
+      console.log(arg);
     }
- 
-    if (eventCopy.allDay) {
-      let start = eventCopy.startTime;
-      let end = eventCopy.endTime;
- 
-      eventCopy.startTime = new Date(Date.UTC(start.getUTCFullYear(), start.getUTCMonth(), start.getUTCDate()));
-      eventCopy.endTime = new Date(Date.UTC(end.getUTCFullYear(), end.getUTCMonth(), end.getUTCDate() + 1));
-    }
- 
-    this.eventSource.push(eventCopy);
-    this.calendarComponent.loadEvents()
-    this.resetEvent();
-  }
-
-  today() {
-    this.calendar.currentDate = new Date();
-  }
-
-  changeMode(mode: 'month' | 'week' | 'day') {
-    this.calendar.mode = mode;
-  }
-
-  onViewTitleChanged(title) {
-    this.viewTitle = title;
-  }
-
-  onEventSelected(event) {
-    let start = formatDate(event.startTime, 'medium', this.locale);
-    let end = formatDate(event.endTime, 'medium', this.locale);
-    console.log(event, start, end)
-  }
-
-  onTimeSelected(event) {
-    let selected = new Date(event.selectedTime);
-    this.event.startTime = selected.toISOString();
-
-    selected.setHours(selected.getHours() + 1);
-    this.event.endTime = (selected.toISOString());
   }
 }
