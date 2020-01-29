@@ -3,6 +3,8 @@ import { CalendarComponent, IEvent } from 'ionic2-calendar/calendar';
 import { formatDate } from '@angular/common';
 import { CalendarService } from 'src/app/services/calendar.service';
 import { ClassModel } from 'src/app/models/event.model';
+import { ModalController } from '@ionic/angular';
+import { NewEventFormPage } from '../new-event-form/new-event-form.page';
 
 @Component({
   selector: 'app-calendar',
@@ -13,24 +15,10 @@ import { ClassModel } from 'src/app/models/event.model';
 export class CalendarPage implements AfterViewInit {
   @ViewChild(CalendarComponent, { static: false }) calendarComponent: CalendarComponent;
 
-  public inputTemplate: {
-    professional: string,
-    days: Array<boolean>,
-    weekRepeat: number,
-    duration: number,
-    startTime: string,
-    classQt: number,
-    modality: string,
-    studentQt: number
-  };
-
   public bgColor: string = '#3a87ad';
-  public collapseEvent: boolean = true;
   public eventSource: Array<ClassModel>;
 
-  constructor(private calendarService: CalendarService) {
-    this.resetInputTemplate();
-  }
+  constructor(private calendarService: CalendarService, private modalController: ModalController) { }
 
   ngAfterViewInit() {
     this.subscribeToEventChange();
@@ -50,60 +38,14 @@ export class CalendarPage implements AfterViewInit {
     return c;
   }
 
-  validateForm() {
-    let vProf = this.inputTemplate.professional != null;
-    let vDays = this.inputTemplate.days != [false, false, false, false, false, false, false];
-    let vStartTime = this.inputTemplate.startTime != null
-    let vDuration = this.inputTemplate.duration > 0;
-    let vClassQt = this.inputTemplate.classQt > 0;
-    let vMod = this.inputTemplate.modality != null;
-    let vStudentQt = this.inputTemplate.studentQt > 0;
-    if (vProf && vDays && vStartTime && vDuration && vClassQt && vMod && vStudentQt)
-      return true;
-    return false;
-  }
-
-  resetInputTemplate() {
-    this.inputTemplate = {
-      professional: null,
-      days: new Array<boolean>(false, false, false, false, false, false, false),
-      weekRepeat: null,
-      duration: null,
-      startTime: null,
-      classQt: null,
-      modality: null,
-      studentQt: null
-    };
-  }
-
-  addEvent() {    
-    let classes: ClassModel[] = [];
-    this.inputTemplate.days.forEach((dayValue, dayIndex) => {
-      if (dayValue) {
-        for (let i = 0; i < this.inputTemplate.weekRepeat + 1; i++) {
-          for (let j = 0; j < this.inputTemplate.classQt; j++) {
-            let start = new Date();
-            start.setDate(start.getDate() + (((7 - start.getDay()) % 7 + dayIndex) % 7) + i * 7);
-            start.setHours(+this.inputTemplate.startTime.slice(11, 13));
-            start.setMinutes(+this.inputTemplate.startTime.slice(14, 16) + this.inputTemplate.duration * j);
-            start.setSeconds(55, 0);
-            let end = new Date(start);
-            end.setMinutes(start.getMinutes() + this.inputTemplate.duration, 0, 0);
-            
-            let newClass = new ClassModel(
-              this.inputTemplate.professional,
-              start, end,
-              this.inputTemplate.modality,
-              [],
-              this.inputTemplate.studentQt
-            );
-            classes.push(newClass);
-          }
-        }
-      }
+  async addEventModal() {
+    const modal = await this.modalController.create({
+      component: NewEventFormPage
     });
-    this.calendarService.addClasses(classes);
-    this.resetInputTemplate();
+    modal.onDidDismiss().then((returnedData) => {
+      console.log(returnedData);
+    });
+    return await modal.present();
   }
 
   log(...args) {
@@ -111,4 +53,5 @@ export class CalendarPage implements AfterViewInit {
       console.log(arg);
     }
   }
+  
 }

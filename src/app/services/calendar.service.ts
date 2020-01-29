@@ -73,6 +73,6 @@ export class CalendarService {
   }
 
   onTimeSelected(event) {
-    // TODO (?)
+    console.log('On time selected:', event);
   }
 }

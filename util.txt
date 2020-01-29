@@ -17,3 +17,6 @@ https://www.google.com/search?q=ionic+4+fullcalendar&oq=ionic+4+fullcalendar&aqs
 
 CU DE SCSS
 https://medium.com/google-developer-experts/angular-advanced-styling-guide-v4-f0765616e635
+
+sel-search
+https://github.com/eakoriakin/ionic-selectable

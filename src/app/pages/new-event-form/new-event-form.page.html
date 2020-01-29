@@ -1,0 +1,74 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Adicionar Classe</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-card>
+    <ion-list style="margin-bottom: 0px; --ion-background-color: #f4f5f8;">
+      <ion-item>
+        <ion-label>Modalidade:</ion-label>
+        <ion-input type="text" [(ngModel)]="this.inputTemplate.modality" placeholder="Ex.: Pilates"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Profissional:</ion-label>
+        <ion-input type="text" [(ngModel)]="this.inputTemplate.professional" placeholder="Ex.: Marcos"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Dias:</ion-label>
+        <div class="weekDays-selector">
+          <input type="checkbox" id="weekday-dom" class="weekday" [(ngModel)]="this.inputTemplate.days[0]" />
+          <label for="weekday-dom">D</label>
+          <input type="checkbox" id="weekday-seg" class="weekday" [(ngModel)]="this.inputTemplate.days[1]" />
+          <label for="weekday-seg">S</label>
+          <input type="checkbox" id="weekday-ter" class="weekday" [(ngModel)]="this.inputTemplate.days[2]" />
+          <label for="weekday-ter">T</label>
+          <input type="checkbox" id="weekday-qua" class="weekday" [(ngModel)]="this.inputTemplate.days[3]" />
+          <label for="weekday-qua">Q</label>
+          <input type="checkbox" id="weekday-qui" class="weekday" [(ngModel)]="this.inputTemplate.days[4]" />
+          <label for="weekday-qui">Q</label>
+          <input type="checkbox" id="weekday-sex" class="weekday" [(ngModel)]="this.inputTemplate.days[5]" />
+          <label for="weekday-sex">S</label>
+          <input type="checkbox" id="weekday-sab" class="weekday" [(ngModel)]="this.inputTemplate.days[6]" />
+          <label for="weekday-sab">S</label>
+        </div>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Repetir pelas próximas:</ion-label>
+        <ion-input type="number" [(ngModel)]="this.inputTemplate.weekRepeat" placeholder="Ex.: 4"></ion-input>
+        <ion-label>semanas</ion-label>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Duração:</ion-label>
+        <ion-input type="number" [(ngModel)]="this.inputTemplate.duration" placeholder="Ex.: 55"></ion-input>
+        <ion-label>min</ion-label>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Início:</ion-label>
+        <ion-datetime displayFormat="HH:mm" pickerFormat="HH:mm" [(ngModel)]="this.inputTemplate.startTime"
+          placeholder="Ex.: 14:00"></ion-datetime>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Qtd. de aulas:</ion-label>
+        <ion-input type="number" [(ngModel)]="this.inputTemplate.classQt" placeholder="Ex.: 2"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Qtd. de alunos:</ion-label>
+        <ion-input type="number" [(ngModel)]="this.inputTemplate.studentQt" placeholder="Ex.: 5"></ion-input>
+      </ion-item>
+
+      <ion-button fill="outline" expand="block" (click)="addEvent()" [disabled]="!this.validateForm()">
+        Adicionar Classe
+      </ion-button>
+    </ion-list>
+  </ion-card>
+  <ion-button (click)="closeModal()">Fechar</ion-button>
+</ion-content>

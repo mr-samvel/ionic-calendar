@@ -11,7 +11,6 @@ const routes: Routes = [
     loadChildren: () => import('./pages/login/login.module').then( m => m.LoginPageModule)
   }
   // Adicionado sozinho quando o ionic gera uma pagina. Como estamos utilizando tabs (com lazy loading) é desnecessario.
-  // No entanto, talvez seja depois pra navegar quando tem algum overlay (modal, popup, etc.)
   // {
   //   path: 'home',
   //   loadChildren: () => import('./pages/home/home.module').then( m => m.HomePageModule)
