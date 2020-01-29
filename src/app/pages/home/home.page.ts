@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthenticationService } from 'src/app/services/authentication.service';
-import { UserModel } from 'src/app/models/user-model';
+import { UserModel } from 'src/app/models/user.model';
 import { UserContainerService } from 'src/app/services/user-container.service';
 import { NavController } from '@ionic/angular';
 

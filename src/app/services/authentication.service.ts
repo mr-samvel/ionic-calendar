@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { UserContainerService } from './user-container.service';
-import { UserModel } from '../models/user-model';
+import { UserModel } from '../models/user.model';
 import { NavController } from '@ionic/angular';
 import { Router } from '@angular/router';
 
