@@ -1,16 +1,21 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChildren, AfterViewInit } from '@angular/core';
 import { ClassModel } from 'src/app/models/event.model';
 import { CalendarService } from 'src/app/services/calendar.service';
 import { ModalController } from '@ionic/angular';
 import { ProfessionalModel } from 'src/app/models/professional.model';
 import { ModalityModel } from 'src/app/models/modality.model';
+import { ModalityContainerService } from 'src/app/services/modality-container.service';
+import { ProfessionalContainerService } from 'src/app/services/professional-container.service';
+import { IonicSelectableComponent } from 'ionic-selectable';
 
 @Component({
   selector: 'app-new-event-form',
   templateUrl: './new-event-form.page.html',
   styleUrls: ['./new-event-form.page.scss'],
 })
-export class NewEventFormPage implements OnInit {
+export class NewEventFormPage implements AfterViewInit {
+  @ViewChildren(IonicSelectableComponent) private selectableComponentQuery: any;
+  
   public inputTemplate: {
     professional: string,
     days: Array<boolean>,
@@ -22,11 +27,17 @@ export class NewEventFormPage implements OnInit {
     studentQt: number
   };
 
-  constructor(private calendarService: CalendarService, private modalController: ModalController) {
+  constructor(private calendarService: CalendarService, private modalController: ModalController,
+    private modalityContainer: ModalityContainerService, private professionalContainer: ProfessionalContainerService) {
     this.resetInputTemplate();
-   }
+  }
 
-  ngOnInit() {
+  ngAfterViewInit() {
+    this.selectableComponentQuery._results.forEach((selectableComponent: IonicSelectableComponent) => {
+      selectableComponent.searchPlaceholder = "Procurar";
+      selectableComponent.closeButtonText = "Cancelar";
+      selectableComponent.addButtonText = "Adicionar";
+    });
   }
 
   async closeModal() {
@@ -46,7 +57,7 @@ export class NewEventFormPage implements OnInit {
       return true;
     return false;
   }
-  
+
   resetInputTemplate() {
     this.inputTemplate = {
       professional: null,
@@ -60,7 +71,15 @@ export class NewEventFormPage implements OnInit {
     };
   }
 
-  addEvent() {    
+  addModality(mod: string) {
+    this.modalityContainer.addModality(new ModalityModel(mod));
+  }
+
+  addProfessional(pro: string) {
+    this.professionalContainer.addProfessional(new ProfessionalModel(pro));
+  }
+
+  addEvent() {
     let classes: ClassModel[] = [];
     this.inputTemplate.days.forEach((dayValue, dayIndex) => {
       if (dayValue) {
@@ -78,7 +97,7 @@ export class NewEventFormPage implements OnInit {
             end.setMinutes(start.getMinutes() + this.inputTemplate.duration, 0, 0);
 
             let mod = new ModalityModel(this.inputTemplate.modality);
-            
+
             let newClass = new ClassModel(
               prof,
               start, end,

@@ -7,7 +7,9 @@ import { StudentModel } from '../models/student.model';
 export class StudentContainerService {
   private students: StudentModel[];
 
-  constructor() { }
+  constructor() {
+    this.students = new Array();
+   }
 
   getModalities() {
     return this.students;

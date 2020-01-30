@@ -18,6 +18,7 @@ import { NewEventFormPageModule } from './pages/new-event-form/new-event-form.mo
 import { ProfessionalContainerService } from './services/professional-container.service';
 import { StudentContainerService } from './services/student-container.service';
 import { ModalityContainerService } from './services/modality-container.service';
+import { IonicSelectableModule } from 'ionic-selectable';
 
 registerLocaleData(ptBr);
 @NgModule({
@@ -29,6 +30,7 @@ registerLocaleData(ptBr);
     AppRoutingModule,
     ClassDetailsPageModule,
     NewEventFormPageModule,
+    IonicSelectableModule
   ],
   providers: [
     StatusBar,

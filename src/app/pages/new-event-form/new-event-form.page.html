@@ -9,12 +9,82 @@
     <ion-list style="margin-bottom: 0px; --ion-background-color: #f4f5f8;">
       <ion-item>
         <ion-label>Modalidade:</ion-label>
-        <ion-input type="text" [(ngModel)]="this.inputTemplate.modality" placeholder="Ex.: Pilates"></ion-input>
+        <ionic-selectable #modSelectable [(ngModel)]="this.inputTemplate.modality" [canAddItem]="true"
+          [items]="this.modalityContainer.getModalities()" [canSearch]="true" itemTextField="name"
+          placeholder="Ex.: Pilates">
+          <ng-template ionicSelectableSearchFailTemplate>
+            <ion-card (click)="modSelectable.showAddItemTemplate()">
+              <ion-card-content>
+                Nenhuma modalidade encontrada. Adicionar?
+              </ion-card-content>
+            </ion-card>
+          </ng-template>
+
+          <ng-template ionicSelectableAddItemTemplate>
+            <ion-card>
+              <ion-card-content style="padding: 0;">
+                <ion-toolbar>
+                  <ion-title>Nome:</ion-title>
+                  <ion-buttons slot="start">
+                    <ion-button (click)="modSelectable.hideAddItemTemplate()">
+                      <ion-icon name="arrow-back"></ion-icon>
+                    </ion-button>
+                  </ion-buttons>
+                </ion-toolbar>
+                <ion-item>
+                  <ion-input #input></ion-input>
+                </ion-item>
+                <ion-toolbar>
+                  <ion-buttons slot="end">
+                    <ion-button (click)="this.addModality(input.value); modSelectable.hideAddItemTemplate()">
+                      Adicionar
+                    </ion-button>
+                  </ion-buttons>
+                </ion-toolbar>
+              </ion-card-content>
+            </ion-card>
+          </ng-template>
+        </ionic-selectable>
       </ion-item>
 
       <ion-item>
         <ion-label>Profissional:</ion-label>
-        <ion-input type="text" [(ngModel)]="this.inputTemplate.professional" placeholder="Ex.: Marcos"></ion-input>
+        <ionic-selectable #proSelectable [(ngModel)]="this.inputTemplate.professional" [canAddItem]="true"
+          [items]="this.professionalContainer.getProfessionals()" [canSearch]="true" itemTextField="name"
+          placeholder="Ex.: Maria">
+          <ng-template ionicSelectableSearchFailTemplate>
+            <ion-card (click)="proSelectable.showAddItemTemplate()">
+              <ion-card-content>
+                Nenhum profissional encontrado. Adicionar?
+              </ion-card-content>
+            </ion-card>
+          </ng-template>
+
+          <ng-template ionicSelectableAddItemTemplate>
+            <ion-card>
+              <ion-card-content style="padding: 0;">
+                <ion-toolbar>
+                  <ion-title>Nome:</ion-title>
+                  <ion-buttons slot="start">
+                    <ion-button (click)="proSelectable.hideAddItemTemplate()">
+                      <ion-icon name="arrow-back"></ion-icon>
+                    </ion-button>
+                  </ion-buttons>
+                </ion-toolbar>
+                <ion-item>
+                  <ion-input #input></ion-input>
+                </ion-item>
+                <ion-toolbar>
+                  <ion-buttons slot="end">
+                    <ion-button (click)="this.addProfessional(input.value); proSelectable.hideAddItemTemplate()">
+                      Adicionar
+                    </ion-button>
+                  </ion-buttons>
+                </ion-toolbar>
+              </ion-card-content>
+            </ion-card>
+          </ng-template>
+        </ionic-selectable>
       </ion-item>
 
       <ion-item>

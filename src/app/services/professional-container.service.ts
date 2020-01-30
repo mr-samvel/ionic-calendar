@@ -7,7 +7,9 @@ import { ProfessionalModel } from '../models/professional.model';
 export class ProfessionalContainerService {
   private professionals: ProfessionalModel[];
 
-  constructor() { }
+  constructor() { 
+    this.professionals = new Array();
+  }
 
   getProfessionals() {
     return this.professionals;
