@@ -15,6 +15,7 @@ import { IonicSelectableComponent } from 'ionic-selectable';
 })
 export class NewEventFormPage implements AfterViewInit {
   @ViewChildren(IonicSelectableComponent) private selectableComponentQuery: any;
+  public segment: string = 'form';
   
   public inputTemplate: {
     professional: ProfessionalModel,

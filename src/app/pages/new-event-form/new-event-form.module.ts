@@ -8,6 +8,7 @@ import { NewEventFormPageRoutingModule } from './new-event-form-routing.module';
 
 import { NewEventFormPage } from './new-event-form.page';
 import { IonicSelectableModule } from 'ionic-selectable';
+import { NgCalendarModule } from 'ionic2-calendar';
 
 @NgModule({
   imports: [
@@ -15,7 +16,8 @@ import { IonicSelectableModule } from 'ionic-selectable';
     FormsModule,
     IonicModule,
     NewEventFormPageRoutingModule,
-    IonicSelectableModule
+    IonicSelectableModule,
+    NgCalendarModule
   ],
   declarations: [NewEventFormPage]
 })
