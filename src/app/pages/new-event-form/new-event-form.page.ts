@@ -17,13 +17,13 @@ export class NewEventFormPage implements AfterViewInit {
   @ViewChildren(IonicSelectableComponent) private selectableComponentQuery: any;
   
   public inputTemplate: {
-    professional: string,
+    professional: ProfessionalModel,
     days: Array<boolean>,
     weekRepeat: number,
     duration: number,
     startTime: string,
     classQt: number,
-    modality: string,
+    modality: ModalityModel,
     studentQt: number
   };
 
@@ -85,7 +85,7 @@ export class NewEventFormPage implements AfterViewInit {
       if (dayValue) {
         for (let i = 0; i < this.inputTemplate.weekRepeat + 1; i++) {
           for (let j = 0; j < this.inputTemplate.classQt; j++) {
-            let prof = new ProfessionalModel(this.inputTemplate.professional);
+            let prof = this.inputTemplate.professional;
 
             let start = new Date();
             start.setDate(start.getDate() + (((7 - start.getDay()) % 7 + dayIndex) % 7) + i * 7);
@@ -96,7 +96,7 @@ export class NewEventFormPage implements AfterViewInit {
             let end = new Date(start);
             end.setMinutes(start.getMinutes() + this.inputTemplate.duration, 0, 0);
 
-            let mod = new ModalityModel(this.inputTemplate.modality);
+            let mod = this.inputTemplate.modality;
 
             let newClass = new ClassModel(
               prof,

@@ -17,5 +17,6 @@ export class ModalityContainerService {
 
   addModality(mod: ModalityModel) {
     this.modalities.push(mod);
+    console.log(this.modalities);
   }
 }

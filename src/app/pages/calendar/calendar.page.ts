@@ -46,12 +46,5 @@ export class CalendarPage implements AfterViewInit {
       console.log(returnedData);
     });
     return await modal.present();
-  }
-
-  log(...args) {
-    for (let arg of args) {
-      console.log(arg);
-    }
-  }
-  
+  }  
 }
