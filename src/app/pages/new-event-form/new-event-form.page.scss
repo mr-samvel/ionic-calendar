@@ -7,3 +7,7 @@
     margin-bottom: 0px; 
     --ion-background-color: #f4f5f8;
   }
+
+  :host ::ng-deep .weekview-normal-event-container {
+    position: relative;
+  }

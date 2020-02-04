@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChildren, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChildren, AfterViewInit, ViewChild } from '@angular/core';
 import { ClassModel } from 'src/app/models/event.model';
 import { CalendarService } from 'src/app/services/calendar.service';
 import { ModalController } from '@ionic/angular';
@@ -7,6 +7,7 @@ import { ModalityModel } from 'src/app/models/modality.model';
 import { ModalityContainerService } from 'src/app/services/modality-container.service';
 import { ProfessionalContainerService } from 'src/app/services/professional-container.service';
 import { IonicSelectableComponent } from 'ionic-selectable';
+import { CalendarComponent } from 'ionic2-calendar/calendar';
 
 @Component({
   selector: 'app-new-event-form',
@@ -15,7 +16,12 @@ import { IonicSelectableComponent } from 'ionic-selectable';
 })
 export class NewEventFormPage implements AfterViewInit {
   @ViewChildren(IonicSelectableComponent) private selectableComponentQuery: any;
+  @ViewChild(CalendarComponent, { static: false }) calendarComponent: CalendarComponent;
+
   public segment: string = 'form';
+
+  public periods = [];
+  public period = {currentDate: new Date(),}
   
   public inputTemplate: {
     professional: ProfessionalModel,
@@ -46,17 +52,18 @@ export class NewEventFormPage implements AfterViewInit {
     await this.modalController.dismiss(onClosedData);
   }
 
-  validateForm() {
-    let vProf = this.inputTemplate.professional != null;
-    let vDays = this.inputTemplate.days != [false, false, false, false, false, false, false];
-    let vStartTime = this.inputTemplate.startTime != null
-    let vDuration = this.inputTemplate.duration > 0;
-    let vClassQt = this.inputTemplate.classQt > 0;
+  validateNext() {
     let vMod = this.inputTemplate.modality != null;
+    let vProf = this.inputTemplate.professional != null;
+    let vDuration = this.inputTemplate.duration > 0;
     let vStudentQt = this.inputTemplate.studentQt > 0;
-    if (vProf && vDays && vStartTime && vDuration && vClassQt && vMod && vStudentQt)
+    if (vProf && vDuration && vMod && vStudentQt)
       return true;
     return false;
+  }
+
+  validateTot() {
+    return true;
   }
 
   resetInputTemplate() {
@@ -70,6 +77,29 @@ export class NewEventFormPage implements AfterViewInit {
       modality: null,
       studentQt: null
     };
+  }
+
+  resetPeriods() {
+    this.periods = new Array();
+  }
+
+  onEventSelected(event) {
+    console.log(event);
+  }
+
+  log(...args) {
+    for(let arg of args) {
+      console.log(arg)
+    }
+  }
+
+  onTimeSelected(ev: {events: any, time: Date}) {
+    let start = ev.time;
+    let end = new Date();
+    end.setMinutes(start.getMinutes() + this.inputTemplate.duration);
+    let period = { startTime: start, endTime: end}
+    this.periods.push(period);
+    this.calendarComponent.loadEvents();
   }
 
   addModality(mod: string) {
