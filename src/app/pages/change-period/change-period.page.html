@@ -1,0 +1,25 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{ this.ev.startTime.toLocaleTimeString().slice(0,5) }} - {{ this.ev.endTime.toLocaleTimeString().slice(0,5) }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-button expand="block" fill="outline" (click)="this.collapse()">
+    Alterar o horário 
+    <ion-icon *ngIf="this.menuCollapse" name="arrow-down"></ion-icon>
+    <ion-icon *ngIf="!this.menuCollapse" name="arrow-up"></ion-icon>
+  </ion-button>
+  <div *ngIf="!this.menuCollapse">
+    <ion-item>
+      <ion-label>Início</ion-label>
+      <ion-datetime displayFormat="HH:mm" [(ngModel)]="this.strEvent.strStartTime"></ion-datetime>
+    </ion-item>
+    <ion-item>
+      <ion-label>Fim</ion-label>
+      <ion-datetime displayFormat="HH:mm" [(ngModel)]="this.strEvent.strEndTime"></ion-datetime>
+    </ion-item>
+    <ion-button expand="block" color="success" [disabled]="!this.validate()" (click)="closeModal('update')">Ok <ion-icon name="checkmark"></ion-icon></ion-button>
+  </div>
+  <ion-button *ngIf="this.menuCollapse" color="danger" expand="block" (click)="closeModal('delete')">Apagar <ion-icon name="trash"></ion-icon></ion-button>
+</ion-content>

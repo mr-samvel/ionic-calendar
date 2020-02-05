@@ -11,7 +11,7 @@
 
 <ion-content>
   <!------ BARRINHA BOTOES SEGMENT ------>
-  <ion-segment style="margin-top: 2px;" color="primary" [(ngModel)]="segment">
+  <ion-segment style="margin-top: 2px;" color="primary" [(ngModel)]="segment" [disabled]="!this.validateNext()">
     <ion-segment-button value="form">
       <ion-icon name="list"></ion-icon>
     </ion-segment-button>
@@ -131,7 +131,7 @@
         <ion-list>
           <ion-item>
             <ion-label>Repetir pelas próximas:</ion-label>
-            <ion-input type="text" [(ngModel)]="this.inputTemplate.weekRepeat" placeholder="Ex.: 4"></ion-input>
+            <ion-input type="number" [(ngModel)]="this.inputTemplate.weekRepeat" placeholder="Ex.: 4"></ion-input>
             <ion-label>semanas</ion-label>
           </ion-item>
         </ion-list>
@@ -142,7 +142,7 @@
         <ion-icon name="refresh"></ion-icon>
         Refazer
       </ion-button>
-      <calendar [eventSource]="this.periods" [calendarMode]="'week'" [currentDate]="this.period.currentDate"
+      <calendar [eventSource]="this.periods" [calendarMode]="'week'" [currentDate]="this.time.currentDate"
         (onEventSelected)="this.onEventSelected($event)" startHour="6" endHour="20" step="0.5" startingDayWeek="0"
         [lockSwipes]="true" [weekviewHeaderTemplate]="weekviewHeaderTemplate"
         [weekviewNormalEventSectionTemplate]="weekviewNormalEventSectionTemplate">
@@ -171,7 +171,7 @@
           </ion-button>
         </ion-buttons>
         <ion-buttons slot="end">
-          <ion-button color="primary" fill="outline" (click)="addEvent()" [disabled]="this.validateTot()">
+          <ion-button color="primary" fill="outline" (click)="addEvent()" [disabled]="!this.validateTot()">
             Adicionar classes
           </ion-button>
         </ion-buttons>

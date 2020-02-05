@@ -9,6 +9,10 @@ const routes: Routes = [
   {
     path: 'login',
     loadChildren: () => import('./pages/login/login.module').then( m => m.LoginPageModule)
+  },
+  {
+    path: 'change-period',
+    loadChildren: () => import('./pages/change-period/change-period.module').then( m => m.ChangePeriodPageModule)
   }
   // Adicionado sozinho quando o ionic gera uma pagina. Como estamos utilizando tabs (com lazy loading) é desnecessario.
   // {

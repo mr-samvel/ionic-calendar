@@ -1,13 +1,14 @@
 import { Component, OnInit, ViewChildren, AfterViewInit, ViewChild } from '@angular/core';
 import { ClassModel } from 'src/app/models/event.model';
 import { CalendarService } from 'src/app/services/calendar.service';
-import { ModalController } from '@ionic/angular';
+import { ModalController, Events, ToastController } from '@ionic/angular';
 import { ProfessionalModel } from 'src/app/models/professional.model';
 import { ModalityModel } from 'src/app/models/modality.model';
 import { ModalityContainerService } from 'src/app/services/modality-container.service';
 import { ProfessionalContainerService } from 'src/app/services/professional-container.service';
 import { IonicSelectableComponent } from 'ionic-selectable';
 import { CalendarComponent } from 'ionic2-calendar/calendar';
+import { ChangePeriodPage } from '../change-period/change-period.page';
 
 @Component({
   selector: 'app-new-event-form',
@@ -21,8 +22,8 @@ export class NewEventFormPage implements AfterViewInit {
   public segment: string = 'form';
 
   public periods = [];
-  public period = {currentDate: new Date(),}
-  
+  public time = { currentDate: new Date(), }
+
   public inputTemplate: {
     professional: ProfessionalModel,
     days: Array<boolean>,
@@ -35,7 +36,8 @@ export class NewEventFormPage implements AfterViewInit {
   };
 
   constructor(private calendarService: CalendarService, private modalController: ModalController,
-    private modalityContainer: ModalityContainerService, private professionalContainer: ProfessionalContainerService) {
+    private modalityContainer: ModalityContainerService, private professionalContainer: ProfessionalContainerService,
+    private toastController: ToastController) {
     this.resetInputTemplate();
   }
 
@@ -48,8 +50,7 @@ export class NewEventFormPage implements AfterViewInit {
   }
 
   async closeModal() {
-    let onClosedData = 'modal fechou';
-    await this.modalController.dismiss(onClosedData);
+    await this.modalController.dismiss();
   }
 
   validateNext() {
@@ -63,7 +64,11 @@ export class NewEventFormPage implements AfterViewInit {
   }
 
   validateTot() {
-    return true;
+    let vWeekRepeat = this.inputTemplate.weekRepeat != null;
+    let vPeriods = this.periods.length > 0;
+    if (vWeekRepeat && vPeriods)
+      return true;
+    return false;
   }
 
   resetInputTemplate() {
@@ -83,23 +88,55 @@ export class NewEventFormPage implements AfterViewInit {
     this.periods = new Array();
   }
 
-  onEventSelected(event) {
-    console.log(event);
-  }
-
   log(...args) {
-    for(let arg of args) {
+    for (let arg of args) {
       console.log(arg)
     }
   }
 
-  onTimeSelected(ev: {events: any, time: Date}) {
-    let start = ev.time;
-    let end = new Date();
-    end.setMinutes(start.getMinutes() + this.inputTemplate.duration);
-    let period = { startTime: start, endTime: end}
-    this.periods.push(period);
-    this.calendarComponent.loadEvents();
+  onEventSelected(ev) {
+    this.presentChangeModal(ev);
+  }
+
+  onTimeSelected(ev: { events: any, time: Date }) {
+    if (ev.events.length == 0) {
+      let start = ev.time;
+      let end = new Date(start);
+      end.setMinutes(start.getMinutes() + this.inputTemplate.duration);
+      let period = { startTime: start, endTime: end };
+      this.periods.push(period);
+      this.calendarComponent.loadEvents();
+    }
+  }
+
+  private async presentChangeModal(ev) {
+    const modal = await this.modalController.create({
+      component: ChangePeriodPage,
+      componentProps: { ev: ev },
+      cssClass: 'custom-modal-css'
+    });
+    modal.onDidDismiss().then((dataReturned) => {
+      if (dataReturned !== null) {
+        let i = this.periods.indexOf(dataReturned.data.ev);
+        if (dataReturned.data.command == 'update') {
+          this.periods[i] = dataReturned.data.ev;
+        }
+        else if (dataReturned.data.command == 'delete') {
+          this.periods.splice(i, 1);
+        }
+        this.calendarComponent.loadEvents();
+      }
+    });
+    return await modal.present();
+  }
+
+  private async presentSuccessToast(message: string) {
+    const toast = await this.toastController.create({
+      message: message,
+      duration: 2000,
+      color: 'success'
+    });
+    return toast.present();
   }
 
   addModality(mod: string) {
@@ -112,37 +149,32 @@ export class NewEventFormPage implements AfterViewInit {
 
   addEvent() {
     let classes: ClassModel[] = [];
-    this.inputTemplate.days.forEach((dayValue, dayIndex) => {
-      if (dayValue) {
-        for (let i = 0; i < this.inputTemplate.weekRepeat + 1; i++) {
-          for (let j = 0; j < this.inputTemplate.classQt; j++) {
-            let prof = this.inputTemplate.professional;
+    let today = new Date();
 
-            let start = new Date();
-            start.setDate(start.getDate() + (((7 - start.getDay()) % 7 + dayIndex) % 7) + i * 7);
-            start.setHours(+this.inputTemplate.startTime.slice(11, 13));
-            start.setMinutes(+this.inputTemplate.startTime.slice(14, 16) + this.inputTemplate.duration * j);
-            start.setSeconds(55, 0);
-
-            let end = new Date(start);
-            end.setMinutes(start.getMinutes() + this.inputTemplate.duration, 0, 0);
-
-            let mod = this.inputTemplate.modality;
-
-            let newClass = new ClassModel(
-              prof,
-              start, end,
-              mod,
-              [],
-              this.inputTemplate.studentQt
-            );
-            classes.push(newClass);
-          }
+    for (let period of this.periods) {
+      for (let repeat = 0; repeat < this.inputTemplate.weekRepeat + 1; repeat ++) {
+        let start = new Date();
+        start.setTime(period.startTime.getTime());
+        start.setDate(start.getDate() + (7 * repeat));
+        if (start.getTime() < today.getTime()) {
+          continue;
         }
+        let end = new Date();
+        end.setTime(period.endTime.getTime());
+        end.setDate(end.getDate() + (7 * repeat));
+
+        let newClass = new ClassModel(
+          this.inputTemplate.professional,
+          start, end,
+          this.inputTemplate.modality,
+          [],
+          this.inputTemplate.studentQt
+        );
+        classes.push(newClass);
       }
-    });
+    }
     this.calendarService.addClasses(classes);
-    this.resetInputTemplate();
+    this.presentSuccessToast(`${classes.length} novas classes foram adicionadas!`);
     this.closeModal();
   }
 }
