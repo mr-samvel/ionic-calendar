@@ -13,6 +13,10 @@ const routes: Routes = [
   {
     path: 'change-period',
     loadChildren: () => import('./pages/change-period/change-period.module').then( m => m.ChangePeriodPageModule)
+  },
+  {
+    path: 'alocate-students',
+    loadChildren: () => import('./pages/alocate-students/alocate-students.module').then( m => m.AlocateStudentsPageModule)
   }
   // Adicionado sozinho quando o ionic gera uma pagina. Como estamos utilizando tabs (com lazy loading) é desnecessario.
   // {

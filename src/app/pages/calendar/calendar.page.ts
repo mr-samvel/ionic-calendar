@@ -5,6 +5,7 @@ import { CalendarService } from 'src/app/services/calendar.service';
 import { ClassModel } from 'src/app/models/event.model';
 import { ModalController } from '@ionic/angular';
 import { NewEventFormPage } from '../new-event-form/new-event-form.page';
+import { AlocateStudentsPage } from '../alocate-students/alocate-students.page';
 
 @Component({
   selector: 'app-calendar',
@@ -27,7 +28,6 @@ export class CalendarPage implements AfterViewInit {
   private subscribeToEventChange() {
     this.calendarService.getEventSourceObservable().subscribe(eventSrc => {
       this.eventSource = eventSrc;
-      console.log(this.eventSource);
       this.calendarComponent.loadEvents();
     });
   }
@@ -42,9 +42,13 @@ export class CalendarPage implements AfterViewInit {
     const modal = await this.modalController.create({
       component: NewEventFormPage
     });
-    modal.onDidDismiss().then((returnedData) => {
-      console.log(returnedData);
+    return await modal.present();
+  }
+
+  async alocateStudentsModal() {
+    const modal = await this.modalController.create({
+      component: AlocateStudentsPage
     });
     return await modal.present();
-  }  
+  }
 }

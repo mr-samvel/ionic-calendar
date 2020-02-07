@@ -11,11 +11,11 @@ export class StudentContainerService {
     this.students = new Array();
    }
 
-  getModalities() {
+  getStudents() {
     return this.students;
   }
 
-  addModality(stud: StudentModel) {
+  addStudent(stud: StudentModel) {
     this.students.push(stud);
   }
 }

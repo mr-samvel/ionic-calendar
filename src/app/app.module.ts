@@ -20,6 +20,7 @@ import { StudentContainerService } from './services/student-container.service';
 import { ModalityContainerService } from './services/modality-container.service';
 import { IonicSelectableModule } from 'ionic-selectable';
 import { ChangePeriodPageModule } from './pages/change-period/change-period.module';
+import { AlocateStudentsPageModule } from './pages/alocate-students/alocate-students.module';
 
 registerLocaleData(ptBr);
 @NgModule({
@@ -32,6 +33,7 @@ registerLocaleData(ptBr);
     ClassDetailsPageModule,
     NewEventFormPageModule,
     ChangePeriodPageModule,
+    AlocateStudentsPageModule,
     IonicSelectableModule
   ],
   providers: [

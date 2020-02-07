@@ -1,0 +1,80 @@
+<ion-header>
+  <ion-toolbar mode="ios" color="primary">
+    <ion-title>Alocar Alunos</ion-title>
+    <ion-buttons slot="start">
+      <ion-button (click)="this.closeModal()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-button color="light" expand="full" size="small" (click)="this.collapseStudents = !this.collapseStudents">
+    <ion-icon *ngIf="this.collapseStudents" name="arrow-dropdown"></ion-icon>
+    <ion-icon *ngIf="!this.collapseStudents" name="arrow-dropup"></ion-icon>
+    Selecionar alunos
+  </ion-button>
+  <div [hidden]="this.collapseStudents">
+    <ion-list>
+      <ion-item>
+        <ion-label>Alunos:</ion-label>
+        <ionic-selectable #studSelectable [(ngModel)]="this.selectedStudents" [canAddItem]="true"
+          [items]="this.studentsContainer.getStudents()" [canSearch]="true" itemTextField="name"
+          [isMultiple]="true" [canClear]="true">
+          <ng-template ionicSelectableSearchFailTemplate>
+            <ion-card (click)="studSelectable.showAddItemTemplate()">
+              <ion-card-content>
+                Nenhum aluno encontrado. Adicionar?
+              </ion-card-content>
+            </ion-card>
+          </ng-template>
+  
+          <ng-template ionicSelectableAddItemTemplate>
+            <ion-card>
+              <ion-card-content style="padding: 0;">
+                <ion-toolbar>
+                  <ion-title>Nome:</ion-title>
+                  <ion-buttons slot="start">
+                    <ion-button (click)="studSelectable.hideAddItemTemplate()">
+                      <ion-icon name="arrow-back"></ion-icon>
+                    </ion-button>
+                  </ion-buttons>
+                </ion-toolbar>
+                <ion-item>
+                  <ion-input #input></ion-input>
+                </ion-item>
+                <ion-toolbar>
+                  <ion-buttons slot="end">
+                    <ion-button (click)="this.addStudent(input.value); studSelectable.hideAddItemTemplate()">
+                      Adicionar
+                    </ion-button>
+                  </ion-buttons>
+                </ion-toolbar>
+              </ion-card-content>
+            </ion-card>
+          </ng-template>
+        </ionic-selectable>
+      </ion-item>
+    </ion-list>
+  </div>
+
+  <ion-button color="light" expand="full" size="small" (click)="this.collapseFilters = !this.collapseFilters">
+    <ion-icon *ngIf="this.collapseFilters" name="arrow-dropdown"></ion-icon>
+    <ion-icon *ngIf="!this.collapseFilters" name="arrow-dropup"></ion-icon>
+    Filtros
+  </ion-button>
+  <div [hidden]="this.collapseFilters">
+    <ion-input></ion-input>
+  </div>
+
+  <ion-item color="light" lines="none" style="--min-height: 20px; margin-top: 20px;">
+    <ion-label class="ion-text-center" style="margin: 0; margin-top: 10px; margin-bottom: 5px;">
+      {{ this.viewTitle }}
+    </ion-label>
+  </ion-item>
+  <calendar [eventSource]="this.events" [calendarMode]="'week'" [currentDate]="this.currentDate"
+    (onTitleChanged)="this.changeTitle($event)"
+    (onEventSelected)="this.onEventSelected($event)" startHour="6" endHour="20" step="0.5" startingDayWeek="0">
+  </calendar>
+</ion-content>

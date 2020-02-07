@@ -22,7 +22,7 @@ export class NewEventFormPage implements AfterViewInit {
   public segment: string = 'form';
 
   public periods = [];
-  public time = { currentDate: new Date(), }
+  public time = { currentDate: new Date() };
 
   public inputTemplate: {
     professional: ProfessionalModel,
@@ -45,7 +45,7 @@ export class NewEventFormPage implements AfterViewInit {
     this.selectableComponentQuery._results.forEach((selectableComponent: IonicSelectableComponent) => {
       selectableComponent.searchPlaceholder = "Procurar";
       selectableComponent.closeButtonText = "Cancelar";
-      selectableComponent.addButtonText = "Adicionar";
+      selectableComponent.addButtonText = "Novo";
     });
   }
 
@@ -86,12 +86,6 @@ export class NewEventFormPage implements AfterViewInit {
 
   resetPeriods() {
     this.periods = new Array();
-  }
-
-  log(...args) {
-    for (let arg of args) {
-      console.log(arg)
-    }
   }
 
   onEventSelected(ev) {
