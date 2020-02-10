@@ -2,3 +2,11 @@ ion-input {
     --padding-end: 3px; 
     text-align: right;
   }
+
+.checkmark {
+  color: green;
+  font-size: 20px;
+  position: absolute;
+  left: 52px;
+  bottom: 20px;
+}
