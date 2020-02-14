@@ -20,7 +20,7 @@
     <ion-list>
       <ion-item>
         <ion-label>Alunos:</ion-label>
-        <ionic-selectable #studSelectable [(ngModel)]="this.selectedStudents" (onChange)="validateStudSelectable()" [canAddItem]="true"
+        <ionic-selectable #studSelectable [(ngModel)]="this.selectedStudents" (onChange)="validateStudentSelectable()" [canAddItem]="true"
           [items]="this.studentsContainer.getStudents()" [canSearch]="true" itemTextField="name" [isMultiple]="true"
           [canClear]="true">
           <ng-template ionicSelectableSearchFailTemplate>
