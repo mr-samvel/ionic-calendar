@@ -3,6 +3,7 @@ import { BehaviorSubject } from 'rxjs';
 import { ClassModel } from '../models/event.model';
 import { ModalController } from '@ionic/angular';
 import { ClassDetailsPage } from '../pages/class-details/class-details.page';
+import { StudentModel } from '../models/student.model';
 
 
 @Injectable({
@@ -50,6 +51,13 @@ export class CalendarService {
   addClasses(events: Array<ClassModel>) {
     for (let event of events) {
       this.eventSource.push(event);
+    }
+    this.eventSourceSubject.next(this.eventSource);
+  }
+
+  addStudentsToClasses(studentsArray: Array<StudentModel>, events: Array<ClassModel>) {        
+    for (let event of events) {
+      this.eventSource[this.eventSource.indexOf(event)].students = this.eventSource[this.eventSource.indexOf(event)].students.concat(studentsArray);
     }
     this.eventSourceSubject.next(this.eventSource);
   }

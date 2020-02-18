@@ -31,16 +31,16 @@ export class AlocateStudentsPage implements AfterViewInit {
 
   constructor(private modalController: ModalController, private calendarService: CalendarService,
     private studentsContainer: StudentContainerService, private professionalsContainer: ProfessionalContainerService,
-    private modalitiesContainer: ModalityContainerService, 
+    private modalitiesContainer: ModalityContainerService,
     private toastController: ToastController, private alertController: AlertController) {
     this.currentDate = new Date();
     this.viewTitle = '';
     this.resetAll();
     this.calendarService.getEventSourceObservable().subscribe(eventSrc => {
-        this.filteredEvents = eventSrc;
-        for (let i in eventSrc) {
-          this.events.set(eventSrc[i], false);
-        }
+      this.filteredEvents = eventSrc;
+      for (let i in eventSrc) {
+        this.events.set(eventSrc[i], false);
+      }
     });
   }
 
@@ -67,7 +67,7 @@ export class AlocateStudentsPage implements AfterViewInit {
     return toast.present();
   }
 
-  
+
   resetAll() {
     this.collapseStudents = false;
     this.collapseFilters = false;
@@ -103,7 +103,7 @@ export class AlocateStudentsPage implements AfterViewInit {
   filterByPro(pro: string) {
     if (pro) {
       this.events.forEach((value: boolean, key: ClassModel) => {
-        if (pro != key.professional.name)     
+        if (pro != key.professional.name)
           this.filteredEvents.splice(this.filteredEvents.indexOf(key), 1);
       });
     }
@@ -206,9 +206,14 @@ export class AlocateStudentsPage implements AfterViewInit {
       return this.deselectClasses(ev);
   }
 
-  log(...args) {
-    for (let arg of args) {
-      console.log(arg);
-    }
+  submit() {
+    let sendArray: ClassModel[] = new Array();
+    this.events.forEach((value: boolean, key: ClassModel) => {
+      if (value)
+        sendArray.push(key);
+    });
+    this.calendarService.addStudentsToClasses(this.selectedStudents, sendArray);
+    this.resetAll();
+    this.closeModal();
   }
 }
