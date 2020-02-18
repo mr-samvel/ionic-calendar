@@ -67,7 +67,28 @@
     Filtros
   </ion-button>
   <div [hidden]="this.collapseFilters">
-    <ion-input></ion-input>
+    <ion-list>
+      <ion-item>
+        <ion-label>Por profissional:</ion-label>
+        <ion-select #filterPro cancelText="Cancelar">
+          <ion-select-option *ngFor="let pro of this.professionalsContainer.getProfessionals()">{{ pro.name }}</ion-select-option>
+        </ion-select>
+      </ion-item>
+      <ion-item>
+        <ion-label>Por modalidade:</ion-label>
+        <ion-select #filterMod cancelText="Cancelar">
+          <ion-select-option *ngFor="let mod of this.modalitiesContainer.getModalities()">{{ mod.name }}</ion-select-option>
+        </ion-select>
+      </ion-item>
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-button size="small" color="danger" (click)="clearFilters(); filterPro.value = null; filterMod.value = null">Limpar</ion-button>
+        </ion-buttons>
+        <ion-buttons slot="end">
+          <ion-button size="small" color="success" (click)="applyFilters(filterPro.value, filterMod.value)">Aplicar</ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-list>
   </div>
 
   <!----- CALENDARIO ----->
@@ -76,7 +97,7 @@
       {{ this.viewTitle }}
     </ion-label>
   </ion-item>
-  <calendar [eventSource]="toEventArray()" [calendarMode]="'week'" [currentDate]="this.currentDate"
+  <calendar [eventSource]="this.filteredEvents" [calendarMode]="'week'" [currentDate]="this.currentDate"
     (onTitleChanged)="this.changeTitle($event)" (onEventSelected)="this.onEventSelected($event)" startHour="6"
     endHour="20" step="0.5" startingDayWeek="0" [weekviewNormalEventTemplate]="weekviewNormalEventTemplate">
   </calendar>

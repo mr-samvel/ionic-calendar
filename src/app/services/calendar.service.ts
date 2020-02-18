@@ -67,7 +67,6 @@ export class CalendarService {
   }
 
   onEventSelected(event) {
-    // TODO: show class modal
     this.showClassDetailsModal(event);
     console.log('Event selected:', event);
   }
