@@ -1,6 +1,11 @@
-ion-input {
+  ion-input {
     --padding-end: 3px; 
     text-align: right;
+  }
+
+  ion-spinner {
+    display: block;
+    margin: auto;
   }
 
 .checkmark {

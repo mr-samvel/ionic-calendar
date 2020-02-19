@@ -26,15 +26,15 @@ export class AlocateStudentsPage implements AfterViewInit {
 
   public selectedStudents: Array<StudentModel>;
 
-  public currentDate: Date;
-  public viewTitle: string;
+  public currentDate: Date = new Date();
+  public viewTitle: string = '';
+
+  public loaded: boolean = false;
 
   constructor(private modalController: ModalController, private calendarService: CalendarService,
     private studentsContainer: StudentContainerService, private professionalsContainer: ProfessionalContainerService,
     private modalitiesContainer: ModalityContainerService,
     private toastController: ToastController, private alertController: AlertController) {
-    this.currentDate = new Date();
-    this.viewTitle = '';
     this.resetAll();
     this.calendarService.getEventSourceObservable().subscribe(eventSrc => {
       this.filteredEvents = eventSrc;
@@ -44,14 +44,26 @@ export class AlocateStudentsPage implements AfterViewInit {
     });
   }
 
-  ngAfterViewInit() {
+  async ngAfterViewInit() {
     this.selectableComponentQuery._results.forEach((selectableComponent: IonicSelectableComponent) => {
       selectableComponent.clearButtonText = "Limpar";
       selectableComponent.searchPlaceholder = "Procurar";
       selectableComponent.closeButtonText = "Cancelar";
       selectableComponent.addButtonText = "Novo";
     });
+
+    // Sim. Isso ta horrivel, mas é o que funciona kkkk 
+    // Boa sorte tentando resolver.
+    // Adicione aqui cada hora gasta:
+    //   4 horas
+    await this.timeout(1000);
+    this.loaded = true;
+    await this.timeout(500);
     this.calendarComponent.loadEvents();
+  }
+
+  private timeout(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   async closeModal() {
