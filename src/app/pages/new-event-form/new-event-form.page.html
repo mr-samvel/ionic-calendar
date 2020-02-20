@@ -1,0 +1,182 @@
+<ion-header>
+  <ion-toolbar mode="ios" color="primary">
+    <ion-title>Adicionar Classe</ion-title>
+    <ion-buttons slot="start">
+      <ion-button (click)="this.closeModal()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <!------ BARRINHA BOTOES SEGMENT ------>
+  <ion-segment style="margin-top: 2px;" color="primary" [(ngModel)]="segment" [disabled]="!this.validateNext()">
+    <ion-segment-button value="form">
+      <ion-icon name="list"></ion-icon>
+    </ion-segment-button>
+    <ion-segment-button value="calendar">
+      <ion-icon name="calendar"></ion-icon>
+    </ion-segment-button>
+  </ion-segment>
+
+  <!------ SWITCH VIEW ------>
+  <div [ngSwitch]="segment">
+
+    <!------ Formulario da primeira view ------>
+    <div *ngSwitchCase="'form'">
+      <ion-card>
+        <ion-list>
+          <ion-item>
+            <ion-label>Modalidade:</ion-label>
+            <ionic-selectable #modSelectable [(ngModel)]="this.inputTemplate.modality" [canAddItem]="true"
+              [items]="this.modalityContainer.getModalities()" [canSearch]="true" itemTextField="name"
+              placeholder="Ex.: Pilates">
+              <ng-template ionicSelectableSearchFailTemplate>
+                <ion-card (click)="modSelectable.showAddItemTemplate()">
+                  <ion-card-content>
+                    Nenhuma modalidade encontrada. Adicionar?
+                  </ion-card-content>
+                </ion-card>
+              </ng-template>
+
+              <ng-template ionicSelectableAddItemTemplate>
+                <ion-card>
+                  <ion-card-content style="padding: 0;">
+                    <ion-toolbar>
+                      <ion-title>Nome:</ion-title>
+                      <ion-buttons slot="start">
+                        <ion-button (click)="modSelectable.hideAddItemTemplate()">
+                          <ion-icon name="arrow-back"></ion-icon>
+                        </ion-button>
+                      </ion-buttons>
+                    </ion-toolbar>
+                    <ion-item>
+                      <ion-input #input></ion-input>
+                    </ion-item>
+                    <ion-toolbar>
+                      <ion-buttons slot="end">
+                        <ion-button (click)="this.addModality(input.value); modSelectable.hideAddItemTemplate()">
+                          Adicionar
+                        </ion-button>
+                      </ion-buttons>
+                    </ion-toolbar>
+                  </ion-card-content>
+                </ion-card>
+              </ng-template>
+            </ionic-selectable>
+          </ion-item>
+
+          <ion-item>
+            <ion-label>Profissional:</ion-label>
+            <ionic-selectable #proSelectable [(ngModel)]="this.inputTemplate.professional" [canAddItem]="true"
+              [items]="this.professionalContainer.getProfessionals()" [canSearch]="true" itemTextField="name"
+              placeholder="Ex.: Maria">
+              <ng-template ionicSelectableSearchFailTemplate>
+                <ion-card (click)="proSelectable.showAddItemTemplate()">
+                  <ion-card-content>
+                    Nenhum profissional encontrado. Adicionar?
+                  </ion-card-content>
+                </ion-card>
+              </ng-template>
+
+              <ng-template ionicSelectableAddItemTemplate>
+                <ion-card>
+                  <ion-card-content style="padding: 0;">
+                    <ion-toolbar>
+                      <ion-title>Nome:</ion-title>
+                      <ion-buttons slot="start">
+                        <ion-button (click)="proSelectable.hideAddItemTemplate()">
+                          <ion-icon name="arrow-back"></ion-icon>
+                        </ion-button>
+                      </ion-buttons>
+                    </ion-toolbar>
+                    <ion-item>
+                      <ion-input #input></ion-input>
+                    </ion-item>
+                    <ion-toolbar>
+                      <ion-buttons slot="end">
+                        <ion-button (click)="this.addProfessional(input.value); proSelectable.hideAddItemTemplate()">
+                          Adicionar
+                        </ion-button>
+                      </ion-buttons>
+                    </ion-toolbar>
+                  </ion-card-content>
+                </ion-card>
+              </ng-template>
+            </ionic-selectable>
+          </ion-item>
+
+          <ion-item>
+            <ion-label>Duração:</ion-label>
+            <ion-input type="number" [(ngModel)]="this.inputTemplate.duration" placeholder="Ex.: 55"></ion-input>
+            <ion-label>min</ion-label>
+          </ion-item>
+
+          <ion-item>
+            <ion-label>Qtd. de alunos:</ion-label>
+            <ion-input type="number" [(ngModel)]="this.inputTemplate.studentQt" placeholder="Ex.: 5"></ion-input>
+          </ion-item>
+        </ion-list>
+      </ion-card>
+      <ion-button fill="outline" expand="block" (click)="this.segment = 'calendar'" [disabled]="!this.validateNext()">
+        Próximo
+        <ion-icon name="arrow-forward"></ion-icon>
+      </ion-button>
+    </div>
+
+    <!------ Formulario da segunda view (calendario) ------>
+    <div *ngSwitchCase="'calendar'">
+      <ion-card>
+        <ion-list>
+          <ion-item>
+            <ion-label>Repetir pelas próximas:</ion-label>
+            <ion-input type="number" [(ngModel)]="this.inputTemplate.weekRepeat" placeholder="Ex.: 4"></ion-input>
+            <ion-label>semanas</ion-label>
+          </ion-item>
+        </ion-list>
+      </ion-card>
+
+
+      <ion-button style="margin: 6px 0px 0px 0px;" color="light" expand="block" (click)="this.resetPeriods()">
+        <ion-icon name="refresh"></ion-icon>
+        Refazer
+      </ion-button>
+      <calendar [eventSource]="this.periods" [calendarMode]="'week'" [currentDate]="this.time.currentDate"
+        (onEventSelected)="this.onEventSelected($event)" startHour="6" endHour="20" step="0.5" startingDayWeek="0"
+        [lockSwipes]="true" [weekviewHeaderTemplate]="weekviewHeaderTemplate"
+        [weekviewNormalEventSectionTemplate]="weekviewNormalEventSectionTemplate">
+      </calendar>
+
+      <ng-template #weekviewHeaderTemplate let-viewDate="viewDate">
+        <div class="custom-day-header"> {{ viewDate.dayHeader.slice(0,3) }} </div>
+      </ng-template>
+
+      <ng-template #weekviewNormalEventSectionTemplate let-tm="tm" let-hourParts="hourParts" let-eventTemplate="eventTemplate">
+        <div (click)="onTimeSelected(tm)" [ngClass]="{'calendar-event-wrap': tm.events}" *ngIf="tm.events">
+          <div *ngFor="let displayEvent of tm.events" class="calendar-event" tappable
+            (click)="onEventSelected(displayEvent.event)"
+            [ngStyle]="{top: (37*displayEvent.startOffset/hourParts)+'px',left: 100/displayEvent.overlapNumber*displayEvent.position+'%', width: 100/displayEvent.overlapNumber+'%', height: 37*(displayEvent.endIndex -displayEvent.startIndex - (displayEvent.endOffset + displayEvent.startOffset)/hourParts)+'px'}">
+            <ng-template [ngTemplateOutlet]="eventTemplate" [ngTemplateOutletContext]="{displayEvent:displayEvent}">
+            </ng-template>
+          </div>
+        </div>
+      </ng-template>
+
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-button color="primary" fill="outline" (click)="this.segment = 'form'">
+            <ion-icon name="arrow-back"></ion-icon>
+            Voltar
+          </ion-button>
+        </ion-buttons>
+        <ion-buttons slot="end">
+          <ion-button color="primary" fill="outline" (click)="addEvent()" [disabled]="!this.validateTot()">
+            Adicionar classes
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </div>
+
+  </div>
+</ion-content>
