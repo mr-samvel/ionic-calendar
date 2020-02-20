@@ -1,0 +1,17 @@
+  ion-input {
+    --padding-end: 3px; 
+    text-align: right;
+  }
+
+  ion-spinner {
+    display: block;
+    margin: auto;
+  }
+
+.checkmark {
+  color: green;
+  font-size: 20px;
+  position: absolute;
+  left: 75%;
+  bottom: 55%;
+}
