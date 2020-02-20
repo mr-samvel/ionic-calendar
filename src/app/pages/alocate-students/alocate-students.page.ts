@@ -81,8 +81,8 @@ export class AlocateStudentsPage implements AfterViewInit {
 
 
   resetAll() {
-    this.collapseStudents = false;
-    this.collapseFilters = false;
+    this.collapseStudents = true;
+    this.collapseFilters = true;
     this.selectedStudents = new Array();
   }
 
@@ -114,15 +114,19 @@ export class AlocateStudentsPage implements AfterViewInit {
 
   filterByPro(pro: string) {
     if (pro) {
+      pro = pro.trim();
       this.events.forEach((value: boolean, key: ClassModel) => {
-        if (pro != key.professional.name)
+        if (pro != key.professional.name) {
+          console.log(pro, '!=', key.professional.name);
           this.filteredEvents.splice(this.filteredEvents.indexOf(key), 1);
+        }
       });
     }
   }
 
   filterByMod(mod: string) {
     if (mod) {
+      mod = mod.trim();
       this.events.forEach((value: boolean, key: ClassModel) => {
         if (mod != key.modality.name)
           this.filteredEvents.splice(this.filteredEvents.indexOf(key), 1);
