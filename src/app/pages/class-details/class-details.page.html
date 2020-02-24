@@ -16,14 +16,20 @@
     </ion-list>
     <ion-list>
       <ion-list-header>
-        <ion-label>Alunos</ion-label>
+        <ion-label>Alunos - {{ this.event.students.length }}/{{ this.event.studentQt }}</ion-label>
       </ion-list-header>
-      <ion-item *ngIf="this.event.students.length == 0">Nenhum, por enquanto :)</ion-item>
-      <ion-item *ngFor="let student of this.event.students">
-        {{ student.name }}
+      <ion-item *ngFor="let i of counter(this.event.studentQt)">
+        <span *ngIf="this.event.students[i]">{{ this.event.students[i].name }}</span>
+        <ion-icon *ngIf="!this.event.students[i]" name="add-circle-outline" slot="end" (click)="addStudent()"></ion-icon>
       </ion-item>
     </ion-list>
   
-
-  <ion-button (click)="closeModal()">Fechar</ion-button>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button fill="outline" color="danger" (click)="closeModal()">Fechar</ion-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button fill="outline" color="success" disabled>Atualizar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
 </ion-content>

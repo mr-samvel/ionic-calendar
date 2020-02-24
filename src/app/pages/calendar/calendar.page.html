@@ -42,7 +42,7 @@
   <!----------------- COMPONENTE CALENDARIO ----------------->
   <calendar [eventSource]="this.eventSource" [calendarMode]="this.calendarService.getCalendarMode()"
     [currentDate]="this.calendarService.getCurrentDate()"
-    (onEventSelected)="this.calendarService.onEventSelected($event)"
+    (onEventSelected)="this.onEventSelected($event)"
     (onTitleChanged)="this.calendarService.onViewTitleChanged($event)" (onTimeSelected)="this.calendarService.onTimeSelected($event)"
     startHour="6" endHour="20" step="0.5" startingDayWeek="0" 
     [monthviewEventDetailTemplate]="monthviewEventDetail"
@@ -69,7 +69,7 @@
     let-eventTemplate="eventTemplate">
     <div [ngClass]="{'calendar-event-wrap': tm.events}" *ngIf="tm.events">
       <div *ngFor="let displayEvent of tm.events" class="calendar-event" tappable
-        (click)="this.calendarService.onEventSelected(displayEvent.event);"
+        (click)="this.onEventSelected(displayEvent.event);"
         [ngStyle]="{top: (37*displayEvent.startOffset/hourParts)+'px',
         left: 100/displayEvent.overlapNumber*displayEvent.position+'%', 
         width: 100/displayEvent.overlapNumber+'%', 
@@ -91,7 +91,7 @@
   <ng-template #dayviewNormalEventSectionTemplate let-tm="tm" let-hourParts="hourParts" let-eventTemplate="eventTemplate">
     <div [ngClass]="{'calendar-event-wrap': tm.events}" *ngIf="tm.events">
       <div *ngFor="let displayEvent of tm.events" class="calendar-event" tappable
-        (click)="this.calendarService.onEventSelected(displayEvent.event)"
+        (click)="this.onEventSelected(displayEvent.event)"
         [ngStyle]="{top: (37*displayEvent.startOffset/hourParts)+'px',
         left: 100/displayEvent.overlapNumber*displayEvent.position+'%', 
         width: 100/displayEvent.overlapNumber+'%', 

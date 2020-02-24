@@ -223,13 +223,14 @@ export class AlocateStudentsPage implements AfterViewInit {
   }
 
   submit() {
-    let sendArray: ClassModel[] = new Array();
+    let sendEvents: ClassModel[] = new Array();
     this.events.forEach((value: boolean, key: ClassModel) => {
       if (value)
-        sendArray.push(key);
+        sendEvents.push(key);
     });
-    this.calendarService.addStudentsToClasses(this.selectedStudents, sendArray);
+    this.calendarService.addStudentsToClasses(this.selectedStudents, sendEvents);
     this.resetAll();
+    this.presentToast('Alunos alocados!', 'success');
     this.closeModal();
   }
 }

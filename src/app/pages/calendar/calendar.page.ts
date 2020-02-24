@@ -6,6 +6,7 @@ import { ClassModel } from 'src/app/models/event.model';
 import { ModalController } from '@ionic/angular';
 import { NewEventFormPage } from '../new-event-form/new-event-form.page';
 import { AlocateStudentsPage } from '../alocate-students/alocate-students.page';
+import { ClassDetailsPage } from '../class-details/class-details.page';
 
 @Component({
   selector: 'app-calendar',
@@ -38,6 +39,19 @@ export class CalendarPage implements AfterViewInit {
     return c;
   }
 
+  private async showClassDetailsModal(event: ClassModel) {
+    const modal = await this.modalController.create({
+      component: ClassDetailsPage,
+      componentProps: {
+        'event': event
+      }
+    });
+    modal.onDidDismiss().then((returnedData) => {
+      console.log(returnedData);
+    });
+    return await modal.present();
+  }
+
   async addEventModal() {
     const modal = await this.modalController.create({
       component: NewEventFormPage
@@ -50,5 +64,9 @@ export class CalendarPage implements AfterViewInit {
       component: AlocateStudentsPage
     });
     return await modal.present();
+  }
+
+  onEventSelected(event) {
+    this.showClassDetailsModal(event);
   }
 }

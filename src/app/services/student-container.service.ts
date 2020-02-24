@@ -8,7 +8,7 @@ export class StudentContainerService {
   private students: StudentModel[];
 
   constructor() {
-    this.students = new Array();
+    this.students = [new StudentModel('Artur'), new StudentModel('Rafael'), new StudentModel('Mauro')];
    }
 
   getStudents() {
