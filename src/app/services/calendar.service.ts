@@ -22,19 +22,6 @@ export class CalendarService {
     this.eventSourceSubject = new BehaviorSubject<ClassModel[]>(this.eventSource);
   }
 
-  private async showClassDetailsModal(event: ClassModel) {
-    const modal = await this.modalController.create({
-      component: ClassDetailsPage,
-      componentProps: {
-        'event': event
-      }
-    });
-    modal.onDidDismiss().then((returnedData) => {
-      console.log(returnedData);
-    });
-    return await modal.present();
-  }
-
   getEventSourceObservable(): BehaviorSubject<ClassModel[]> {
     return this.eventSourceSubject;
   }
@@ -75,7 +62,6 @@ export class CalendarService {
   }
 
   onEventSelected(event) {
-    this.showClassDetailsModal(event);
     console.log('Event selected:', event);
   }
 
