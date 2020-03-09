@@ -5,18 +5,32 @@
 </ion-header>
 
 <ion-content *ngIf="!this.isLogged()">
-  <ion-item class="ion-text-center">
-    <ion-label>Welcome! Please <a (click)="this.goToLogin()">login</a> to proceed.</ion-label>
-  </ion-item>
-  <br>
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Bem vindo!</ion-card-title>
+    </ion-card-header>
+
+    <ion-toolbar>
+      <ion-buttons slot="end">
+        <ion-button color="primary" (click)="this.goToLogin()">Login</ion-button>
+      </ion-buttons>
+      <ion-buttons slot="end">
+        <ion-button color="primary" (click)="this.goToRegister()">Registrar</ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-card>
 </ion-content>
 
 <ion-content *ngIf="this.isLogged()">
   <ion-card>
     <ion-card-header>
-      <ion-card-subtitle>Welcome, {{ this.getUsername() }}!</ion-card-subtitle>
+      <ion-card-title>Bem vindo, {{ this.getUsername() }}!</ion-card-title>
     </ion-card-header>
 
-    <ion-button (click)="this.logoff()">Logoff</ion-button>
+    <ion-toolbar>
+      <ion-buttons slot="end">
+        <ion-button color="primary" (click)="this.logoff()">Logoff</ion-button>
+      </ion-buttons>
+    </ion-toolbar>
   </ion-card>
 </ion-content>

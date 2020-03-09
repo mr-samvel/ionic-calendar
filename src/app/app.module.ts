@@ -8,11 +8,17 @@ import { StatusBar } from '@ionic-native/status-bar/ngx';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+
+import { registerLocaleData } from '@angular/common';
+import ptBr from '@angular/common/locales/pt';
+
+import { environment } from 'src/environments/environment';
+
+import { AngularFireModule } from '@angular/fire';
+import { AngularFireAuthModule } from '@angular/fire/auth';
 import { AuthenticationService } from './services/authentication.service';
 import { UserContainerService } from './services/user-container.service';
 import { CalendarService } from './services/calendar.service';
-import { registerLocaleData } from '@angular/common';
-import ptBr from '@angular/common/locales/pt';
 import { ClassDetailsPageModule } from './pages/class-details/class-details.module';
 import { NewEventFormPageModule } from './pages/new-event-form/new-event-form.module';
 import { ProfessionalContainerService } from './services/professional-container.service';
@@ -30,6 +36,8 @@ registerLocaleData(ptBr);
     BrowserModule,
     IonicModule.forRoot(), 
     AppRoutingModule,
+    AngularFireModule.initializeApp(environment.firebaseConfig),
+    AngularFireAuthModule,
     ClassDetailsPageModule,
     NewEventFormPageModule,
     ChangePeriodPageModule,
@@ -46,7 +54,7 @@ registerLocaleData(ptBr);
     ModalityContainerService,
     CalendarService,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-    { provide: LOCALE_ID, useValue: 'pt' }
+    { provide: LOCALE_ID, useValue: 'pt' },
   ],
   bootstrap: [AppComponent]
 })
