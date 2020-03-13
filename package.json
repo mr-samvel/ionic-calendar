@@ -15,6 +15,7 @@
   "dependencies": {
     "@angular/common": "~8.1.2",
     "@angular/core": "~8.1.2",
+    "@angular/fire": "^5.4.2",
     "@angular/forms": "~8.1.2",
     "@angular/platform-browser": "~8.1.2",
     "@angular/platform-browser-dynamic": "~8.1.2",
@@ -26,6 +27,7 @@
     "cordova-android": "^8.1.0",
     "cordova-ios": "^5.1.1",
     "core-js": "^2.5.4",
+    "firebase": "^7.10.0",
     "ionic-selectable": "^4.5.0",
     "ionic2-calendar": "^0.5.7",
     "rxjs": "~6.5.1",

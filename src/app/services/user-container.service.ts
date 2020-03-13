@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { UserModel } from '../models/user.model';
+import { AngularFirestore } from '@angular/fire/firestore';
 
 @Injectable({
   providedIn: 'root'
@@ -7,10 +8,28 @@ import { UserModel } from '../models/user.model';
 export class UserContainerService {
   private currentUser: UserModel;
 
-  constructor() { }
+  constructor(private afs: AngularFirestore) { }
 
-  storeUser(user: UserModel) {
+  storeCurrentUser(user: UserModel) {
     this.currentUser = user;
+  }
+
+  retrieveUserFromServer(uid) {
+    const snapshot = this.afs.collection<UserModel>('Users').doc(uid).get();
+    return snapshot.toPromise().then(data => {
+      return {
+        uid: data.id,
+        ...data.data()
+      } as UserModel
+    });//.catch(() => { return null; });
+  }
+
+  deleteCurrentUser() {
+    this.currentUser = null;
+  }
+
+  getCurrentUser() {
+    return this.currentUser;
   }
 
   getUsername(): string {
