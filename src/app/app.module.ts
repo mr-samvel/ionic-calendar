@@ -27,6 +27,7 @@ import { ModalityContainerService } from './services/modality-container.service'
 import { IonicSelectableModule } from 'ionic-selectable';
 import { ChangePeriodPageModule } from './pages/change-period/change-period.module';
 import { AlocateStudentsPageModule } from './pages/alocate-students/alocate-students.module';
+import { AngularFirestoreModule } from '@angular/fire/firestore';
 
 registerLocaleData(ptBr);
 @NgModule({
@@ -38,6 +39,7 @@ registerLocaleData(ptBr);
     AppRoutingModule,
     AngularFireModule.initializeApp(environment.firebaseConfig),
     AngularFireAuthModule,
+    AngularFirestoreModule,
     ClassDetailsPageModule,
     NewEventFormPageModule,
     ChangePeriodPageModule,

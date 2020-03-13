@@ -1,9 +1,15 @@
 export class UserModel {
+    static STUDENT_PROFILE: number = 0;
+    static PROFESSIONAL_PROFILE: number = 1;
     username: string;
-    password: string;
+    uid: string;
+    profile: number;
+    email: string;
 
-    constructor(username: string, password: string) {
+    constructor(username: string, uid: string, profile: number, email: string) {
         this.username = username;
-        this.password = password;
+        this.uid = uid;
+        this.profile = profile;
+        this.email = email;
     }
 }
