@@ -5,32 +5,7 @@ const routes: Routes = [
   {
     path: '',
     loadChildren: () => import('./tabs/tabs.module').then(m => m.TabsPageModule)
-  },
-  {
-    path: 'login',
-    loadChildren: () => import('./pages/login/login.module').then( m => m.LoginPageModule)
-  },
-  {
-    path: 'change-period',
-    loadChildren: () => import('./pages/change-period/change-period.module').then( m => m.ChangePeriodPageModule)
-  },
-  {
-    path: 'alocate-students',
-    loadChildren: () => import('./pages/alocate-students/alocate-students.module').then( m => m.AlocateStudentsPageModule)
   }
-  // Adicionado sozinho quando o ionic gera uma pagina. Como estamos utilizando tabs (com lazy loading) é desnecessario.
-  // {
-  //   path: 'home',
-  //   loadChildren: () => import('./pages/home/home.module').then( m => m.HomePageModule)
-  // },
-  // {
-  //   path: 'calendar',
-  //   loadChildren: () => import('./pages/calendar/calendar.module').then( m => m.CalendarPageModule)
-  // },
-  // {
-  //   path: 'about',
-  //   loadChildren: () => import('./pages/about/about.module').then( m => m.AboutPageModule)
-  // }
 ];
 @NgModule({
   imports: [

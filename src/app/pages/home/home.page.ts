@@ -16,8 +16,8 @@ export class HomePage implements OnInit {
   ngOnInit() {
   }
 
-  goToLogin() {
-    this.navCtrl.navigateForward('/login');
+  googleLogin() {
+    this.authenticationService.googleLogin();
   }
 
   isLogged(): boolean {
@@ -25,7 +25,8 @@ export class HomePage implements OnInit {
   }
 
   getUsername(): string {
-    return this.userContainerService.getUsername();
+    if(this.userContainerService.getCurrentUser())
+      return this.userContainerService.getUsername();
   }
 
   logoff() {
