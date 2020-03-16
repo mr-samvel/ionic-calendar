@@ -19,7 +19,6 @@ export class EventModel implements IEvent {
 }
 
 export class ClassModel {
-    // implementar isso é o que nos interessa.
     professional: ProfessionalModel;
     startTime: Date;
     endTime: Date;
@@ -35,4 +34,27 @@ export class ClassModel {
         this.students = students;
         this.studentQt = studentQt;
      }
+}
+
+export class DBClassTemplate {
+    // uid: string;
+    professional: ProfessionalModel; // trocar por UID
+    modality: ModalityModel; // trocar por UID
+    students: Array<StudentModel>; // trocar por UID
+    startDate: Date;
+    endDate: Date;
+    startTime: string; // Date.toTimeString()::'hh:mm:ss GMT-0300'
+    endTime: string;
+    weekday: Array<boolean> = new Array(7);
+
+    constructor(pro: ProfessionalModel, mod: ModalityModel, studs: Array<StudentModel>, stDate: Date, endDate: Date, stTime: string, endTime: string, wkday: Array<boolean>) {
+        this.professional = pro;
+        this.modality = mod;
+        this.students = studs;
+        this.startDate = stDate;
+        this.endDate = endDate;
+        this.startTime = stTime;
+        this.endTime = endTime;
+        this.weekday = wkday;
+    }
 }
