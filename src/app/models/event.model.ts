@@ -37,7 +37,7 @@ export class ClassModel {
 }
 
 export class DBClassTemplate {
-    // uid: string;
+    uid: string;
     professional: ProfessionalModel; // trocar por UID
     modality: ModalityModel; // trocar por UID
     students: Array<StudentModel>; // trocar por UID
@@ -47,7 +47,9 @@ export class DBClassTemplate {
     endTime: string;
     weekday: Array<boolean> = new Array(7);
 
-    constructor(pro: ProfessionalModel, mod: ModalityModel, studs: Array<StudentModel>, stDate: Date, endDate: Date, stTime: string, endTime: string, wkday: Array<boolean>) {
+    constructor(pro: ProfessionalModel, mod: ModalityModel, studs: Array<StudentModel>, 
+            stDate: Date, endDate: Date, stTime: string, 
+            endTime: string, wkday: Array<boolean>, uid?: string) {
         this.professional = pro;
         this.modality = mod;
         this.students = studs;
@@ -56,5 +58,6 @@ export class DBClassTemplate {
         this.startTime = stTime;
         this.endTime = endTime;
         this.weekday = wkday;
+        this.uid = uid;
     }
 }

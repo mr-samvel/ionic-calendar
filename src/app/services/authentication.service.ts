@@ -57,7 +57,6 @@ export class AuthenticationService {
         if (!snap.exists) {
           let clone = Object.assign({}, user);
           delete clone.uid;
-          console.log('clone:', clone);
           this.usersRef.doc(uid).set(clone);
         }
       });

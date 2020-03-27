@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChildren, AfterViewInit, ViewChild } from '@angular/core';
-import { ClassModel } from 'src/app/models/event.model';
+import { ClassModel, DBClassTemplate } from 'src/app/models/event.model';
 import { CalendarService } from 'src/app/services/calendar.service';
 import { ModalController, Events, ToastController } from '@ionic/angular';
 import { ProfessionalModel } from 'src/app/models/professional.model';
@@ -21,13 +21,13 @@ export class NewEventFormPage implements AfterViewInit {
 
   public segment: string = 'form';
 
-  public periods = [];
+  public periods: { startTime: Date, endTime: Date }[] = [];
   public time = { currentDate: new Date() };
 
   public inputTemplate: {
     professional: ProfessionalModel,
     days: Array<boolean>,
-    weekRepeat: number,
+    monthRepeat: number,
     duration: number,
     startTime: string,
     classQt: number,
@@ -64,9 +64,9 @@ export class NewEventFormPage implements AfterViewInit {
   }
 
   validateTot() {
-    let vWeekRepeat = this.inputTemplate.weekRepeat != null;
+    let vMonthRepeat = this.inputTemplate.monthRepeat != null;
     let vPeriods = this.periods.length > 0;
-    if (vWeekRepeat && vPeriods)
+    if (vMonthRepeat && vPeriods)
       return true;
     return false;
   }
@@ -75,7 +75,7 @@ export class NewEventFormPage implements AfterViewInit {
     this.inputTemplate = {
       professional: null,
       days: new Array<boolean>(false, false, false, false, false, false, false),
-      weekRepeat: null,
+      monthRepeat: null,
       duration: null,
       startTime: null,
       classQt: null,
@@ -142,33 +142,78 @@ export class NewEventFormPage implements AfterViewInit {
   }
 
   addEvent() {
-    let classes: ClassModel[] = [];
-    let today = new Date();
+    let dbClasses: DBClassTemplate[] = new Array();
+    let now = new Date();
+    let smallestDay: Date;
 
     for (let period of this.periods) {
-      for (let repeat = 0; repeat < this.inputTemplate.weekRepeat + 1; repeat ++) {
-        let start = new Date();
-        start.setTime(period.startTime.getTime());
-        start.setDate(start.getDate() + (7 * repeat));
-        if (start.getTime() < today.getTime()) {
-          continue;
-        }
-        let end = new Date();
-        end.setTime(period.endTime.getTime());
-        end.setDate(end.getDate() + (7 * repeat));
+      let days: boolean[] = new Array(7).fill(false);
 
-        let newClass = new ClassModel(
-          this.inputTemplate.professional,
-          start, end,
-          this.inputTemplate.modality,
-          [],
-          this.inputTemplate.studentQt
-        );
-        classes.push(newClass);
+      if (period.startTime < now) {
+        smallestDay = new Date(period.startTime);
+        smallestDay.setDate(period.startTime.getDate() + 7);
+      } else
+        smallestDay = period.startTime;
+
+      for (let i = 0; i < this.periods.length; i++) {
+        let oInnerPeriod = this.periods[i];
+        if (oInnerPeriod.startTime.toTimeString() == period.startTime.toTimeString()) {
+          if (oInnerPeriod.startTime >= now && oInnerPeriod.startTime < smallestDay)
+            smallestDay = oInnerPeriod.startTime;
+          days[oInnerPeriod.startTime.getDay()] = true;
+          if (oInnerPeriod != period)
+            delete this.periods[i];
+        }
       }
+
+      for (let i = this.periods.length-1; i >= 0; i--) {
+        if (this.periods[i] == undefined)
+          this.periods.splice(i, 1);
+      }
+
+      let startDate: Date = smallestDay;
+      let endDate: Date = new Date(startDate);
+
+      if (this.inputTemplate.monthRepeat == 0)
+        endDate.setFullYear(startDate.getFullYear() + 1);
+      else
+        endDate.setMonth(startDate.getMonth() + this.inputTemplate.monthRepeat);
+
+      let dbClass = new DBClassTemplate(
+        this.inputTemplate.professional, this.inputTemplate.modality,
+        [],
+        startDate, endDate,
+        period.startTime.toTimeString(), period.endTime.toTimeString(),
+        days
+      );
+      dbClasses.push(dbClass);
     }
-    this.calendarService.addClasses(classes);
-    this.presentSuccessToast(`${classes.length} novas classes foram adicionadas!`);
+
+    this.calendarService.pushClassesToDB(dbClasses);
+    this.presentSuccessToast('Novas classes adicionadas!');
     this.closeModal();
+
+    // for (let period of this.periods) {
+    //   for (let repeat = 0; repeat < this.inputTemplate.monthRepeat + 1; repeat ++) {
+    //     let start = new Date();
+    //     start.setTime(period.startTime.getTime());
+    //     start.setDate(start.getDate() + (7 * repeat));
+    //     if (start.getTime() < now.getTime()) {
+    //       continue;
+    //     }
+    //     let end = new Date();
+    //     end.setTime(period.endTime.getTime());
+    //     end.setDate(end.getDate() + (7 * repeat));
+
+    //     let newClass = new ClassModel(
+    //       this.inputTemplate.professional,
+    //       start, end,
+    //       this.inputTemplate.modality,
+    //       [],
+    //       this.inputTemplate.studentQt
+    //     );
+    //     classes.push(newClass);
+    //   }
+    // }
   }
 }
