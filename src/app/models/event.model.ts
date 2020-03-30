@@ -41,18 +41,20 @@ export class DBClassTemplate {
     professional: ProfessionalModel; // trocar por UID
     modality: ModalityModel; // trocar por UID
     students: Array<StudentModel>; // trocar por UID
+    studentQt: number;
     startDate: Date;
-    endDate: Date;
+    endDate: Date; // sempre vai ser sabado (dia 6)
     startTime: string; // Date.toTimeString()::'hh:mm:ss GMT-0300'
     endTime: string;
     weekday: Array<boolean> = new Array(7);
 
-    constructor(pro: ProfessionalModel, mod: ModalityModel, studs: Array<StudentModel>, 
+    constructor(pro: ProfessionalModel, mod: ModalityModel, studs: Array<StudentModel>, studQt: number,
             stDate: Date, endDate: Date, stTime: string, 
             endTime: string, wkday: Array<boolean>, uid?: string) {
         this.professional = pro;
         this.modality = mod;
         this.students = studs;
+        this.studentQt = studQt;
         this.startDate = stDate;
         this.endDate = endDate;
         this.startTime = stTime;

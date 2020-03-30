@@ -12,6 +12,9 @@ import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/fire
 })
 export class CalendarService {
   private eventsRef: AngularFirestoreCollection<DBClassTemplate>;
+  private dbClasses: Array<DBClassTemplate> = new Array();
+  private goneUIDs: Map<string, Date> = new Map();
+
   private eventSourceSubject: BehaviorSubject<ClassModel[]>;
   private eventSource: Array<ClassModel> = new Array();
   private calendarOptions: { viewTitle: string, mode: 'month' | 'week' | 'day', currentDate: Date } = {
@@ -23,8 +26,26 @@ export class CalendarService {
   constructor(private modalController: ModalController, private afStore: AngularFirestore) {
     this.eventSourceSubject = new BehaviorSubject<ClassModel[]>(this.eventSource);
     this.eventsRef = this.afStore.collection<DBClassTemplate>('Events');
-    //monitor db event changes
-      // onchange traduzir e addClasses()
+    this.monitorDBEventChanges();
+  }
+
+  monitorDBEventChanges() {
+    this.eventsRef.snapshotChanges().subscribe((retrieved) => {
+      for (let cl of retrieved) {
+        let dbClass: DBClassTemplate = {uid: cl.payload.doc.id, ...cl.payload.doc.data()} as DBClassTemplate;
+        let found = false;
+        for (let uid of this.goneUIDs.keys())
+          if (dbClass.uid == uid) {
+            found = true;
+            break;
+          }
+        if (found)
+          continue;
+        this.goneUIDs.set(dbClass.uid, new Date());
+        this.dbClasses.push(dbClass);
+      }
+      this.checkForNewClasses(new Date());
+    });
   }
 
   getEventSourceObservable(): BehaviorSubject<ClassModel[]> {
@@ -50,7 +71,6 @@ export class CalendarService {
   pushClassesToDB(events: Array<DBClassTemplate>) {
     for(let event of events) {
       const uid = this.afStore.createId();
-      console.log(uid);
       event.uid = uid;
 
       const clone: any = Object.assign({}, event);
@@ -60,9 +80,65 @@ export class CalendarService {
       clone.students = [];
       
       delete clone.uid;
-      console.log(clone);
       this.eventsRef.doc(uid).set(clone);
     }
+  }
+
+  checkForNewClasses(selectedDate: Date) {
+    let now = new Date(selectedDate);
+    let finalDate: Date = new Date();
+    finalDate.setMonth(finalDate.getMonth() + 1);
+    
+    for (let dbClass of this.dbClasses) {
+      let newEvents: Array<ClassModel> = new Array();
+      let found = false;
+      for (let [goneUID, goneFinalDate] of this.goneUIDs) {
+        if (dbClass.uid == goneUID) {
+          found = true;
+          if (finalDate > goneFinalDate) {
+            this.goneUIDs.set(goneUID, finalDate);
+            newEvents = this.translateDBClassToEvents(dbClass, goneFinalDate, finalDate);
+          }
+          break;
+        }
+      }
+      if (!found) { 
+        this.goneUIDs.set(dbClass.uid, finalDate);
+        newEvents = this.translateDBClassToEvents(dbClass, now, finalDate);
+      }
+
+      if (newEvents.length > 0)
+        this.addClasses(newEvents);
+    }
+  }
+
+  //starttime e endtime estao errados.
+  translateDBClassToEvents(dbClass: DBClassTemplate, startDate: Date, finalDate: Date): ClassModel[] {
+    let newEvents: ClassModel[] = new Array();
+    for (let [dayOfWeek, value] of dbClass.weekday.entries()) {
+      if (!value)
+        continue;
+      let startTime = new Date(startDate);
+      while (startTime.getDay() != dayOfWeek)
+        startTime.setDate(startTime.getDate() + 1);
+      startTime.setHours(+dbClass.startTime.slice(0, 2), +dbClass.startTime.slice(3, 5), 0, 0);
+      
+      let endTime = new Date(startTime);
+      endTime.setHours(+dbClass.endTime.slice(0, 2), +dbClass.endTime.slice(3, 5), 0, 0);
+
+      while(startTime < finalDate) {
+        let newClass = new ClassModel(
+          dbClass.professional,
+          startTime, endTime,
+          dbClass.modality, dbClass.students,
+          dbClass.students.length
+        );
+        newEvents.push(newClass);
+        startTime.setDate(startTime.getDate() + 7);
+        endTime.setDate(startTime.getDate());
+      }
+    }
+    return newEvents;
   }
 
   addStudentsToClasses(studentsArray: Array<StudentModel>, events: Array<ClassModel>) {        
@@ -84,7 +160,11 @@ export class CalendarService {
   onEventSelected(event) {
     console.log('Event selected:', event);
   }
-  onTimeSelected(event) {
+  onTimeSelected(event: { selectedTime: Date, events: ClassModel[] }) {
     console.log('On time selected:', event);
+    // load
+    // trocar para on range selected
+    // this.checkForNewClasses(event.selectedTime);
+    // fim load
   }
 }

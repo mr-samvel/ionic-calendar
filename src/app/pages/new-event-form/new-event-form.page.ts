@@ -106,7 +106,7 @@ export class NewEventFormPage implements AfterViewInit {
   private async presentChangeModal(ev) {
     const modal = await this.modalController.create({
       component: ChangePeriodPage,
-      componentProps: { ev: ev },
+      componentProps: { ev: ev, duration: this.inputTemplate.duration },
       cssClass: 'custom-modal-css'
     });
     modal.onDidDismiss().then((dataReturned) => {
@@ -179,9 +179,12 @@ export class NewEventFormPage implements AfterViewInit {
       else
         endDate.setMonth(startDate.getMonth() + this.inputTemplate.monthRepeat);
 
+      while(endDate.getDay() != 6)
+        endDate.setDate(endDate.getDate() + 1);
+
       let dbClass = new DBClassTemplate(
         this.inputTemplate.professional, this.inputTemplate.modality,
-        [],
+        [], this.inputTemplate.studentQt,
         startDate, endDate,
         period.startTime.toTimeString(), period.endTime.toTimeString(),
         days
@@ -192,28 +195,5 @@ export class NewEventFormPage implements AfterViewInit {
     this.calendarService.pushClassesToDB(dbClasses);
     this.presentSuccessToast('Novas classes adicionadas!');
     this.closeModal();
-
-    // for (let period of this.periods) {
-    //   for (let repeat = 0; repeat < this.inputTemplate.monthRepeat + 1; repeat ++) {
-    //     let start = new Date();
-    //     start.setTime(period.startTime.getTime());
-    //     start.setDate(start.getDate() + (7 * repeat));
-    //     if (start.getTime() < now.getTime()) {
-    //       continue;
-    //     }
-    //     let end = new Date();
-    //     end.setTime(period.endTime.getTime());
-    //     end.setDate(end.getDate() + (7 * repeat));
-
-    //     let newClass = new ClassModel(
-    //       this.inputTemplate.professional,
-    //       start, end,
-    //       this.inputTemplate.modality,
-    //       [],
-    //       this.inputTemplate.studentQt
-    //     );
-    //     classes.push(newClass);
-    //   }
-    // }
   }
 }

@@ -29,6 +29,7 @@ export class CalendarPage implements AfterViewInit {
   private subscribeToEventChange() {
     this.calendarService.getEventSourceObservable().subscribe(eventSrc => {
       this.eventSource = eventSrc;
+      console.log(this.eventSource);
       this.calendarComponent.loadEvents();
     });
   }
