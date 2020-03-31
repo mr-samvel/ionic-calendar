@@ -3,13 +3,13 @@ export class UserModel {
     static PROFESSIONAL_PROFILE: number = 1;
     username: string;
     uid: string;
-    profile: number;
+    roles: Array<number>;
     email: string;
 
-    constructor(username: string, uid: string, profile: number, email: string) {
+    constructor(username: string, uid: string, roles: Array<number>, email: string) {
         this.username = username;
         this.uid = uid;
-        this.profile = profile;
+        this.roles = roles;
         this.email = email;
     }
 }

@@ -42,7 +42,6 @@ export class AuthenticationService {
         this.userState = false;
         this.userContainerService.deleteCurrentUser();
       }
-      console.log('user changed:', this.userContainerService.getCurrentUser());
     });
   }
 
@@ -51,13 +50,12 @@ export class AuthenticationService {
       let username = userCredential.user.displayName;
       let uid = userCredential.user.uid;
       let email = userCredential.user.email;
-      let user = new UserModel(username, uid, UserModel.STUDENT_PROFILE, email);
+      let user = new UserModel(username, uid, [UserModel.STUDENT_PROFILE], email);
       this.userContainerService.storeCurrentUser(user);
       this.usersRef.doc(uid).get().toPromise().then(snap => {
         if (!snap.exists) {
           let clone = Object.assign({}, user);
           delete clone.uid;
-          console.log('clone:', clone);
           this.usersRef.doc(uid).set(clone);
         }
       });

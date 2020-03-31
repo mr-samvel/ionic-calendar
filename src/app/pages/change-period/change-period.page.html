@@ -6,18 +6,18 @@
 
 <ion-content>
   <ion-button expand="block" fill="outline" (click)="this.collapse()">
-    Alterar o horário 
+    Alterar o horário
     <ion-icon *ngIf="this.menuCollapse" name="arrow-down"></ion-icon>
     <ion-icon *ngIf="!this.menuCollapse" name="arrow-up"></ion-icon>
   </ion-button>
   <div *ngIf="!this.menuCollapse">
     <ion-item>
       <ion-label>Início</ion-label>
-      <ion-datetime displayFormat="HH:mm" [(ngModel)]="this.strEvent.strStartTime"></ion-datetime>
+      <ion-datetime displayFormat="HH:mm" [value]="this.strEvent.strStartTime" onIonChange="this.onDatetimeChange('start', $event.detail.value)"></ion-datetime>
     </ion-item>
     <ion-item>
       <ion-label>Fim</ion-label>
-      <ion-datetime displayFormat="HH:mm" [(ngModel)]="this.strEvent.strEndTime"></ion-datetime>
+      <ion-datetime displayFormat="HH:mm" [value]="this.strEvent.strEndTime" onIonChange="this.onDatetimeChange('end', $event.detail.value)"></ion-datetime>
     </ion-item>
     <ion-button expand="block" color="success" [disabled]="!this.validate()" (click)="closeModal('update')">Ok <ion-icon name="checkmark"></ion-icon></ion-button>
   </div>
