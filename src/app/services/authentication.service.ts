@@ -42,7 +42,6 @@ export class AuthenticationService {
         this.userState = false;
         this.userContainerService.deleteCurrentUser();
       }
-      console.log('user changed:', this.userContainerService.getCurrentUser());
     });
   }
 

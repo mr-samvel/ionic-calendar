@@ -42,7 +42,7 @@
   <!----------------- COMPONENTE CALENDARIO ----------------->
   <calendar [eventSource]="this.eventSource" [calendarMode]="this.calendarService.getCalendarMode()"
     [currentDate]="this.calendarService.getCurrentDate()"
-    (onEventSelected)="this.onEventSelected($event)"
+    (onEventSelected)="this.onEventSelected($event)" (onCurrentDateChanged)="this.calendarService.onCurrentDateChanged($event)"
     (onTitleChanged)="this.calendarService.onViewTitleChanged($event)" (onTimeSelected)="this.calendarService.onTimeSelected($event)"
     startHour="6" endHour="20" step="0.5" startingDayWeek="0" 
     [monthviewEventDetailTemplate]="monthviewEventDetail"

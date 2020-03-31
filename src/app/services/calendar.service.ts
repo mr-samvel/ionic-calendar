@@ -86,7 +86,7 @@ export class CalendarService {
 
   checkForNewClasses(selectedDate: Date) {
     let now = new Date(selectedDate);
-    let finalDate: Date = new Date();
+    let finalDate: Date = new Date(selectedDate);
     finalDate.setMonth(finalDate.getMonth() + 1);
     
     for (let dbClass of this.dbClasses) {
@@ -95,9 +95,12 @@ export class CalendarService {
       for (let [goneUID, goneFinalDate] of this.goneUIDs) {
         if (dbClass.uid == goneUID) {
           found = true;
-          if (finalDate > goneFinalDate) {
+          if (finalDate > goneFinalDate && dbClass.endDate.toDate() > finalDate) {
             this.goneUIDs.set(goneUID, finalDate);
             newEvents = this.translateDBClassToEvents(dbClass, goneFinalDate, finalDate);
+          } else if (dbClass.endDate.toDate() > goneFinalDate && finalDate > dbClass.endDate.toDate()) {
+            this.goneUIDs.set(goneUID, new Date(dbClass.endDate.toDate()));
+            newEvents = this.translateDBClassToEvents(dbClass, goneFinalDate, dbClass.endDate.toDate());
           }
           break;
         }
@@ -112,7 +115,6 @@ export class CalendarService {
     }
   }
 
-  //starttime e endtime estao errados.
   translateDBClassToEvents(dbClass: DBClassTemplate, startDate: Date, finalDate: Date): ClassModel[] {
     let newEvents: ClassModel[] = new Array();
     for (let [dayOfWeek, value] of dbClass.weekday.entries()) {
@@ -127,9 +129,11 @@ export class CalendarService {
       endTime.setHours(+dbClass.endTime.slice(0, 2), +dbClass.endTime.slice(3, 5), 0, 0);
 
       while(startTime < finalDate) {
+        let cloneStTime = new Date(startTime);
+        let cloneEndTime = new Date(endTime);
         let newClass = new ClassModel(
           dbClass.professional,
-          startTime, endTime,
+          cloneStTime, cloneEndTime,
           dbClass.modality, dbClass.students,
           dbClass.students.length
         );
@@ -158,13 +162,12 @@ export class CalendarService {
     this.calendarOptions.viewTitle = title;
   }
   onEventSelected(event) {
-    console.log('Event selected:', event);
+    // console.log('Event selected:', event);
+  }
+  onCurrentDateChanged(ev: Date) {
+    this.checkForNewClasses(ev);
   }
   onTimeSelected(event: { selectedTime: Date, events: ClassModel[] }) {
-    console.log('On time selected:', event);
-    // load
-    // trocar para on range selected
-    // this.checkForNewClasses(event.selectedTime);
-    // fim load
+    // console.log('On time selected:', event);
   }
 }

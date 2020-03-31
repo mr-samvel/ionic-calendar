@@ -2,6 +2,7 @@ import { IEvent } from 'ionic2-calendar/calendar';
 import { ProfessionalModel } from './professional.model';
 import { ModalityModel } from './modality.model';
 import { StudentModel } from './student.model';
+import * as firebase from 'firebase';
 
 export class EventModel implements IEvent {
     // Esses atributos implementam a interface IEvent do componente ionic2-calendar
@@ -42,8 +43,8 @@ export class DBClassTemplate {
     modality: ModalityModel; // trocar por UID
     students: Array<StudentModel>; // trocar por UID
     studentQt: number;
-    startDate: Date;
-    endDate: Date; // sempre vai ser sabado (dia 6)
+    startDate: firebase.firestore.Timestamp; // o Firebase armazena em Timpestamp
+    endDate: firebase.firestore.Timestamp; // sempre vai ser sabado (dia de numero 6)
     startTime: string; // Date.toTimeString()::'hh:mm:ss GMT-0300'
     endTime: string;
     weekday: Array<boolean> = new Array(7);
@@ -55,8 +56,8 @@ export class DBClassTemplate {
         this.modality = mod;
         this.students = studs;
         this.studentQt = studQt;
-        this.startDate = stDate;
-        this.endDate = endDate;
+        this.startDate = firebase.firestore.Timestamp.fromDate(stDate);
+        this.endDate = firebase.firestore.Timestamp.fromDate(endDate);
         this.startTime = stTime;
         this.endTime = endTime;
         this.weekday = wkday;
