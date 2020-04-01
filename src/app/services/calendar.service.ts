@@ -11,7 +11,7 @@ import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/fire
   providedIn: 'root'
 })
 export class CalendarService {
-  private eventsRef: AngularFirestoreCollection<DBClassTemplate>;
+  private dbClassesRef: AngularFirestoreCollection<DBClassTemplate>;
   private dbClasses: Array<DBClassTemplate> = new Array();
   private goneUIDs: Map<string, Date> = new Map();
 
@@ -25,25 +25,31 @@ export class CalendarService {
 
   constructor(private modalController: ModalController, private afStore: AngularFirestore) {
     this.eventSourceSubject = new BehaviorSubject<ClassModel[]>(this.eventSource);
-    this.eventsRef = this.afStore.collection<DBClassTemplate>('Events');
+    this.dbClassesRef = this.afStore.collection<DBClassTemplate>('Events');
     this.monitorDBEventChanges();
   }
 
   monitorDBEventChanges() {
-    this.eventsRef.snapshotChanges().subscribe((retrieved) => {
+    this.dbClassesRef.snapshotChanges().subscribe((retrieved) => {
+      let tmpClasses: DBClassTemplate[] = new Array();
       for (let cl of retrieved) {
         let dbClass: DBClassTemplate = {uid: cl.payload.doc.id, ...cl.payload.doc.data()} as DBClassTemplate;
+        tmpClasses.push(dbClass);
+
         let found = false;
-        for (let uid of this.goneUIDs.keys())
+        for (let uid of this.goneUIDs.keys()) {
           if (dbClass.uid == uid) {
             found = true;
             break;
           }
+        }
         if (found)
           continue;
         this.goneUIDs.set(dbClass.uid, new Date());
-        this.dbClasses.push(dbClass);
       }
+      
+      this.deleteObsoleteClasses(tmpClasses);
+      this.dbClasses = tmpClasses;
       this.checkForNewClasses(new Date());
     });
   }
@@ -80,7 +86,7 @@ export class CalendarService {
       clone.students = [];
       
       delete clone.uid;
-      this.eventsRef.doc(uid).set(clone);
+      this.dbClassesRef.doc(uid).set(clone);
     }
   }
 
@@ -132,6 +138,7 @@ export class CalendarService {
         let cloneStTime = new Date(startTime);
         let cloneEndTime = new Date(endTime);
         let newClass = new ClassModel(
+          dbClass.uid,
           dbClass.professional,
           cloneStTime, cloneEndTime,
           dbClass.modality, dbClass.students,
@@ -143,6 +150,17 @@ export class CalendarService {
       }
     }
     return newEvents;
+  }
+
+  deleteObsoleteClasses(newClasses: DBClassTemplate[]) {
+    for (let [index, cl] of this.dbClasses.entries()) {
+      if(!newClasses.some((tmpCl) => tmpCl.uid == cl.uid)) {
+        this.dbClasses.splice(index);
+        this.goneUIDs.delete(cl.uid);
+        this.eventSource = this.eventSource.filter((obj) => obj.uid != cl.uid);
+      }
+    }
+    this.eventSourceSubject.next(this.eventSource);
   }
 
   addStudentsToClasses(studentsArray: Array<StudentModel>, events: Array<ClassModel>) {        

@@ -20,6 +20,7 @@ export class EventModel implements IEvent {
 }
 
 export class ClassModel {
+    uid: string;
     professional: ProfessionalModel;
     startTime: Date;
     endTime: Date;
@@ -27,7 +28,8 @@ export class ClassModel {
     students: Array<StudentModel>;
     studentQt: number;
 
-    constructor(prof: ProfessionalModel, start: Date, end: Date, modality: ModalityModel, students: StudentModel[], studentQt: number) {
+    constructor(uid: string, prof: ProfessionalModel, start: Date, end: Date, modality: ModalityModel, students: StudentModel[], studentQt: number) {
+        this.uid = uid;
         this.professional = prof;
         this.startTime = start;
         this.endTime = end;
