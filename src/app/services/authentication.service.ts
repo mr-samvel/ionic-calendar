@@ -53,9 +53,10 @@ export class AuthenticationService {
       let user = new UserModel(username, uid, [UserModel.STUDENT_PROFILE], email);
       this.userContainerService.storeCurrentUser(user);
       this.usersRef.doc(uid).get().toPromise().then(snap => {
+        let retrievedUser: UserModel = {uid: snap.id, ...snap.data()} as UserModel;
+        let clone = Object.assign({}, user);
+        delete clone.uid;
         if (!snap.exists) {
-          let clone = Object.assign({}, user);
-          delete clone.uid;
           this.usersRef.doc(uid).set(clone);
         }
       });

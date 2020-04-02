@@ -119,4 +119,62 @@ export class ClassDetailsPage implements AfterViewInit {
     await alert.present();
   }
 
+
+  async deleteClass() {
+    let tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    let confirmWarning = false;
+
+    if (this.event.startTime < tomorrow) {
+      const warning = await this.alertController.create({
+        cssClass: "alert-warning",
+        header: "Cuidado!",
+        message: "Você está cancelando uma aula com pouco tempo para avisar os alunos!\nDeseja continuar?",
+        buttons: [
+          {
+            text: "Não",
+            cssClass: "warning-button",
+            role: "cancel"
+          },
+          {
+            text: "Sim",
+            cssClass: "warning-button",
+            handler: () => confirmWarning = true
+          }
+        ]
+      });
+      await warning.present();
+      warning.onDidDismiss().then(() => {
+        if(confirmWarning)
+          this.confirmAlert();
+      });
+    } else
+      return this.confirmAlert();
+  }
+  private async confirmAlert() {
+    const delAlert = await this.alertController.create({
+      header: "Cancelar aulas",
+      message: `Deseja cancelar todas as aulas de ${this.event.modality.name}, 
+      do(a) profissional ${this.event.professional.name}, às ${this.event.startTime.toLocaleTimeString().slice(0, 5)} - 
+      ${this.event.startTime.toLocaleDateString(undefined, { weekday: 'long' })}?`,
+      buttons: [
+        {
+          text: "Não, somente essa",
+          handler: () => {
+            console.log("TODO");
+            this.closeModal();
+          }
+        },
+        {
+          text: "Sim",
+          handler: () => {
+            this.calendarService.deleteWeekdayRepetition(this.event);
+            this.closeModal();
+          }
+        }
+      ]
+    });
+    await delAlert.present();
+  }
+
 }
