@@ -2,12 +2,12 @@ import { Component, ViewChildren, AfterViewInit, ViewChild } from '@angular/core
 import { ModalController, ToastController, AlertController } from '@ionic/angular';
 import { CalendarService } from 'src/app/services/calendar.service';
 import { StudentContainerService } from 'src/app/services/student-container.service';
-import { StudentModel } from 'src/app/models/student.model';
 import { IonicSelectableComponent } from 'ionic-selectable';
 import { CalendarComponent } from 'ionic2-calendar/calendar';
 import { ClassModel } from 'src/app/models/event.model';
 import { ProfessionalContainerService } from 'src/app/services/professional-container.service';
 import { ModalityContainerService } from 'src/app/services/modality-container.service';
+import { UserModel } from 'src/app/models/user.model';
 
 @Component({
   selector: 'app-alocate-students',
@@ -24,7 +24,7 @@ export class AlocateStudentsPage implements AfterViewInit {
   public collapseStudents: boolean;
   public collapseFilters: boolean;
 
-  public selectedStudents: Array<StudentModel>;
+  public selectedStudents: Array<UserModel>;
 
   public currentDate: Date = new Date();
   public viewTitle: string = '';
@@ -91,7 +91,8 @@ export class AlocateStudentsPage implements AfterViewInit {
   }
 
   addStudent(stud: string) {
-    this.studentsContainer.addStudent(new StudentModel(stud));
+    console.log("TODO");
+    // this.studentsContainer.addStudent(new StudentModel(stud));
   }
 
   validateStudentSelectable() {
@@ -116,8 +117,8 @@ export class AlocateStudentsPage implements AfterViewInit {
     if (pro) {
       pro = pro.trim();
       this.events.forEach((value: boolean, key: ClassModel) => {
-        if (pro != key.professional.name) {
-          console.log(pro, '!=', key.professional.name);
+        if (pro != key.professional.username) {
+          console.log(pro, '!=', key.professional.username);
           this.filteredEvents.splice(this.filteredEvents.indexOf(key), 1);
         }
       });
@@ -149,7 +150,7 @@ export class AlocateStudentsPage implements AfterViewInit {
     const alert = await this.alertController.create({
       header: 'Adicionar às aulas?',
       message: `Selecionar todas as aulas de ${ev.modality.name}, 
-        do(a) profissional ${ev.professional.name}, às ${ev.startTime.toLocaleTimeString().slice(0, 5)} - 
+        do(a) profissional ${ev.professional.username}, às ${ev.startTime.toLocaleTimeString().slice(0, 5)} - 
         ${ev.startTime.toLocaleDateString(undefined, { weekday: 'long' })}?`,
       buttons: [
         {
@@ -166,7 +167,7 @@ export class AlocateStudentsPage implements AfterViewInit {
               let vStartMinute = key.startTime.getMinutes() == ev.startTime.getMinutes();
               let vEndHour = key.endTime.getHours() == ev.endTime.getHours();
               let vEndMinute = key.endTime.getMinutes() == ev.endTime.getMinutes();
-              let vProf = key.professional.name == ev.professional.name;
+              let vProf = key.professional.username == ev.professional.username;
               let vMod = key.modality.name == ev.modality.name;
               if (vDate && vStartHour && vStartMinute && vEndHour && vEndHour && vEndMinute && vProf && vMod)
                 this.events.set(key, true);
@@ -182,7 +183,7 @@ export class AlocateStudentsPage implements AfterViewInit {
     const alert = await this.alertController.create({
       header: 'Desselecionar as aulas?',
       message: `Desselecionar todas as aulas de ${ev.modality.name}, 
-        do(a) profissional ${ev.professional.name}, às ${ev.startTime.toLocaleTimeString().slice(0, 5)} - 
+        do(a) profissional ${ev.professional.username}, às ${ev.startTime.toLocaleTimeString().slice(0, 5)} - 
         ${ev.startTime.toLocaleDateString(undefined, { weekday: 'long' })}?`,
       buttons: [
         {
@@ -199,7 +200,7 @@ export class AlocateStudentsPage implements AfterViewInit {
               let vStartMinute = key.startTime.getMinutes() == ev.startTime.getMinutes();
               let vEndHour = key.endTime.getHours() == ev.endTime.getHours();
               let vEndMinute = key.endTime.getMinutes() == ev.endTime.getMinutes();
-              let vProf = key.professional.name == ev.professional.name;
+              let vProf = key.professional.username == ev.professional.username;
               let vMod = key.modality.name == ev.modality.name;
               if (vDate && vStartHour && vStartMinute && vEndHour && vEndHour && vEndMinute && vProf && vMod)
                 this.events.set(key, false);

@@ -1,8 +1,7 @@
 import { IEvent } from 'ionic2-calendar/calendar';
-import { ProfessionalModel } from './professional.model';
 import { ModalityModel } from './modality.model';
-import { StudentModel } from './student.model';
 import * as firebase from 'firebase';
+import { UserModel } from './user.model';
 
 export class EventModel implements IEvent {
     // Esses atributos implementam a interface IEvent do componente ionic2-calendar
@@ -21,14 +20,14 @@ export class EventModel implements IEvent {
 
 export class ClassModel {
     uid: string;
-    professional: ProfessionalModel;
+    professional: UserModel;
     startTime: Date;
     endTime: Date;
     modality: ModalityModel;
-    students: Array<StudentModel>;
+    students: Array<UserModel>;
     studentQt: number;
 
-    constructor(uid: string, prof: ProfessionalModel, start: Date, end: Date, modality: ModalityModel, students: StudentModel[], studentQt: number) {
+    constructor(uid: string, prof: UserModel, start: Date, end: Date, modality: ModalityModel, students: UserModel[], studentQt: number) {
         this.uid = uid;
         this.professional = prof;
         this.startTime = start;
@@ -41,9 +40,9 @@ export class ClassModel {
 
 export class DBClassTemplate {
     uid: string;
-    professional: ProfessionalModel; // trocar por UID
-    modality: ModalityModel; // trocar por UID
-    students: Array<StudentModel>; // trocar por UID
+    professionalUID: string; // UID
+    modalityUID: string; // UID
+    studentsUIDs: Array<string>; // UID
     studentQt: number;
     startDate: firebase.firestore.Timestamp; // o Firebase armazena em Timpestamp
     endDate: firebase.firestore.Timestamp; // sempre vai ser sabado (dia de numero 6)
@@ -51,12 +50,12 @@ export class DBClassTemplate {
     endTime: string;
     weekday: Array<boolean> = new Array(7);
 
-    constructor(pro: ProfessionalModel, mod: ModalityModel, studs: Array<StudentModel>, studQt: number,
+    constructor(pro: UserModel, mod: ModalityModel, studs: Array<UserModel>, studQt: number,
             stDate: Date, endDate: Date, stTime: string, 
             endTime: string, wkday: Array<boolean>, uid?: string) {
-        this.professional = pro;
-        this.modality = mod;
-        this.students = studs;
+        this.professionalUID = pro.uid;
+        this.modalityUID = mod.uid;
+        this.studentsUIDs = studs.map(a => a.uid);
         this.studentQt = studQt;
         this.startDate = firebase.firestore.Timestamp.fromDate(stDate);
         this.endDate = firebase.firestore.Timestamp.fromDate(endDate);

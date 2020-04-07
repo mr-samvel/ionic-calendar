@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { ClassModel, DBClassTemplate } from '../models/event.model';
 import { ModalController } from '@ionic/angular';
-import { StudentModel } from '../models/student.model';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
 
 
@@ -86,8 +85,8 @@ export class CalendarService {
 
       const clone: any = Object.assign({}, event);
 
-      clone.professional = event.professional.name;
-      clone.modality = event.modality.name;
+      clone.professional = event.professional.username;
+      clone.modality = event.modality.username;
       clone.students = [];
 
       delete clone.uid;
