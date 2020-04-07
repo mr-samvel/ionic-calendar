@@ -59,7 +59,7 @@
     </ion-item>
     <ion-item *ngFor="let event of selectedDate.events" (click)="showClassDetails(event)">
       {{ event.startTime.toLocaleTimeString().slice(0,5) }} - {{ event.endTime.toLocaleTimeString().slice(0,5) }} |
-      {{ event.modality.name }}: {{ event.professional.name }}
+      {{ event.modality.name }}: {{ event.professional.username }}
     </ion-item>
   </ng-template>
 
@@ -105,7 +105,7 @@
   <ng-template #dayviewNormalEventTemplate let-displayEvent="displayEvent">
     <div class="calendar-event-inner" [ngStyle]="{'background-color': bgColor}">
       <ion-grid>
-        <ion-row>{{displayEvent.event.modality.name}} - {{displayEvent.event.professional.name}}</ion-row>
+        <ion-row>{{displayEvent.event.modality.username}} - {{displayEvent.event.professional.username}}</ion-row>
         <ion-row>{{displayEvent.event.students.length}}/{{displayEvent.event.studentQt}} estudantes</ion-row>
       </ion-grid>
     </div>

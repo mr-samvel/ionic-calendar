@@ -70,7 +70,7 @@
           <ion-item>
             <ion-label>Profissional:</ion-label>
             <ionic-selectable #proSelectable [(ngModel)]="this.inputTemplate.professional" [canAddItem]="true"
-              [items]="this.professionalContainer.getProfessionals()" [canSearch]="true" itemTextField="name"
+              [items]="this.professionalContainer.getProfessionals()" [canSearch]="true" itemTextField="username"
               placeholder="Ex.: Maria">
               <ng-template ionicSelectableSearchFailTemplate>
                 <ion-card (click)="proSelectable.showAddItemTemplate()">

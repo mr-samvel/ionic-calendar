@@ -28,9 +28,20 @@ export class ModalityContainerService {
   getModalities() {
     return this.modalities;
   }
+  getModalityByUID(uid: string): ModalityModel {
+    return this.modalities.find(m => m.uid == uid);
+  }
+  getModalitiesByUID(uids: string[]): ModalityModel[] {
+    let tmpArray = new Array();
+    for(let uid of uids){
+      tmpArray.push(this.getModalityByUID(uid));
+    }
+    return tmpArray;
+  }
 
-  // addModality(mod: ModalityModel) {
-  //   this.modalities.push(mod);
-  //   console.log(this.modalities);
-  // }
+  addModality(mod: ModalityModel) {
+    console.log("TODO");
+    // this.modalities.push(mod);
+    // console.log(this.modalities);
+  }
 }

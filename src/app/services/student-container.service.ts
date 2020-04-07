@@ -29,8 +29,19 @@ export class StudentContainerService {
   getStudents() {
     return this.students;
   }
+  getStudentByUID(uid: string): UserModel {
+    return this.students.find(e => e.uid == uid);
+  }
+  getStudentsByUID(uids: string[]): UserModel[] {
+    let tmpArray = new Array();
+    for(let uid of uids){
+      tmpArray.push(this.getStudentByUID(uid));
+    }
+    return tmpArray;
+  }
 
-  // addStudent(stud: StudentModel) {
-  //   this.students.push(stud);
-  // }
+  addStudent(stud: any) {
+    console.log("TODO");
+    // this.students.push(stud);
+  }
 }

@@ -167,8 +167,8 @@ export class AlocateStudentsPage implements AfterViewInit {
               let vStartMinute = key.startTime.getMinutes() == ev.startTime.getMinutes();
               let vEndHour = key.endTime.getHours() == ev.endTime.getHours();
               let vEndMinute = key.endTime.getMinutes() == ev.endTime.getMinutes();
-              let vProf = key.professional.username == ev.professional.username;
-              let vMod = key.modality.name == ev.modality.name;
+              let vProf = key.professional.uid == ev.professional.uid;
+              let vMod = key.modality.uid == ev.modality.uid;
               if (vDate && vStartHour && vStartMinute && vEndHour && vEndHour && vEndMinute && vProf && vMod)
                 this.events.set(key, true);
             });
@@ -200,8 +200,8 @@ export class AlocateStudentsPage implements AfterViewInit {
               let vStartMinute = key.startTime.getMinutes() == ev.startTime.getMinutes();
               let vEndHour = key.endTime.getHours() == ev.endTime.getHours();
               let vEndMinute = key.endTime.getMinutes() == ev.endTime.getMinutes();
-              let vProf = key.professional.username == ev.professional.username;
-              let vMod = key.modality.name == ev.modality.name;
+              let vProf = key.professional.uid == ev.professional.uid;
+              let vMod = key.modality.uid == ev.modality.uid;
               if (vDate && vStartHour && vStartMinute && vEndHour && vEndHour && vEndMinute && vProf && vMod)
                 this.events.set(key, false);
             });

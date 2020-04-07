@@ -21,7 +21,7 @@
       <ion-item>
         <ion-label>Alunos:</ion-label>
         <ionic-selectable #studSelectable [(ngModel)]="this.selectedStudents" (onChange)="validateStudentSelectable()"
-          [canAddItem]="true" [items]="this.studentsContainer.getStudents()" [canSearch]="true" itemTextField="name"
+          [canAddItem]="true" [items]="this.studentsContainer.getStudents()" [canSearch]="true" itemTextField="username"
           [isMultiple]="true" [canClear]="true">
           <ng-template ionicSelectableSearchFailTemplate>
             <ion-card (click)="studSelectable.showAddItemTemplate()">
@@ -71,14 +71,14 @@
       <ion-item>
         <ion-label>Por profissional:</ion-label>
         <ion-select #filterPro cancelText="Cancelar">
-          <ion-select-option *ngFor="let pro of this.professionalsContainer.getProfessionals()">{{ pro.name }}
+          <ion-select-option *ngFor="let pro of this.professionalsContainer.getProfessionals()">{{ pro.username }}
           </ion-select-option>
         </ion-select>
       </ion-item>
       <ion-item>
         <ion-label>Por modalidade:</ion-label>
         <ion-select #filterMod cancelText="Cancelar">
-          <ion-select-option *ngFor="let mod of this.modalitiesContainer.getModalities()">{{ mod.name }}
+          <ion-select-option *ngFor="let mod of this.modalitiesContainer.getModalities()">{{ mod.username }}
           </ion-select-option>
         </ion-select>
       </ion-item>
@@ -115,7 +115,7 @@
       [ngStyle]="{'background-color': displayEvent.event.students.length == displayEvent.event.studentQt ? 'red' : 'lightgray'}">
       <ion-icon [hidden]="!isSelected(displayEvent.event)" name="checkmark" class="checkmark"></ion-icon>
       {{displayEvent.event.modality.name}}
-      {{displayEvent.event.professional.name}}
+      {{displayEvent.event.professional.username}}
     </div>
   </ng-template>
 

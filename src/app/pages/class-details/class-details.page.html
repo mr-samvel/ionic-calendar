@@ -10,7 +10,7 @@
     <ion-list-header style="justify-content: center;" color="light">
       <ion-label style="font-size: larger;">{{ this.event.modality.name }}</ion-label>
     </ion-list-header>
-    <ion-item>Profissional: {{ this.event.professional.name }}</ion-item>
+    <ion-item>Profissional: {{ this.event.professional.username }}</ion-item>
     <ion-item>Início: {{ this.event.startTime.toLocaleDateString().slice(0,5) }} -
       {{ this.event.startTime.toLocaleTimeString().slice(0,5) }}</ion-item>
     <ion-item>Fim: {{ this.event.endTime.toLocaleDateString().slice(0,5) }} -
@@ -20,8 +20,8 @@
     <ion-list-header>
       <ion-label>Alunos - {{ this.event.students.length }}/{{ this.event.studentQt }}</ion-label>
     </ion-list-header>
-    <ion-item *ngFor="let student of this.event.students">{{ student.name }}</ion-item>
-    <ion-item *ngFor="let student of this.selectedStudents">{{ student.name }}</ion-item>
+    <ion-item *ngFor="let student of this.event.students">{{ student.username }}</ion-item>
+    <ion-item *ngFor="let student of this.selectedStudents">{{ student.username }}</ion-item>
     <ion-item
       *ngFor="let i of counter(this.event.studentQt - (this.event.students.length + this.selectedStudents.length))">
       <ion-icon name="add-circle-outline" slot="end" (click)="addStudent()"></ion-icon>

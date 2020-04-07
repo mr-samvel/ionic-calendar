@@ -29,8 +29,19 @@ export class ProfessionalContainerService {
   getProfessionals() {
     return this.professionals;
   }
+  getProfessionalByUID(uid: string): UserModel {
+    return this.professionals.find(p => p.uid == uid);
+  }
+  getProfessionalsByUID(uids: string[]): UserModel[] {
+    let tmpArray = new Array();
+    for(let uid of uids){
+      tmpArray.push(this.getProfessionalByUID(uid));
+    }
+    return tmpArray;
+  }
 
-  // addProfessional(prof: ProfessionalModel) {
-  //   this.professionals.push(prof);
-  // }
+  addProfessional(prof: any) {
+    console.log("TODO");
+    // this.professionals.push(prof);
+  }
 }

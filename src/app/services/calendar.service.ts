@@ -3,6 +3,10 @@ import { BehaviorSubject } from 'rxjs';
 import { ClassModel, DBClassTemplate } from '../models/event.model';
 import { ModalController } from '@ionic/angular';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
+import { UserModel } from '../models/user.model';
+import { ProfessionalContainerService } from './professional-container.service';
+import { StudentContainerService } from './student-container.service';
+import { ModalityContainerService } from './modality-container.service';
 
 
 @Injectable({
@@ -21,7 +25,8 @@ export class CalendarService {
     currentDate: new Date()
   };
 
-  constructor(private modalController: ModalController, private afStore: AngularFirestore) {
+  constructor(private modalController: ModalController, private afStore: AngularFirestore, private modalityContainer: ModalityContainerService,
+      private professionalContainer: ProfessionalContainerService, private studentContainer: StudentContainerService, ) {
     this.eventSourceSubject = new BehaviorSubject<ClassModel[]>(this.eventSource);
     this.dbClassesRef = this.afStore.collection<DBClassTemplate>('Events');
     this.monitorDBEventChanges();
@@ -85,10 +90,6 @@ export class CalendarService {
 
       const clone: any = Object.assign({}, event);
 
-      clone.professional = event.professional.username;
-      clone.modality = event.modality.username;
-      clone.students = [];
-
       delete clone.uid;
       this.dbClassesRef.doc(uid).set(clone);
     }
@@ -143,10 +144,10 @@ export class CalendarService {
         let cloneEndTime = new Date(endTime);
         let newClass = new ClassModel(
           dbClass.uid,
-          dbClass.professional,
+          this.professionalContainer.getProfessionalByUID(dbClass.professionalUID),
           cloneStTime, cloneEndTime,
-          dbClass.modality,
-          dbClass.students, dbClass.studentQt
+          this.modalityContainer.getModalityByUID(dbClass.modalityUID),
+          this.studentContainer.getStudentsByUID(dbClass.studentsUIDs), dbClass.studentQt
         );
         newEvents.push(newClass);
         startTime.setDate(startTime.getDate() + 7);
@@ -167,7 +168,7 @@ export class CalendarService {
     this.eventSourceSubject.next(this.eventSource);
   }
 
-  addStudentsToClasses(studentsArray: Array<StudentModel>, events: Array<ClassModel>) {
+  addStudentsToClasses(studentsArray: Array<UserModel>, events: Array<ClassModel>) {
     for (let event of events) {
       this.eventSource[this.eventSource.indexOf(event)].students = this.eventSource[this.eventSource.indexOf(event)].students.concat(studentsArray);
     }
@@ -186,8 +187,8 @@ export class CalendarService {
       let vStartMinute = ev.startTime.getMinutes() == event.startTime.getMinutes();
       let vEndHour = ev.endTime.getHours() == event.endTime.getHours();
       let vEndMinute = ev.endTime.getMinutes() == event.endTime.getMinutes();
-      let vProf = ev.professional.name == event.professional.name;
-      let vMod = ev.modality.name == event.modality.name;
+      let vProf = ev.professional.uid == event.professional.uid;
+      let vMod = ev.modality.uid == event.modality.uid;
       if (vDate && vStartHour && vStartMinute && vEndHour && vEndHour && vEndMinute && vProf && vMod)
         deletes.push(ev);
     }
