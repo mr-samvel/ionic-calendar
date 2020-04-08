@@ -35,7 +35,7 @@
             <ion-card>
               <ion-card-content style="padding: 0;">
                 <ion-toolbar>
-                  <ion-title>Nome:</ion-title>
+                  <ion-title>Convidar novo aluno</ion-title>
                   <ion-buttons slot="start">
                     <ion-button (click)="studSelectable.hideAddItemTemplate()">
                       <ion-icon name="arrow-back"></ion-icon>
@@ -43,12 +43,13 @@
                   </ion-buttons>
                 </ion-toolbar>
                 <ion-item>
+                  <ion-label position="floating">Insira o email do aluno:</ion-label>
                   <ion-input #input></ion-input>
                 </ion-item>
                 <ion-toolbar>
                   <ion-buttons slot="end">
                     <ion-button (click)="this.addStudent(input.value); studSelectable.hideAddItemTemplate()">
-                      Adicionar
+                      Mandar convite
                     </ion-button>
                   </ion-buttons>
                 </ion-toolbar>

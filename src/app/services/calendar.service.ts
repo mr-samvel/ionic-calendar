@@ -95,6 +95,8 @@ export class CalendarService {
     }
   }
 
+  // TODO
+  // tem um bug que faz com que alguns dias sejam pulados
   checkForNewClasses(selectedDate: Date) {
     let now = new Date(selectedDate);
     let finalDate: Date = new Date(selectedDate);
@@ -169,10 +171,11 @@ export class CalendarService {
   }
 
   addStudentsToClasses(studentsArray: Array<UserModel>, events: Array<ClassModel>) {
-    for (let event of events) {
-      this.eventSource[this.eventSource.indexOf(event)].students = this.eventSource[this.eventSource.indexOf(event)].students.concat(studentsArray);
-    }
-    this.eventSourceSubject.next(this.eventSource);
+    console.log("TODO");
+    // for (let event of events) {
+    //   this.eventSource[this.eventSource.indexOf(event)].students = this.eventSource[this.eventSource.indexOf(event)].students.concat(studentsArray);
+    // }
+    // this.eventSourceSubject.next(this.eventSource);
   }
 
   deleteWeekdayRepetition(event: ClassModel) {

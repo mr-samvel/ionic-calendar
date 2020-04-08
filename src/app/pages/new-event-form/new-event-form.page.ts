@@ -134,8 +134,7 @@ export class NewEventFormPage implements AfterViewInit {
   }
 
   addModality(mod: string) {
-    console.log("TODO");
-    // this.modalityContainer.addModality(new ModalityModel(mod));
+    this.modalityContainer.addModality(mod);
   }
 
   addProfessional(pro: string) {

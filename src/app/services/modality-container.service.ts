@@ -39,9 +39,11 @@ export class ModalityContainerService {
     return tmpArray;
   }
 
-  addModality(mod: ModalityModel) {
-    console.log("TODO");
-    // this.modalities.push(mod);
-    // console.log(this.modalities);
+  addModality(name: string) {
+    const nUID = this.afStore.createId();
+    let newMod = new ModalityModel(nUID, name);
+    let clone = Object.assign({}, newMod);
+    delete clone.uid;
+    this.modalitiesRef.doc(nUID).set(clone);
   }
 }

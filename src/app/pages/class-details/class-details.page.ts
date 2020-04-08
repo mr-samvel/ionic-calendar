@@ -24,8 +24,7 @@ export class ClassDetailsPage implements AfterViewInit {
   }
 
   async closeModal() {
-    let onClosedData = 'modal fechou';  
-    await this.modalController.dismiss(onClosedData);
+    await this.modalController.dismiss();
   }
 
   private updateTempStudents() {
