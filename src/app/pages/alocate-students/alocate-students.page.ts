@@ -161,16 +161,10 @@ export class AlocateStudentsPage implements AfterViewInit {
           text: 'Sim',
           handler: () => {
             this.events.forEach((value: boolean, key: ClassModel) => {
-              // TODO
-              // let vDate = key.startTime.toLocaleDateString(undefined, { weekday: 'long' }) == ev.startTime.toLocaleDateString(undefined, { weekday: 'long' });
-              // let vStartHour = key.startTime.getHours() == ev.startTime.getHours();
-              // let vStartMinute = key.startTime.getMinutes() == ev.startTime.getMinutes();
-              // let vEndHour = key.endTime.getHours() == ev.endTime.getHours();
-              // let vEndMinute = key.endTime.getMinutes() == ev.endTime.getMinutes();
-              // let vProf = key.professional.uid == ev.professional.uid;
-              // let vMod = key.modality.uid == ev.modality.uid;
-              // if (vDate && vStartHour && vStartMinute && vEndHour && vEndHour && vEndMinute && vProf && vMod)
-                // this.events.set(key, true);
+              let vDate = ev.startTime.getDay() == key.startTime.getDay();
+              let vUID = ev.uid == key.uid;
+              if (vDate && vUID)
+                this.events.set(key, true);
             });
           }
         }
@@ -195,16 +189,10 @@ export class AlocateStudentsPage implements AfterViewInit {
           text: 'Sim',
           handler: () => {
             this.events.forEach((value: boolean, key: ClassModel) => {
-              // TODO
-              // let vDate = key.startTime.toLocaleDateString(undefined, { weekday: 'long' }) == ev.startTime.toLocaleDateString(undefined, { weekday: 'long' });
-              // let vStartHour = key.startTime.getHours() == ev.startTime.getHours();
-              // let vStartMinute = key.startTime.getMinutes() == ev.startTime.getMinutes();
-              // let vEndHour = key.endTime.getHours() == ev.endTime.getHours();
-              // let vEndMinute = key.endTime.getMinutes() == ev.endTime.getMinutes();
-              // let vProf = key.professional.uid == ev.professional.uid;
-              // let vMod = key.modality.uid == ev.modality.uid;
-              // if (vDate && vStartHour && vStartMinute && vEndHour && vEndHour && vEndMinute && vProf && vMod)
-                // this.events.set(key, false);
+              let vDate = ev.startTime.getDay() == key.startTime.getDay();
+              let vUID = ev.uid == key.uid;
+              if (vDate && vUID)
+                this.events.set(key, false);
             });
           }
         }
@@ -233,7 +221,7 @@ export class AlocateStudentsPage implements AfterViewInit {
     // });
     // this.calendarService.addStudentsToClasses(this.selectedStudents, sendEvents);
     // this.resetAll();
-    // this.presentToast('Alunos alocados!', 'success');
+    // this.presentToast('Feito!', 'success');
     // this.closeModal();
   }
 }

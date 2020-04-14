@@ -7,6 +7,8 @@ import { UserModel } from '../models/user.model';
 import { ProfessionalContainerService } from './professional-container.service';
 import { StudentContainerService } from './student-container.service';
 import { ModalityContainerService } from './modality-container.service';
+import { StudentClassModel } from '../models/student-class.model';
+import * as firebase from 'firebase';
 
 
 @Injectable({
@@ -17,6 +19,9 @@ export class CalendarService {
   private dbClasses: Array<DBClassTemplate> = new Array();
   private goneUIDs: Map<string, Date> = new Map();
 
+  private studentClassesRef: AngularFirestoreCollection<StudentClassModel>;
+  private studentClassArray: Array<StudentClassModel> = new Array();
+
   private eventSourceSubject: BehaviorSubject<ClassModel[]>;
   private eventSource: Array<ClassModel> = new Array();
   private calendarOptions: { viewTitle: string, mode: 'month' | 'week' | 'day', currentDate: Date } = {
@@ -26,13 +31,15 @@ export class CalendarService {
   };
 
   constructor(private modalController: ModalController, private afStore: AngularFirestore, private modalityContainer: ModalityContainerService,
-      private professionalContainer: ProfessionalContainerService, private studentContainer: StudentContainerService, ) {
+    private professionalContainer: ProfessionalContainerService, private studentContainer: StudentContainerService, ) {
     this.eventSourceSubject = new BehaviorSubject<ClassModel[]>(this.eventSource);
     this.dbClassesRef = this.afStore.collection<DBClassTemplate>('Events');
+    this.studentClassesRef = this.afStore.collection<StudentClassModel>('StudentClass');
     this.monitorDBEventChanges();
+    this.monitorAlocatedStudents();
   }
 
-  monitorDBEventChanges() {
+  private monitorDBEventChanges() {
     this.dbClassesRef.snapshotChanges().subscribe((retrieved) => {
       let tmpClasses: DBClassTemplate[] = new Array();
       for (let cl of retrieved) {
@@ -57,47 +64,29 @@ export class CalendarService {
     });
   }
 
-  getEventSourceObservable(): BehaviorSubject<ClassModel[]> {
-    return this.eventSourceSubject;
-  }
-  getCalendarMode(): 'month' | 'week' | 'day' {
-    return this.calendarOptions.mode;
-  }
-  getCurrentDate(): Date {
-    return this.calendarOptions.currentDate;
-  }
-  getViewTitle(): string {
-    return this.calendarOptions.viewTitle;
+  private monitorAlocatedStudents() {
+    // TODO
+    // subscribe em studentclassesref
+    // comparar array local com snapshot
+    // atualizar de acordo com o que for novo
   }
 
-  addEvents(events: Array<ClassModel>) {
+  private addEvents(events: Array<ClassModel>) {
     for (let event of events) {
       this.eventSource.push(event);
     }
     this.eventSourceSubject.next(this.eventSource);
   }
-  deleteEvents(events: Array<ClassModel>) {
+  private deleteEvents(events: Array<ClassModel>) {
     for (let event of events) {
       this.eventSource.splice(this.eventSource.indexOf(event));
     }
     this.eventSourceSubject.next(this.eventSource);
   }
 
-  pushClassesToDB(events: Array<DBClassTemplate>) {
-    for (let event of events) {
-      const uid = this.afStore.createId();
-      event.uid = uid;
-
-      const clone: any = Object.assign({}, event);
-
-      delete clone.uid;
-      this.dbClassesRef.doc(uid).set(clone);
-    }
-  }
-
   // TODO
   // tem um bug que faz com que alguns dias sejam pulados
-  checkForNewClasses(selectedDate: Date) {
+  private checkForNewClasses(selectedDate: Date) {
     let now = new Date(selectedDate);
     let finalDate: Date = new Date(selectedDate);
     finalDate.setMonth(finalDate.getMonth() + 1);
@@ -128,7 +117,7 @@ export class CalendarService {
     }
   }
 
-  translateDBClassToEvents(dbClass: DBClassTemplate, startDate: Date, finalDate: Date): ClassModel[] {
+  private translateDBClassToEvents(dbClass: DBClassTemplate, startDate: Date, finalDate: Date): ClassModel[] {
     let newEvents: ClassModel[] = new Array();
     for (let [dayOfWeek, value] of dbClass.weekday.entries()) {
       if (!value)
@@ -149,7 +138,7 @@ export class CalendarService {
           this.professionalContainer.getProfessionalByUID(dbClass.professionalUID),
           cloneStTime, cloneEndTime,
           this.modalityContainer.getModalityByUID(dbClass.modalityUID),
-          this.studentContainer.getStudentsByUID(dbClass.studentsUIDs), dbClass.studentQt
+          [], dbClass.studentQt
         );
         newEvents.push(newClass);
         startTime.setDate(startTime.getDate() + 7);
@@ -159,7 +148,7 @@ export class CalendarService {
     return newEvents;
   }
 
-  deleteObsoleteClasses(newClasses: DBClassTemplate[]) {
+  private deleteObsoleteClasses(newClasses: DBClassTemplate[]) {
     for (let [index, cl] of this.dbClasses.entries()) {
       if (!newClasses.some((tmpCl) => tmpCl.uid == cl.uid)) {
         this.dbClasses.splice(index);
@@ -169,13 +158,61 @@ export class CalendarService {
     }
     this.eventSourceSubject.next(this.eventSource);
   }
+  private deleteClass(uid: string) {
+    return this.dbClassesRef.doc(uid).delete();
+  }
 
-  addStudentsToClasses(studentsArray: Array<UserModel>, events: Array<ClassModel>) {
-    console.log("TODO");
-    // for (let event of events) {
-    //   this.eventSource[this.eventSource.indexOf(event)].students = this.eventSource[this.eventSource.indexOf(event)].students.concat(studentsArray);
-    // }
-    // this.eventSourceSubject.next(this.eventSource);
+  getEventSourceObservable(): BehaviorSubject<ClassModel[]> {
+    return this.eventSourceSubject;
+  }
+  getCalendarMode(): 'month' | 'week' | 'day' {
+    return this.calendarOptions.mode;
+  }
+  getCurrentDate(): Date {
+    return this.calendarOptions.currentDate;
+  }
+  getViewTitle(): string {
+    return this.calendarOptions.viewTitle;
+  }
+
+  pushClassesToDB(events: Array<DBClassTemplate>) {
+    for (let event of events) {
+      const uid = this.afStore.createId();
+      event.uid = uid;
+
+      const clone: any = Object.assign({}, event);
+
+      delete clone.uid;
+      this.dbClassesRef.doc(uid).set(clone);
+    }
+  }
+
+  addStudentsToClasses(studentsArray: Array<UserModel>, eventUID: string, day: Date, weekday: number) {
+    for (let student of studentsArray) {
+      let scArray = this.studentClassArray.filter(e => e.studentUID == student.uid);
+      let scEvent = scArray.find(e => e.classUID == eventUID);
+      if (scEvent) { // update
+        if (day)
+          scEvent.daysRep.push(firebase.firestore.Timestamp.fromDate(day));
+        else if (weekday)
+          scEvent.weekdaysRep[weekday] = true;
+        this.studentClassesRef.doc(scEvent.uid).set(scEvent);
+      } else { // create
+        let uid = this.afStore.createId();
+        if (day)
+          scEvent = new StudentClassModel(uid, eventUID, student.uid, [day], null);
+        else if (weekday) {
+          let weekdayRep = new Array(7).fill(false);
+          weekdayRep[weekday] = true;
+          scEvent = new StudentClassModel(uid, eventUID, student.uid, null, weekdayRep);
+        }
+        this.studentClassesRef.doc(scEvent.uid).set(scEvent);
+      }
+    }
+    // p/ cada estudante
+    // checar todos os studentclassmodel e comparar estudante/studUID e eventUID/classUID
+    // se sim, adicionar day à dayRep ou weekday a weekdayRep
+    // se nao criar novo studentclassmodel e jogar ao servidor
   }
 
   deleteWeekdayRepetition(event: ClassModel) {
@@ -185,14 +222,9 @@ export class CalendarService {
 
     let deletes = new Array();
     for (let ev of this.eventSource) {
-      let vDate = ev.startTime.toLocaleDateString(undefined, { weekday: 'long' }) == event.startTime.toLocaleDateString(undefined, { weekday: 'long' });
-      let vStartHour = ev.startTime.getHours() == event.startTime.getHours();
-      let vStartMinute = ev.startTime.getMinutes() == event.startTime.getMinutes();
-      let vEndHour = ev.endTime.getHours() == event.endTime.getHours();
-      let vEndMinute = ev.endTime.getMinutes() == event.endTime.getMinutes();
-      let vProf = ev.professional.uid == event.professional.uid;
-      let vMod = ev.modality.uid == event.modality.uid;
-      if (vDate && vStartHour && vStartMinute && vEndHour && vEndHour && vEndMinute && vProf && vMod)
+      let vDate = ev.startTime.getDay() == event.startTime.getDay();
+      let vUID = ev.uid == event.uid;
+      if (vDate && vUID)
         deletes.push(ev);
     }
     this.deleteEvents(deletes);
@@ -200,9 +232,7 @@ export class CalendarService {
       return this.dbClassesRef.doc(this.dbClasses[i].uid).update({ "weekday": this.dbClasses[i].weekday });
     return this.deleteClass(this.dbClasses[i].uid);
   }
-  deleteClass(uid: string) {
-    return this.dbClassesRef.doc(uid).delete();
-  }
+
 
   today() {
     this.calendarOptions.currentDate = new Date();

@@ -42,7 +42,6 @@ export class DBClassTemplate {
     uid: string;
     professionalUID: string; // UID
     modalityUID: string; // UID
-    studentsUIDs: Array<string>; // UID
     studentQt: number;
     startDate: firebase.firestore.Timestamp; // o Firebase armazena em Timpestamp
     endDate: firebase.firestore.Timestamp; // sempre vai ser sabado (dia de numero 6)
@@ -50,12 +49,11 @@ export class DBClassTemplate {
     endTime: string;
     weekday: Array<boolean> = new Array(7);
 
-    constructor(pro: UserModel, mod: ModalityModel, studs: Array<UserModel>, studQt: number,
+    constructor(pro: UserModel, mod: ModalityModel, studQt: number,
             stDate: Date, endDate: Date, stTime: string, 
             endTime: string, wkday: Array<boolean>, uid?: string) {
         this.professionalUID = pro.uid;
         this.modalityUID = mod.uid;
-        this.studentsUIDs = studs.map(a => a.uid);
         this.studentQt = studQt;
         this.startDate = firebase.firestore.Timestamp.fromDate(stDate);
         this.endDate = firebase.firestore.Timestamp.fromDate(endDate);

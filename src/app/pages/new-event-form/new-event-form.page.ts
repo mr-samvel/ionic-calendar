@@ -185,7 +185,7 @@ export class NewEventFormPage implements AfterViewInit {
 
       let dbClass = new DBClassTemplate(
         this.inputTemplate.professional, this.inputTemplate.modality,
-        [], this.inputTemplate.studentQt,
+        this.inputTemplate.studentQt,
         startDate, endDate,
         period.startTime.toTimeString(), period.endTime.toTimeString(),
         days
