@@ -13,9 +13,12 @@ export class StudentClassModel {
         this.classUID = classUID;
         this.studentUID = studentUID;
         this.daysRep = new Array();
-        daysRep.forEach(day => {
-            this.daysRep.push(firebase.firestore.Timestamp.fromDate(day));
-        });
+        if (daysRep)
+            daysRep.forEach(day => {
+                this.daysRep.push(firebase.firestore.Timestamp.fromDate(day));
+            });
+        else 
+            this.daysRep = null;
         this.weekdaysRep = weekdaysRep;
     }
 }

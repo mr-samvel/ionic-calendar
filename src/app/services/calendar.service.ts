@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import { tap, first } from 'rxjs/operators';
 import { ClassModel, DBClassTemplate } from '../models/event.model';
 import { ModalController } from '@ionic/angular';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
@@ -35,40 +36,49 @@ export class CalendarService {
     this.eventSourceSubject = new BehaviorSubject<ClassModel[]>(this.eventSource);
     this.dbClassesRef = this.afStore.collection<DBClassTemplate>('Events');
     this.studentClassesRef = this.afStore.collection<StudentClassModel>('StudentClass');
-    this.monitorDBEventChanges();
-    this.monitorAlocatedStudents();
+    this.monitorDBEventChanges().then(() => this.monitorAlocatedStudents());
   }
 
   private monitorDBEventChanges() {
-    this.dbClassesRef.snapshotChanges().subscribe((retrieved) => {
-      let tmpClasses: DBClassTemplate[] = new Array();
-      for (let cl of retrieved) {
-        let dbClass: DBClassTemplate = { uid: cl.payload.doc.id, ...cl.payload.doc.data() } as DBClassTemplate;
-        tmpClasses.push(dbClass);
+    return new Promise(resolve => {
+      this.dbClassesRef.snapshotChanges().subscribe(
+        (retrieved) => {
+          let tmpClasses: DBClassTemplate[] = new Array();
+          for (let cl of retrieved) {
+            let dbClass: DBClassTemplate = { uid: cl.payload.doc.id, ...cl.payload.doc.data() } as DBClassTemplate;
+            tmpClasses.push(dbClass);
 
-        let found = false;
-        for (let uid of this.goneUIDs.keys()) {
-          if (dbClass.uid == uid) {
-            found = true;
-            break;
+            let found = false;
+            for (let uid of this.goneUIDs.keys()) {
+              if (dbClass.uid == uid) {
+                found = true;
+                break;
+              }
+            }
+            if (found)
+              continue;
+            this.goneUIDs.set(dbClass.uid, new Date());
           }
-        }
-        if (found)
-          continue;
-        this.goneUIDs.set(dbClass.uid, new Date());
-      }
 
-      this.deleteObsoleteClasses(tmpClasses);
-      this.dbClasses = tmpClasses;
-      this.checkForNewClasses(new Date());
+          this.deleteObsoleteClasses(tmpClasses);
+          this.dbClasses = tmpClasses;
+          this.checkForNewClasses(new Date());
+          resolve(); // haha crimes contra a humanidade haha
+        }
+      );
     });
   }
 
   private monitorAlocatedStudents() {
     // TODO
-    // subscribe em studentclassesref
-    // comparar array local com snapshot
-    // atualizar de acordo com o que for novo
+    this.studentClassesRef.snapshotChanges().subscribe((retrieved) => {
+      for (let sc of retrieved) {
+        let scObject: StudentClassModel = { uid: sc.payload.doc.id, ...sc.payload.doc.data() } as StudentClassModel;
+        if (!this.studentClassArray.some(e => JSON.stringify(e) === JSON.stringify(scObject))) {
+          // atualizar de acordo com o que for novo
+        }
+      }
+    });
   }
 
   private addEvents(events: Array<ClassModel>) {
@@ -196,7 +206,6 @@ export class CalendarService {
           scEvent.daysRep.push(firebase.firestore.Timestamp.fromDate(day));
         else if (weekday)
           scEvent.weekdaysRep[weekday] = true;
-        this.studentClassesRef.doc(scEvent.uid).set(scEvent);
       } else { // create
         let uid = this.afStore.createId();
         if (day)
@@ -206,8 +215,10 @@ export class CalendarService {
           weekdayRep[weekday] = true;
           scEvent = new StudentClassModel(uid, eventUID, student.uid, null, weekdayRep);
         }
-        this.studentClassesRef.doc(scEvent.uid).set(scEvent);
       }
+      let clone = Object.assign({}, scEvent);
+      delete clone.uid; 
+      this.studentClassesRef.doc(scEvent.uid).set(clone);
     }
     // p/ cada estudante
     // checar todos os studentclassmodel e comparar estudante/studUID e eventUID/classUID
