@@ -6,9 +6,9 @@ export class StudentClassModel {
     studentUID: string;
     // professionalUID: string; // exceção?
     daysRep: firebase.firestore.Timestamp[]; // se null então deve repetir indefinidamente de acordo com weekdaysRep
-    weekdaysRep: boolean[] = new Array(7); // se null então só se aplica aos dias em daysRep
+    weekdaysRep: number[]; // repete nos dias de numero 0 a 6, se null então só se aplica aos dias em daysRep
 
-    constructor(uid: string, classUID: string, studentUID: string, daysRep: Date[], weekdaysRep: boolean[]) {
+    constructor(uid: string, classUID: string, studentUID: string, daysRep: Date[], weekdaysRep: number[]) {
         this.uid = uid;
         this.classUID = classUID;
         this.studentUID = studentUID;

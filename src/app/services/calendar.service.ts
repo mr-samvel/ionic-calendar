@@ -47,15 +47,7 @@ export class CalendarService {
           for (let cl of retrieved) {
             let dbClass: DBClassTemplate = { uid: cl.payload.doc.id, ...cl.payload.doc.data() } as DBClassTemplate;
             tmpClasses.push(dbClass);
-
-            let found = false;
-            for (let uid of this.goneUIDs.keys()) {
-              if (dbClass.uid == uid) {
-                found = true;
-                break;
-              }
-            }
-            if (found)
+            if (Array.from(this.goneUIDs.keys()).includes(dbClass.uid))
               continue;
             this.goneUIDs.set(dbClass.uid, new Date());
           }
@@ -63,22 +55,68 @@ export class CalendarService {
           this.deleteObsoleteClasses(tmpClasses);
           this.dbClasses = tmpClasses;
           this.checkForNewClasses(new Date());
-          resolve(); // haha crimes contra a humanidade haha
+          resolve();
         }
       );
     });
   }
 
   private monitorAlocatedStudents() {
-    // TODO
     this.studentClassesRef.snapshotChanges().subscribe((retrieved) => {
       for (let sc of retrieved) {
         let scObject: StudentClassModel = { uid: sc.payload.doc.id, ...sc.payload.doc.data() } as StudentClassModel;
         if (!this.studentClassArray.some(e => JSON.stringify(e) === JSON.stringify(scObject))) {
-          // atualizar de acordo com o que for novo
+          this.alocateNewStudents(scObject);
+          this.unallocateObsoleteStudents(scObject);
+          this.updateStudentClassArray(scObject);
         }
       }
     });
+  }
+
+  private alocateNewStudents(scObject: StudentClassModel) {
+    let evs = this.eventSource.filter(ev => ev.uid == scObject.classUID);
+    for (let ev of evs) {
+      ev.students = ev.students.concat(this.checkStudentsOfClass(ev, [scObject]));
+    }
+  }
+
+  private unallocateObsoleteStudents(scObject: StudentClassModel) {
+    // TODO
+    console.log('TODO');
+  }
+
+  private updateStudentClassArray(scObject: StudentClassModel) {
+    let oldSCIndex = this.studentClassArray.findIndex(e => e.uid == scObject.uid);
+    if (oldSCIndex !== -1)
+      this.studentClassArray.splice(oldSCIndex);
+    this.studentClassArray.push(scObject);
+  }
+
+  private checkStudentsOfClass(event: ClassModel, studentClasses: StudentClassModel[]): UserModel[] {
+    let students: UserModel[] = new Array();
+    for (let sc of studentClasses) {
+      if (sc.daysRep) {
+        for (let d of sc.daysRep) {
+          let date = d.toDate();
+          if (event.startTime.getTime() == date.getTime() &&
+            !event.students.some(s => s.uid == sc.studentUID) &&
+            !students.some(s => s.uid == sc.studentUID)
+          )
+            students.push(this.studentContainer.getStudentByUID(sc.studentUID));
+        }
+      }
+      if (sc.weekdaysRep) {
+        for (let trueDay of sc.weekdaysRep) {
+          if (event.startTime.getDay() == trueDay &&
+            !event.students.some(s => s.uid == sc.studentUID) &&
+            !students.some(s => s.uid == sc.studentUID)
+          )
+            students.push(this.studentContainer.getStudentByUID(sc.studentUID));
+        }
+      }
+    }
+    return students;
   }
 
   private addEvents(events: Array<ClassModel>) {
@@ -150,6 +188,8 @@ export class CalendarService {
           this.modalityContainer.getModalityByUID(dbClass.modalityUID),
           [], dbClass.studentQt
         );
+        let scs = this.studentClassArray.filter(e => e.classUID == newClass.uid);
+        newClass.students = newClass.students.concat(this.checkStudentsOfClass(newClass, scs));
         newEvents.push(newClass);
         startTime.setDate(startTime.getDate() + 7);
         endTime.setDate(startTime.getDate());
@@ -205,25 +245,23 @@ export class CalendarService {
         if (day)
           scEvent.daysRep.push(firebase.firestore.Timestamp.fromDate(day));
         else if (weekday)
-          scEvent.weekdaysRep[weekday] = true;
+          if (!scEvent.weekdaysRep)
+            scEvent.weekdaysRep = [weekday];
+          else if (!scEvent.weekdaysRep.includes(weekday))
+            scEvent.weekdaysRep.push(weekday);
       } else { // create
         let uid = this.afStore.createId();
         if (day)
           scEvent = new StudentClassModel(uid, eventUID, student.uid, [day], null);
         else if (weekday) {
-          let weekdayRep = new Array(7).fill(false);
-          weekdayRep[weekday] = true;
+          let weekdayRep = [weekday];
           scEvent = new StudentClassModel(uid, eventUID, student.uid, null, weekdayRep);
         }
       }
       let clone = Object.assign({}, scEvent);
-      delete clone.uid; 
+      delete clone.uid;
       this.studentClassesRef.doc(scEvent.uid).set(clone);
     }
-    // p/ cada estudante
-    // checar todos os studentclassmodel e comparar estudante/studUID e eventUID/classUID
-    // se sim, adicionar day à dayRep ou weekday a weekdayRep
-    // se nao criar novo studentclassmodel e jogar ao servidor
   }
 
   deleteWeekdayRepetition(event: ClassModel) {
