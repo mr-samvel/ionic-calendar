@@ -65,7 +65,7 @@ export class CalendarService {
     this.studentClassesRef.snapshotChanges().subscribe((retrieved) => {
       for (let sc of retrieved) {
         let scObject: StudentClassModel = { uid: sc.payload.doc.id, ...sc.payload.doc.data() } as StudentClassModel;
-        if (!this.studentClassArray.some(e => JSON.stringify(e) === JSON.stringify(scObject))) {
+        if (!this.studentClassArray.some(e => e == scObject)) {
           this.alocateNewStudents(scObject);
           this.unallocateObsoleteStudents(scObject);
           this.updateStudentClassArray(scObject);
@@ -90,7 +90,8 @@ export class CalendarService {
     let oldSCIndex = this.studentClassArray.findIndex(e => e.uid == scObject.uid);
     if (oldSCIndex !== -1)
       this.studentClassArray.splice(oldSCIndex);
-    this.studentClassArray.push(scObject);
+    let clone = Object.assign({}, scObject);
+    this.studentClassArray.push(clone);
   }
 
   private checkStudentsOfClass(event: ClassModel, studentClasses: StudentClassModel[]): UserModel[] {

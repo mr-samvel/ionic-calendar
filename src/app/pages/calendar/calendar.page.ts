@@ -46,9 +46,6 @@ export class CalendarPage implements AfterViewInit {
         'event': event
       }
     });
-    modal.onDidDismiss().then((returnedData) => {
-      console.log(returnedData);
-    });
     return await modal.present();
   }
 
