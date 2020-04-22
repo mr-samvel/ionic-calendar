@@ -120,7 +120,7 @@ export class CalendarService {
     return students;
   }
 
-  private addEvents(events: Array<ClassModel>) {
+  private addEvents(events: Array<ClassModel>) {    
     for (let event of events) {
       this.eventSource.push(event);
     }
@@ -193,7 +193,7 @@ export class CalendarService {
         newClass.students = newClass.students.concat(this.checkStudentsOfClass(newClass, scs));
         newEvents.push(newClass);
         startTime.setDate(startTime.getDate() + 7);
-        endTime.setDate(startTime.getDate());
+        endTime.setDate(endTime.getDate() + 7);
       }
     }
     return newEvents;
