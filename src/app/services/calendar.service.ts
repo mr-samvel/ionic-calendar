@@ -133,8 +133,6 @@ export class CalendarService {
     this.eventSourceSubject.next(this.eventSource);
   }
 
-  // TODO
-  // tem um bug que faz com que alguns dias sejam pulados
   private checkForNewClasses(selectedDate: Date) {
     let now = new Date(selectedDate);
     let finalDate: Date = new Date(selectedDate);
