@@ -21,7 +21,7 @@
       <ion-item>
         <ion-label>Alunos:</ion-label>
         <ionic-selectable #studSelectable [(ngModel)]="this.selectedStudents" (onChange)="validateStudentSelectable()"
-          [canAddItem]="true" [items]="this.studentsContainer.getStudents()" [canSearch]="true" itemTextField="name"
+          [canAddItem]="true" [items]="this.studentsContainer.getStudents()" [canSearch]="true" itemTextField="username"
           [isMultiple]="true" [canClear]="true">
           <ng-template ionicSelectableSearchFailTemplate>
             <ion-card (click)="studSelectable.showAddItemTemplate()">
@@ -35,7 +35,7 @@
             <ion-card>
               <ion-card-content style="padding: 0;">
                 <ion-toolbar>
-                  <ion-title>Nome:</ion-title>
+                  <ion-title>Convidar novo aluno</ion-title>
                   <ion-buttons slot="start">
                     <ion-button (click)="studSelectable.hideAddItemTemplate()">
                       <ion-icon name="arrow-back"></ion-icon>
@@ -43,12 +43,13 @@
                   </ion-buttons>
                 </ion-toolbar>
                 <ion-item>
+                  <ion-label position="floating">Insira o email do aluno:</ion-label>
                   <ion-input #input></ion-input>
                 </ion-item>
                 <ion-toolbar>
                   <ion-buttons slot="end">
                     <ion-button (click)="this.addStudent(input.value); studSelectable.hideAddItemTemplate()">
-                      Adicionar
+                      Mandar convite
                     </ion-button>
                   </ion-buttons>
                 </ion-toolbar>
@@ -66,19 +67,20 @@
     <ion-icon *ngIf="!this.collapseFilters" name="arrow-dropup"></ion-icon>
     Filtros
   </ion-button>
-  <div [hidden]="this.collapseFilters">
+  <ion-label [hidden]="this.collapseFilters">TODO</ion-label>
+  <!-- <div [hidden]="this.collapseFilters">
     <ion-list>
       <ion-item>
         <ion-label>Por profissional:</ion-label>
         <ion-select #filterPro cancelText="Cancelar">
-          <ion-select-option *ngFor="let pro of this.professionalsContainer.getProfessionals()">{{ pro.name }}
+          <ion-select-option *ngFor="let pro of this.professionalsContainer.getProfessionals()">{{ pro.username }}
           </ion-select-option>
         </ion-select>
       </ion-item>
       <ion-item>
         <ion-label>Por modalidade:</ion-label>
         <ion-select #filterMod cancelText="Cancelar">
-          <ion-select-option *ngFor="let mod of this.modalitiesContainer.getModalities()">{{ mod.name }}
+          <ion-select-option *ngFor="let mod of this.modalitiesContainer.getModalities()">{{ mod.username }}
           </ion-select-option>
         </ion-select>
       </ion-item>
@@ -93,7 +95,7 @@
         </ion-buttons>
       </ion-toolbar>
     </ion-list>
-  </div>
+  </div> -->
 
   <!----- CALENDARIO ----->
   <ion-item color="light" lines="none" style="--min-height: 20px">
@@ -115,7 +117,7 @@
       [ngStyle]="{'background-color': displayEvent.event.students.length == displayEvent.event.studentQt ? 'red' : 'lightgray'}">
       <ion-icon [hidden]="!isSelected(displayEvent.event)" name="checkmark" class="checkmark"></ion-icon>
       {{displayEvent.event.modality.name}}
-      {{displayEvent.event.professional.name}}
+      {{displayEvent.event.professional.username}}
     </div>
   </ng-template>
 

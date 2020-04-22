@@ -2,12 +2,12 @@ import { Component, ViewChildren, AfterViewInit, ViewChild } from '@angular/core
 import { ModalController, ToastController, AlertController } from '@ionic/angular';
 import { CalendarService } from 'src/app/services/calendar.service';
 import { StudentContainerService } from 'src/app/services/student-container.service';
-import { StudentModel } from 'src/app/models/student.model';
 import { IonicSelectableComponent } from 'ionic-selectable';
 import { CalendarComponent } from 'ionic2-calendar/calendar';
 import { ClassModel } from 'src/app/models/event.model';
 import { ProfessionalContainerService } from 'src/app/services/professional-container.service';
 import { ModalityContainerService } from 'src/app/services/modality-container.service';
+import { UserModel } from 'src/app/models/user.model';
 
 @Component({
   selector: 'app-alocate-students',
@@ -24,7 +24,7 @@ export class AlocateStudentsPage implements AfterViewInit {
   public collapseStudents: boolean;
   public collapseFilters: boolean;
 
-  public selectedStudents: Array<StudentModel>;
+  public selectedStudents: Array<UserModel>;
 
   public currentDate: Date = new Date();
   public viewTitle: string = '';
@@ -90,8 +90,8 @@ export class AlocateStudentsPage implements AfterViewInit {
     this.viewTitle = title;
   }
 
-  addStudent(stud: string) {
-    this.studentsContainer.addStudent(new StudentModel(stud));
+  addStudent(email: string) {
+    this.studentsContainer.addStudent(email);
   }
 
   validateStudentSelectable() {
@@ -116,8 +116,8 @@ export class AlocateStudentsPage implements AfterViewInit {
     if (pro) {
       pro = pro.trim();
       this.events.forEach((value: boolean, key: ClassModel) => {
-        if (pro != key.professional.name) {
-          console.log(pro, '!=', key.professional.name);
+        if (pro != key.professional.username) {
+          console.log(pro, '!=', key.professional.username);
           this.filteredEvents.splice(this.filteredEvents.indexOf(key), 1);
         }
       });
@@ -149,7 +149,7 @@ export class AlocateStudentsPage implements AfterViewInit {
     const alert = await this.alertController.create({
       header: 'Adicionar às aulas?',
       message: `Selecionar todas as aulas de ${ev.modality.name}, 
-        do(a) profissional ${ev.professional.name}, às ${ev.startTime.toLocaleTimeString().slice(0, 5)} - 
+        do(a) profissional ${ev.professional.username}, às ${ev.startTime.toLocaleTimeString().slice(0, 5)} - 
         ${ev.startTime.toLocaleDateString(undefined, { weekday: 'long' })}?`,
       buttons: [
         {
@@ -161,14 +161,9 @@ export class AlocateStudentsPage implements AfterViewInit {
           text: 'Sim',
           handler: () => {
             this.events.forEach((value: boolean, key: ClassModel) => {
-              let vDate = key.startTime.toLocaleDateString(undefined, { weekday: 'long' }) == ev.startTime.toLocaleDateString(undefined, { weekday: 'long' });
-              let vStartHour = key.startTime.getHours() == ev.startTime.getHours();
-              let vStartMinute = key.startTime.getMinutes() == ev.startTime.getMinutes();
-              let vEndHour = key.endTime.getHours() == ev.endTime.getHours();
-              let vEndMinute = key.endTime.getMinutes() == ev.endTime.getMinutes();
-              let vProf = key.professional.name == ev.professional.name;
-              let vMod = key.modality.name == ev.modality.name;
-              if (vDate && vStartHour && vStartMinute && vEndHour && vEndHour && vEndMinute && vProf && vMod)
+              let vDate = ev.startTime.getDay() == key.startTime.getDay();
+              let vUID = ev.uid == key.uid;
+              if (vDate && vUID)
                 this.events.set(key, true);
             });
           }
@@ -182,7 +177,7 @@ export class AlocateStudentsPage implements AfterViewInit {
     const alert = await this.alertController.create({
       header: 'Desselecionar as aulas?',
       message: `Desselecionar todas as aulas de ${ev.modality.name}, 
-        do(a) profissional ${ev.professional.name}, às ${ev.startTime.toLocaleTimeString().slice(0, 5)} - 
+        do(a) profissional ${ev.professional.username}, às ${ev.startTime.toLocaleTimeString().slice(0, 5)} - 
         ${ev.startTime.toLocaleDateString(undefined, { weekday: 'long' })}?`,
       buttons: [
         {
@@ -194,14 +189,9 @@ export class AlocateStudentsPage implements AfterViewInit {
           text: 'Sim',
           handler: () => {
             this.events.forEach((value: boolean, key: ClassModel) => {
-              let vDate = key.startTime.toLocaleDateString(undefined, { weekday: 'long' }) == ev.startTime.toLocaleDateString(undefined, { weekday: 'long' });
-              let vStartHour = key.startTime.getHours() == ev.startTime.getHours();
-              let vStartMinute = key.startTime.getMinutes() == ev.startTime.getMinutes();
-              let vEndHour = key.endTime.getHours() == ev.endTime.getHours();
-              let vEndMinute = key.endTime.getMinutes() == ev.endTime.getMinutes();
-              let vProf = key.professional.name == ev.professional.name;
-              let vMod = key.modality.name == ev.modality.name;
-              if (vDate && vStartHour && vStartMinute && vEndHour && vEndHour && vEndMinute && vProf && vMod)
+              let vDate = ev.startTime.getDay() == key.startTime.getDay();
+              let vUID = ev.uid == key.uid;
+              if (vDate && vUID)
                 this.events.set(key, false);
             });
           }
@@ -223,14 +213,15 @@ export class AlocateStudentsPage implements AfterViewInit {
   }
 
   submit() {
-    let sendEvents: ClassModel[] = new Array();
-    this.events.forEach((value: boolean, key: ClassModel) => {
-      if (value)
-        sendEvents.push(key);
-    });
-    this.calendarService.addStudentsToClasses(this.selectedStudents, sendEvents);
-    this.resetAll();
-    this.presentToast('Alunos alocados!', 'success');
-    this.closeModal();
+    console.log("TODO");
+    // let sendEvents: ClassModel[] = new Array();
+    // this.events.forEach((value: boolean, key: ClassModel) => {
+    //   if (value)
+    //     sendEvents.push(key);
+    // });
+    // this.calendarService.addStudentsToClasses(this.selectedStudents, sendEvents);
+    // this.resetAll();
+    // this.presentToast('Feito!', 'success');
+    // this.closeModal();
   }
 }

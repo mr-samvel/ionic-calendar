@@ -1,14 +1,14 @@
 import { Component, OnInit, ViewChildren, AfterViewInit, ViewChild } from '@angular/core';
-import { ClassModel, DBClassTemplate } from 'src/app/models/event.model';
+import { DBClassTemplate } from 'src/app/models/event.model';
 import { CalendarService } from 'src/app/services/calendar.service';
 import { ModalController, Events, ToastController } from '@ionic/angular';
-import { ProfessionalModel } from 'src/app/models/professional.model';
 import { ModalityModel } from 'src/app/models/modality.model';
 import { ModalityContainerService } from 'src/app/services/modality-container.service';
 import { ProfessionalContainerService } from 'src/app/services/professional-container.service';
 import { IonicSelectableComponent } from 'ionic-selectable';
 import { CalendarComponent } from 'ionic2-calendar/calendar';
 import { ChangePeriodPage } from '../change-period/change-period.page';
+import { UserModel } from 'src/app/models/user.model';
 
 @Component({
   selector: 'app-new-event-form',
@@ -25,7 +25,7 @@ export class NewEventFormPage implements AfterViewInit {
   public time = { currentDate: new Date() };
 
   public inputTemplate: {
-    professional: ProfessionalModel,
+    professional: UserModel,
     days: Array<boolean>,
     monthRepeat: number,
     duration: number,
@@ -134,11 +134,12 @@ export class NewEventFormPage implements AfterViewInit {
   }
 
   addModality(mod: string) {
-    this.modalityContainer.addModality(new ModalityModel(mod));
+    this.modalityContainer.addModality(mod);
   }
 
   addProfessional(pro: string) {
-    this.professionalContainer.addProfessional(new ProfessionalModel(pro));
+    console.log("TODO");
+    // this.professionalContainer.addProfessional(new ProfessionalModel(pro));
   }
 
   addEvent() {
@@ -184,7 +185,7 @@ export class NewEventFormPage implements AfterViewInit {
 
       let dbClass = new DBClassTemplate(
         this.inputTemplate.professional, this.inputTemplate.modality,
-        [], this.inputTemplate.studentQt,
+        this.inputTemplate.studentQt,
         startDate, endDate,
         period.startTime.toTimeString(), period.endTime.toTimeString(),
         days
