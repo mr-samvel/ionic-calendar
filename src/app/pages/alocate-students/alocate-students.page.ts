@@ -19,6 +19,7 @@ export class AlocateStudentsPage implements AfterViewInit {
   @ViewChild(CalendarComponent, { static: false }) calendarComponent: CalendarComponent;
 
   private events: Map<ClassModel, boolean> = new Map();
+  private eventsRep: Array<{uid: string, dayRep: Date, weekdayRep: number, exceptions: Date[]}> = new Array();
   public filteredEvents: Array<ClassModel>;
 
   public collapseStudents: boolean;
@@ -153,9 +154,13 @@ export class AlocateStudentsPage implements AfterViewInit {
         ${ev.startTime.toLocaleDateString(undefined, { weekday: 'long' })}?`,
       buttons: [
         {
+          text: 'Cancelar'
+        },
+        {
           text: 'Não, apenas essa',
           handler: () => {
             this.events.set(ev, true);
+            this.eventsRep.push({uid: ev.uid, dayRep: ev.startTime, weekdayRep: null, exceptions: []});
           }
         }, {
           text: 'Sim',
@@ -166,6 +171,7 @@ export class AlocateStudentsPage implements AfterViewInit {
               if (vDate && vUID)
                 this.events.set(key, true);
             });
+            this.eventsRep.push({uid: ev.uid, dayRep: null, weekdayRep: ev.startTime.getDay(), exceptions: []});
           }
         }
       ]
@@ -181,9 +187,17 @@ export class AlocateStudentsPage implements AfterViewInit {
         ${ev.startTime.toLocaleDateString(undefined, { weekday: 'long' })}?`,
       buttons: [
         {
+          text: 'Cancelar'
+        },
+        {
           text: 'Não, apenas essa',
           handler: () => {
             this.events.set(ev, false);
+            let i = this.eventsRep.findIndex(e => e.uid == ev.uid && (e.dayRep == ev.startTime || e.weekdayRep == ev.startTime.getDay()));
+            if (this.eventsRep[i].weekdayRep)
+              this.eventsRep[i].exceptions.push(ev.startTime);
+            else if (this.eventsRep[i].dayRep)
+              this.eventsRep.splice(i);
           }
         }, {
           text: 'Sim',
@@ -194,6 +208,8 @@ export class AlocateStudentsPage implements AfterViewInit {
               if (vDate && vUID)
                 this.events.set(key, false);
             });
+            let i = this.eventsRep.findIndex(e => e.uid == ev.uid && (e.dayRep == ev.startTime || e.weekdayRep == ev.startTime.getDay()));
+            this.eventsRep.splice(i);
           }
         }
       ]
@@ -213,15 +229,14 @@ export class AlocateStudentsPage implements AfterViewInit {
   }
 
   submit() {
-    console.log("TODO");
-    // let sendEvents: ClassModel[] = new Array();
-    // this.events.forEach((value: boolean, key: ClassModel) => {
-    //   if (value)
-    //     sendEvents.push(key);
-    // });
-    // this.calendarService.addStudentsToClasses(this.selectedStudents, sendEvents);
-    // this.resetAll();
-    // this.presentToast('Feito!', 'success');
-    // this.closeModal();
+    for (let sendEvent of this.eventsRep) {
+      let exc = null;
+      if (sendEvent.exceptions.length > 0)
+        exc = sendEvent.exceptions;
+      this.calendarService.addStudentsToClasses(this.selectedStudents, sendEvent.uid, sendEvent.dayRep, sendEvent.weekdayRep, exc);
+    }
+    this.resetAll();
+    this.presentToast('Feito!', 'success');
+    this.closeModal();
   }
 }

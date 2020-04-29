@@ -97,6 +97,13 @@ export class CalendarService {
   private checkStudentsOfClass(event: ClassModel, studentClasses: StudentClassModel[]): UserModel[] {
     let students: UserModel[] = new Array();
     for (let sc of studentClasses) {
+      let exceptions: Date[] = new Array();
+      if (sc.daysException)
+        sc.daysException.forEach(e => {
+          exceptions.push(e.toDate());
+        });
+      if (exceptions.some(e => e.getTime() == event.startTime.getTime()))
+        continue;
       if (sc.daysRep) {
         for (let d of sc.daysRep) {
           let date = d.toDate();
@@ -120,7 +127,7 @@ export class CalendarService {
     return students;
   }
 
-  private addEvents(events: Array<ClassModel>) {    
+  private addEvents(events: Array<ClassModel>) {
     for (let event of events) {
       this.eventSource.push(event);
     }
@@ -236,26 +243,33 @@ export class CalendarService {
     }
   }
 
-  addStudentsToClasses(studentsArray: Array<UserModel>, eventUID: string, day: Date, weekday: number) {
+  addStudentsToClasses(studentsArray: Array<UserModel>, eventUID: string, day: Date, weekday: number, exceptions: Date[]) {
     for (let student of studentsArray) {
       let scArray = this.studentClassArray.filter(e => e.studentUID == student.uid);
       let scEvent = scArray.find(e => e.classUID == eventUID);
       if (scEvent) { // update
-        if (day)
-          scEvent.daysRep.push(firebase.firestore.Timestamp.fromDate(day));
+        if (day) {
+          if (!scEvent.daysRep)
+            scEvent.daysRep = [firebase.firestore.Timestamp.fromDate(day)];
+          else 
+            scEvent.daysRep.push(firebase.firestore.Timestamp.fromDate(day));
+          let iE = scEvent.daysException.findIndex(e => e.toDate().getTime() == day.getTime());
+          if (iE != -1)
+            scEvent.daysException.splice(iE);
+        }
         else if (weekday)
           if (!scEvent.weekdaysRep)
             scEvent.weekdaysRep = [weekday];
           else if (!scEvent.weekdaysRep.includes(weekday))
             scEvent.weekdaysRep.push(weekday);
+        if (exceptions)
+          exceptions.forEach(exc => scEvent.daysException.push(firebase.firestore.Timestamp.fromDate(exc)));
       } else { // create
         let uid = this.afStore.createId();
         if (day)
-          scEvent = new StudentClassModel(uid, eventUID, student.uid, [day], null);
-        else if (weekday) {
-          let weekdayRep = [weekday];
-          scEvent = new StudentClassModel(uid, eventUID, student.uid, null, weekdayRep);
-        }
+          scEvent = new StudentClassModel(uid, eventUID, student.uid, [day], null, exceptions);
+        else if (weekday)
+          scEvent = new StudentClassModel(uid, eventUID, student.uid, null, [weekday], exceptions);
       }
       let clone = Object.assign({}, scEvent);
       delete clone.uid;

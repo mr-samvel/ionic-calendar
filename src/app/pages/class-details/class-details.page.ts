@@ -87,13 +87,13 @@ export class ClassDetailsPage implements AfterViewInit {
         {
           text: 'Não, apenas essa',
           handler: () => {
-            this.calendarService.addStudentsToClasses(studs, this.event.uid, this.event.startTime, null);
+            this.calendarService.addStudentsToClasses(studs, this.event.uid, this.event.startTime, null, null);
             this.closeModal();
           }
         }, {
           text: 'Sim',
           handler: () => {
-            this.calendarService.addStudentsToClasses(studs, this.event.uid, null, this.event.startTime.getDay());
+            this.calendarService.addStudentsToClasses(studs, this.event.uid, null, this.event.startTime.getDay(), null);
             this.closeModal();
           }
         }
