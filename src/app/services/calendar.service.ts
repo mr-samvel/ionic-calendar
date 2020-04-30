@@ -283,16 +283,25 @@ export class CalendarService {
       let scEvent = scArray.find(e => e.classUID == eventUID);
       if (scEvent) {
         if (exceptionDay) {
-          let iDayRep = scEvent.daysRep.findIndex(e => e.toDate() == exceptionDay);
-          if (iDayRep > -1)
-            scEvent.daysRep.splice(iDayRep);
-          else
-            scEvent.daysException.push(firebase.firestore.Timestamp.fromDate(exceptionDay));
+          if (scEvent.daysRep) {
+            let iDayRep = scEvent.daysRep.findIndex(e => e.toDate() == exceptionDay);
+            if (iDayRep > -1)
+              scEvent.daysRep.splice(iDayRep);
+          }
+          else {
+            let exc = firebase.firestore.Timestamp.fromDate(exceptionDay);
+            if (scEvent.daysException)
+              scEvent.daysException.push(exc);
+            else
+              scEvent.daysException = [exc];
+          }
         }
         if (exceptionWeekday) {
-          let iWeekdayRep = scEvent.weekdaysRep.findIndex(e => e == exceptionWeekday);
-          if (iWeekdayRep > -1)
-            scEvent.weekdaysRep.splice(iWeekdayRep);
+          if (scEvent.weekdaysRep) {
+            let iWeekdayRep = scEvent.weekdaysRep.findIndex(e => e == exceptionWeekday);
+            if (iWeekdayRep > -1)
+              scEvent.weekdaysRep.splice(iWeekdayRep);
+          }
           else if (scEvent.daysRep) {
             let removes = new Array();
             for (let [index, d] of scEvent.daysRep.entries()) {
@@ -304,6 +313,8 @@ export class CalendarService {
               scEvent.daysRep.splice(r);
           }
         }
+        if (!scEvent.daysRep && !scEvent.weekdaysRep && scEvent.daysException) // limpar
+          scEvent.daysException = null;
       }
       let clone = Object.assign({}, scEvent);
       delete clone.uid;
