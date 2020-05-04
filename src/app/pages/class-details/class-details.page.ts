@@ -12,25 +12,23 @@ import { UserModel } from 'src/app/models/user.model';
 })
 export class ClassDetailsPage implements AfterViewInit {
   public event: ClassModel;
-  public selectedStudents: UserModel[] = new Array();
-  private tempStudents: UserModel[] = new Array();
+  private availableStudents: UserModel[] = new Array();
 
   constructor(private modalController: ModalController, private alertController: AlertController,
     private studentsContainer: StudentContainerService, private calendarService: CalendarService) { }
 
   ngAfterViewInit() {
-    this.selectedStudents = new Array();
-    this.updateTempStudents();
+    this.updateAvailableStudents();
   }
 
   async closeModal() {
     await this.modalController.dismiss();
   }
 
-  private updateTempStudents() {
+  private updateAvailableStudents() {
     for (let student of this.studentsContainer.getStudents()) {
-      if (!this.tempStudents.find(element => element == student) && !this.event.students.find(element => element == student)) {
-        this.tempStudents.push(student);
+      if (!this.availableStudents.find(element => element == student) && !this.event.students.find(element => element == student)) {
+        this.availableStudents.push(student);
       }
     }
   }
@@ -41,7 +39,7 @@ export class ClassDetailsPage implements AfterViewInit {
 
   async addStudent() {
     let inputsArray = new Array();
-    for (let student of this.tempStudents) {
+    for (let student of this.availableStudents) {
       inputsArray.push({
         name: student.username,
         type: 'radio',
@@ -62,22 +60,15 @@ export class ClassDetailsPage implements AfterViewInit {
         {
           text: 'Adicionar',
           handler: (data) => {
-            this.selectedStudents.push(data);
-            this.tempStudents.splice(this.tempStudents.indexOf(data), 1);
+            this.addToClasses(data);
+            this.availableStudents.splice(this.availableStudents.indexOf(data), 1);
           }
         }
       ]
     });
     await alert.present();
   }
-
-  submit() {
-    let temp = this.selectedStudents;
-    this.selectedStudents = new Array();
-    this.addToClasses(temp);
-  }
-
-  private async addToClasses(studs: UserModel[]) {
+  async addToClasses(stud: UserModel) {
     const alert = await this.alertController.create({
       header: 'Adicionar às aulas?',
       message: `Adicionar a todas as aulas de ${this.event.modality.name}, 
@@ -87,14 +78,12 @@ export class ClassDetailsPage implements AfterViewInit {
         {
           text: 'Não, apenas essa',
           handler: () => {
-            this.calendarService.addStudentsToClasses(studs, this.event.uid, this.event.startTime, null);
-            this.closeModal();
+            this.calendarService.addStudentsToClasses([stud], this.event.uid, this.event.startTime, null, null);
           }
         }, {
           text: 'Sim',
           handler: () => {
-            this.calendarService.addStudentsToClasses(studs, this.event.uid, null, this.event.startTime.getDay());
-            this.closeModal();
+            this.calendarService.addStudentsToClasses([stud], this.event.uid, null, this.event.startTime.getDay(), null);
           }
         }
       ]
@@ -102,6 +91,30 @@ export class ClassDetailsPage implements AfterViewInit {
     await alert.present();
   }
 
+  async removeStudent(stud: UserModel) {
+    const alert = await this.alertController.create({
+      header: 'Remover estudante das aulas?',
+      message: `Deseja remover ${stud.username} de todas as aulas de ${this.event.modality.name}, 
+        do(a) profissional ${this.event.professional.username}, às ${this.event.startTime.toLocaleTimeString().slice(0, 5)} - 
+        ${this.event.startTime.toLocaleDateString(undefined, { weekday: 'long' })}?`,
+      buttons: [
+        {
+          text: 'Não, apenas dessa',
+          handler: () => {
+            this.calendarService.removeStudentsFromClasses([stud], this.event.uid, this.event.startTime, null);
+            this.availableStudents.push(stud);
+          }
+        }, {
+          text: 'Sim',
+          handler: () => {
+            this.calendarService.removeStudentsFromClasses([stud], this.event.uid, null, this.event.startTime.getDay());
+            this.availableStudents.push(stud);
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
 
   async deleteClass() {
     let tomorrow = new Date();
@@ -129,12 +142,12 @@ export class ClassDetailsPage implements AfterViewInit {
       await warning.present();
       warning.onDidDismiss().then(() => {
         if(confirmWarning)
-          this.confirmAlert();
+          this.confirmDeleteClassAlert();
       });
     } else
-      return this.confirmAlert();
+      return this.confirmDeleteClassAlert();
   }
-  private async confirmAlert() {
+  private async confirmDeleteClassAlert() {
     const delAlert = await this.alertController.create({
       header: "Cancelar aulas",
       message: `Deseja cancelar todas as aulas de ${this.event.modality.name}, 
@@ -144,14 +157,14 @@ export class ClassDetailsPage implements AfterViewInit {
         {
           text: "Não, somente essa",
           handler: () => {
-            console.log("TODO");
+            this.calendarService.addClassExceptionDay(this.event);
             this.closeModal();
           }
         },
         {
           text: "Sim",
           handler: () => {
-            this.calendarService.deleteWeekdayRepetition(this.event);
+            this.calendarService.deleteClassWeekdayRepetition(this.event);
             this.closeModal();
           }
         }
@@ -159,5 +172,4 @@ export class ClassDetailsPage implements AfterViewInit {
     });
     await delAlert.present();
   }
-
 }

@@ -1,5 +1,10 @@
 <ion-header>
   <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-button (click)="this.closeModal()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
     <ion-title>Detalhes da Aula</ion-title>
   </ion-toolbar>
 </ion-header>
@@ -20,22 +25,16 @@
     <ion-list-header>
       <ion-label>Alunos - {{ this.event.students.length }}/{{ this.event.studentQt }}</ion-label>
     </ion-list-header>
-    <ion-item *ngFor="let student of this.event.students">{{ student.username }}</ion-item>
-    <ion-item *ngFor="let student of this.selectedStudents">{{ student.username }}</ion-item>
-    <ion-item
-      *ngFor="let i of counter(this.event.studentQt - (this.event.students.length + this.selectedStudents.length))">
+    
+    <ion-item *ngFor="let student of this.event.students">
+      {{ student.username }}
+      <ion-icon color="danger" slot="end" name="remove-circle-outline" (click)=this.removeStudent(student)></ion-icon>
+    </ion-item>
+        
+    <ion-item *ngFor="let i of counter(this.event.studentQt - this.event.students.length)">
       <ion-icon name="add-circle-outline" slot="end" (click)="addStudent()"></ion-icon>
     </ion-item>
   </ion-list>
 
   <ion-button expand="block" fill="outline" color="danger" (click)="this.deleteClass()">Cancelar aula</ion-button>
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-button fill="outline" (click)="this.closeModal()">Fechar</ion-button>
-    </ion-buttons>
-    <ion-buttons slot="end">
-      <ion-button fill="outline" color="success" (click)="this.submit()" [disabled]="this.selectedStudents.length == 0">
-        Atualizar</ion-button>
-    </ion-buttons>
-  </ion-toolbar>
 </ion-content>

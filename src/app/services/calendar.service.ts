@@ -66,37 +66,40 @@ export class CalendarService {
       for (let sc of retrieved) {
         let scObject: StudentClassModel = { uid: sc.payload.doc.id, ...sc.payload.doc.data() } as StudentClassModel;
         if (!this.studentClassArray.some(e => e == scObject)) {
-          this.alocateNewStudents(scObject);
-          this.unallocateObsoleteStudents(scObject);
           this.updateStudentClassArray(scObject);
         }
       }
+      this.alocateStudents();
     });
   }
 
-  private alocateNewStudents(scObject: StudentClassModel) {
-    let evs = this.eventSource.filter(ev => ev.uid == scObject.classUID);
-    for (let ev of evs) {
-      ev.students = ev.students.concat(this.checkStudentsOfClass(ev, [scObject]));
+  private alocateStudents() {
+    for (let ev of this.eventSource) {
+      ev.students = new Array();
+      ev.students = ev.students.concat(this.checkStudentsOfClass(ev));
     }
-  }
-
-  private unallocateObsoleteStudents(scObject: StudentClassModel) {
-    // TODO
-    console.log('TODO');
   }
 
   private updateStudentClassArray(scObject: StudentClassModel) {
     let oldSCIndex = this.studentClassArray.findIndex(e => e.uid == scObject.uid);
     if (oldSCIndex !== -1)
-      this.studentClassArray.splice(oldSCIndex);
+      this.studentClassArray.splice(oldSCIndex, 1);
     let clone = Object.assign({}, scObject);
     this.studentClassArray.push(clone);
   }
 
-  private checkStudentsOfClass(event: ClassModel, studentClasses: StudentClassModel[]): UserModel[] {
+  private checkStudentsOfClass(event: ClassModel): UserModel[] {
     let students: UserModel[] = new Array();
-    for (let sc of studentClasses) {
+    for (let sc of this.studentClassArray) {
+      if (sc.classUID != event.uid)
+        continue;
+      let exceptions: Date[] = new Array();
+      if (sc.daysException)
+        sc.daysException.forEach(e => {
+          exceptions.push(e.toDate());
+        });
+      if (exceptions.some(e => e.getTime() == event.startTime.getTime()))
+        continue;
       if (sc.daysRep) {
         for (let d of sc.daysRep) {
           let date = d.toDate();
@@ -120,7 +123,7 @@ export class CalendarService {
     return students;
   }
 
-  private addEvents(events: Array<ClassModel>) {    
+  private addEvents(events: Array<ClassModel>) {
     for (let event of events) {
       this.eventSource.push(event);
     }
@@ -128,9 +131,23 @@ export class CalendarService {
   }
   private deleteEvents(events: Array<ClassModel>) {
     for (let event of events) {
-      this.eventSource.splice(this.eventSource.indexOf(event));
+      this.eventSource.splice(this.eventSource.indexOf(event), 1);
     }
     this.eventSourceSubject.next(this.eventSource);
+  }
+
+  private deleteObsoleteClasses(newClasses: DBClassTemplate[]) {
+    for (let [index, cl] of this.dbClasses.entries()) {
+      if (!newClasses.some((tmpCl) => tmpCl.uid == cl.uid)) {
+        this.dbClasses.splice(index, 1);
+        this.goneUIDs.delete(cl.uid);
+        this.eventSource = this.eventSource.filter((obj) => obj.uid != cl.uid);
+      }
+    }
+    this.eventSourceSubject.next(this.eventSource);
+  }
+  private deleteDBClass(uid: string) {
+    return this.dbClassesRef.doc(uid).delete();
   }
 
   private checkForNewClasses(selectedDate: Date) {
@@ -180,6 +197,12 @@ export class CalendarService {
       while (startTime < finalDate) {
         let cloneStTime = new Date(startTime);
         let cloneEndTime = new Date(endTime);
+        if (dbClass.exceptionDays)
+          if (dbClass.exceptionDays.some(d => d.toDate().getTime() == cloneStTime.getTime())) {
+            startTime.setDate(startTime.getDate() + 7);
+            endTime.setDate(endTime.getDate() + 7);
+            continue;
+          }
         let newClass = new ClassModel(
           dbClass.uid,
           this.professionalContainer.getProfessionalByUID(dbClass.professionalUID),
@@ -187,28 +210,13 @@ export class CalendarService {
           this.modalityContainer.getModalityByUID(dbClass.modalityUID),
           [], dbClass.studentQt
         );
-        let scs = this.studentClassArray.filter(e => e.classUID == newClass.uid);
-        newClass.students = newClass.students.concat(this.checkStudentsOfClass(newClass, scs));
+        newClass.students = newClass.students.concat(this.checkStudentsOfClass(newClass));
         newEvents.push(newClass);
         startTime.setDate(startTime.getDate() + 7);
         endTime.setDate(endTime.getDate() + 7);
       }
     }
     return newEvents;
-  }
-
-  private deleteObsoleteClasses(newClasses: DBClassTemplate[]) {
-    for (let [index, cl] of this.dbClasses.entries()) {
-      if (!newClasses.some((tmpCl) => tmpCl.uid == cl.uid)) {
-        this.dbClasses.splice(index);
-        this.goneUIDs.delete(cl.uid);
-        this.eventSource = this.eventSource.filter((obj) => obj.uid != cl.uid);
-      }
-    }
-    this.eventSourceSubject.next(this.eventSource);
-  }
-  private deleteClass(uid: string) {
-    return this.dbClassesRef.doc(uid).delete();
   }
 
   getEventSourceObservable(): BehaviorSubject<ClassModel[]> {
@@ -236,26 +244,41 @@ export class CalendarService {
     }
   }
 
-  addStudentsToClasses(studentsArray: Array<UserModel>, eventUID: string, day: Date, weekday: number) {
+  addStudentsToClasses(studentsArray: Array<UserModel>, eventUID: string, day: Date, weekday: number, exceptions: Date[]) {
     for (let student of studentsArray) {
       let scArray = this.studentClassArray.filter(e => e.studentUID == student.uid);
       let scEvent = scArray.find(e => e.classUID == eventUID);
       if (scEvent) { // update
-        if (day)
-          scEvent.daysRep.push(firebase.firestore.Timestamp.fromDate(day));
+        if (day) {
+          if (!scEvent.daysRep)
+            scEvent.daysRep = [firebase.firestore.Timestamp.fromDate(day)];
+          else
+            scEvent.daysRep.push(firebase.firestore.Timestamp.fromDate(day));
+          if (scEvent.daysException) {
+            let iE = scEvent.daysException.findIndex(e => e.toDate().getTime() == day.getTime());
+            if (iE != -1)
+              scEvent.daysException.splice(iE, 1);
+          }
+        }
         else if (weekday)
           if (!scEvent.weekdaysRep)
             scEvent.weekdaysRep = [weekday];
           else if (!scEvent.weekdaysRep.includes(weekday))
             scEvent.weekdaysRep.push(weekday);
+          if (scEvent.daysException) {
+            for (let [iE, dE] of scEvent.daysException.entries()) {
+              if (dE.toDate().getDay() == weekday)
+                scEvent.daysException.splice(iE, 1);
+            }
+          }
+        if (exceptions)
+          exceptions.forEach(exc => scEvent.daysException.push(firebase.firestore.Timestamp.fromDate(exc)));
       } else { // create
         let uid = this.afStore.createId();
         if (day)
-          scEvent = new StudentClassModel(uid, eventUID, student.uid, [day], null);
-        else if (weekday) {
-          let weekdayRep = [weekday];
-          scEvent = new StudentClassModel(uid, eventUID, student.uid, null, weekdayRep);
-        }
+          scEvent = new StudentClassModel(uid, eventUID, student.uid, [day], null, exceptions);
+        else if (weekday)
+          scEvent = new StudentClassModel(uid, eventUID, student.uid, null, [weekday], exceptions);
       }
       let clone = Object.assign({}, scEvent);
       delete clone.uid;
@@ -263,9 +286,65 @@ export class CalendarService {
     }
   }
 
-  deleteWeekdayRepetition(event: ClassModel) {
-    let foundClass = this.dbClasses.find(e => e.uid == event.uid);
-    let i = this.dbClasses.indexOf(foundClass);
+  removeStudentsFromClasses(studentsArray: UserModel[], eventUID: string, exceptionDay: Date, exceptionWeekday: number) {
+    for (let student of studentsArray) {
+      let scArray = this.studentClassArray.filter(e => e.studentUID == student.uid);
+      let scEvent = scArray.find(e => e.classUID == eventUID);
+      if (scEvent) {
+        if (exceptionDay) {
+          if (scEvent.daysRep) {
+            let iDayRep = scEvent.daysRep.findIndex(e => e.toDate().getTime() == exceptionDay.getTime());
+            if (iDayRep > -1)
+              scEvent.daysRep.splice(iDayRep, 1);
+          }
+          if (scEvent.weekdaysRep) {
+            let exc = firebase.firestore.Timestamp.fromDate(exceptionDay);
+            if (scEvent.daysException)
+              scEvent.daysException.push(exc);
+            else
+              scEvent.daysException = [exc];
+          }
+        }
+        if (exceptionWeekday) {
+          if (scEvent.weekdaysRep) {
+            let iWeekdayRep = scEvent.weekdaysRep.findIndex(e => e == exceptionWeekday);
+            if (iWeekdayRep > -1)
+              scEvent.weekdaysRep.splice(iWeekdayRep, 1);
+          }
+          if (scEvent.daysRep) {
+            let removes = new Array();
+            for (let [index, d] of scEvent.daysRep.entries()) {
+              let day = d.toDate();
+              if (day.getDay() == exceptionWeekday)
+                removes.push(index);
+            }
+            for (let r of removes)
+              scEvent.daysRep.splice(r, 1);
+          }
+        }
+        if (!scEvent.daysRep && !scEvent.weekdaysRep && scEvent.daysException) // limpar
+          scEvent.daysException = null;
+      }
+      let clone = Object.assign({}, scEvent);
+      delete clone.uid;
+      this.studentClassesRef.doc(scEvent.uid).set(clone);
+    }
+  }
+
+  addClassExceptionDay(exceptionEvent: ClassModel) {
+    let foundDBClass = this.dbClasses.find(e => e.uid == exceptionEvent.uid);
+    let excepTimestamp = firebase.firestore.Timestamp.fromDate(exceptionEvent.startTime);
+    if (foundDBClass.exceptionDays)
+      foundDBClass.exceptionDays.push(excepTimestamp);
+    else 
+      foundDBClass.exceptionDays = [excepTimestamp];
+
+    this.deleteEvents([exceptionEvent]);
+    return this.dbClassesRef.doc(foundDBClass.uid).update({"exceptionDays": foundDBClass.exceptionDays});
+  }
+
+  deleteClassWeekdayRepetition(event: ClassModel) {
+    let i = this.dbClasses.findIndex(e => e.uid == event.uid);
     this.dbClasses[i].weekday[event.startTime.getDay()] = false;
 
     let deletes = new Array();
@@ -278,7 +357,7 @@ export class CalendarService {
     this.deleteEvents(deletes);
     if (this.dbClasses[i].weekday.includes(true))
       return this.dbClassesRef.doc(this.dbClasses[i].uid).update({ "weekday": this.dbClasses[i].weekday });
-    return this.deleteClass(this.dbClasses[i].uid);
+    return this.deleteDBClass(this.dbClasses[i].uid);
   }
 
 
