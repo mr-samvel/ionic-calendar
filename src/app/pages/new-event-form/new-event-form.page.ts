@@ -188,7 +188,7 @@ export class NewEventFormPage implements AfterViewInit {
         this.inputTemplate.studentQt,
         startDate, endDate,
         period.startTime.toTimeString(), period.endTime.toTimeString(),
-        days
+        days, null, null
       );
       dbClasses.push(dbClass);
     }

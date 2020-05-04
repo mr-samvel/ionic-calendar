@@ -101,16 +101,14 @@ export class ClassDetailsPage implements AfterViewInit {
         {
           text: 'Não, apenas dessa',
           handler: () => {
-            console.log("TODO");
             this.calendarService.removeStudentsFromClasses([stud], this.event.uid, this.event.startTime, null);
-            // adicionar exceção
+            this.availableStudents.push(stud);
           }
         }, {
           text: 'Sim',
           handler: () => {
-            console.log("TODO");
             this.calendarService.removeStudentsFromClasses([stud], this.event.uid, null, this.event.startTime.getDay());
-            // remover weekdayrep
+            this.availableStudents.push(stud);
           }
         }
       ]
@@ -159,7 +157,7 @@ export class ClassDetailsPage implements AfterViewInit {
         {
           text: "Não, somente essa",
           handler: () => {
-            console.log("TODO");
+            this.calendarService.addClassExceptionDay(this.event);
             this.closeModal();
           }
         },

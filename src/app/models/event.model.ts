@@ -48,10 +48,12 @@ export class DBClassTemplate {
     startTime: string; // Date.toTimeString()::'hh:mm:ss GMT-0300'
     endTime: string;
     weekday: Array<boolean> = new Array(7);
+    exceptionDays: firebase.firestore.Timestamp[];
 
     constructor(pro: UserModel, mod: ModalityModel, studQt: number,
             stDate: Date, endDate: Date, stTime: string, 
-            endTime: string, wkday: Array<boolean>, uid?: string) {
+            endTime: string, wkday: Array<boolean>, uid: string,
+            exceptionDays: Date[]) {
         this.professionalUID = pro.uid;
         this.modalityUID = mod.uid;
         this.studentQt = studQt;
@@ -61,5 +63,13 @@ export class DBClassTemplate {
         this.endTime = endTime;
         this.weekday = wkday;
         this.uid = uid;
+        if (exceptionDays) {
+            this.exceptionDays = new Array();
+            exceptionDays.forEach(d => {
+                this.exceptionDays.push(firebase.firestore.Timestamp.fromDate(d));
+            });
+        } else
+            this.exceptionDays = null;
+            
     }
 }

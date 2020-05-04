@@ -106,7 +106,7 @@ export class AlocateStudentsPage implements AfterViewInit {
       }
     });
     if (error)
-      this.presentToast('Os eventos que ficariam superlotados foram desmarcados', 'warning')
+      this.presentToast('Os eventos que ficariam superlotados foram desmarcados', 'warning');
   }
 
   isSelected(ev: ClassModel) {
@@ -197,7 +197,7 @@ export class AlocateStudentsPage implements AfterViewInit {
             if (this.eventsRep[i].weekdayRep)
               this.eventsRep[i].exceptions.push(ev.startTime);
             else if (this.eventsRep[i].dayRep)
-              this.eventsRep.splice(i);
+              this.eventsRep.splice(i, 1);
           }
         }, {
           text: 'Sim',
@@ -209,7 +209,7 @@ export class AlocateStudentsPage implements AfterViewInit {
                 this.events.set(key, false);
             });
             let i = this.eventsRep.findIndex(e => e.uid == ev.uid && (e.dayRep == ev.startTime || e.weekdayRep == ev.startTime.getDay()));
-            this.eventsRep.splice(i);
+            this.eventsRep.splice(i, 1);
           }
         }
       ]
