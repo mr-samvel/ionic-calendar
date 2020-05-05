@@ -3,8 +3,8 @@ import { DBClassTemplate } from 'src/app/models/event.model';
 import { CalendarService } from 'src/app/services/calendar.service';
 import { ModalController, Events, ToastController } from '@ionic/angular';
 import { ModalityModel } from 'src/app/models/modality.model';
-import { ModalityContainerService } from 'src/app/services/modality-container.service';
-import { ProfessionalContainerService } from 'src/app/services/professional-container.service';
+import { ModalityService } from 'src/app/services/modality.service';
+import { ProfessionalService } from 'src/app/services/professional.service';
 import { IonicSelectableComponent } from 'ionic-selectable';
 import { CalendarComponent } from 'ionic2-calendar/calendar';
 import { ChangePeriodPage } from '../change-period/change-period.page';
@@ -36,7 +36,7 @@ export class NewEventFormPage implements AfterViewInit {
   };
 
   constructor(private calendarService: CalendarService, private modalController: ModalController,
-    private modalityContainer: ModalityContainerService, private professionalContainer: ProfessionalContainerService,
+    private modalityService: ModalityService, private professionalService: ProfessionalService,
     private toastController: ToastController) {
     this.resetInputTemplate();
   }
@@ -134,7 +134,7 @@ export class NewEventFormPage implements AfterViewInit {
   }
 
   addModality(mod: string) {
-    this.modalityContainer.addModality(mod);
+    this.modalityService.addModality(mod);
   }
 
   addProfessional(pro: string) {

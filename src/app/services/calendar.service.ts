@@ -5,9 +5,9 @@ import { ClassModel, DBClassTemplate } from '../models/event.model';
 import { ModalController } from '@ionic/angular';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
 import { UserModel } from '../models/user.model';
-import { ProfessionalContainerService } from './professional-container.service';
-import { StudentContainerService } from './student-container.service';
-import { ModalityContainerService } from './modality-container.service';
+import { ProfessionalService } from './professional.service';
+import { StudentService } from './student.service';
+import { ModalityService } from './modality.service';
 import { StudentClassModel } from '../models/student-class.model';
 import * as firebase from 'firebase';
 
@@ -31,8 +31,8 @@ export class CalendarService {
     currentDate: new Date()
   };
 
-  constructor(private modalController: ModalController, private afStore: AngularFirestore, private modalityContainer: ModalityContainerService,
-    private professionalContainer: ProfessionalContainerService, private studentContainer: StudentContainerService, ) {
+  constructor(private modalController: ModalController, private afStore: AngularFirestore, private modalityService: ModalityService,
+    private professionalService: ProfessionalService, private studentService: StudentService, ) {
     this.eventSourceSubject = new BehaviorSubject<ClassModel[]>(this.eventSource);
     this.dbClassesRef = this.afStore.collection<DBClassTemplate>('Events');
     this.studentClassesRef = this.afStore.collection<StudentClassModel>('StudentClass');
@@ -107,7 +107,7 @@ export class CalendarService {
             !event.students.some(s => s.uid == sc.studentUID) &&
             !students.some(s => s.uid == sc.studentUID)
           )
-            students.push(this.studentContainer.getStudentByUID(sc.studentUID));
+            students.push(this.studentService.getStudentByUID(sc.studentUID));
         }
       }
       if (sc.weekdaysRep) {
@@ -116,7 +116,7 @@ export class CalendarService {
             !event.students.some(s => s.uid == sc.studentUID) &&
             !students.some(s => s.uid == sc.studentUID)
           )
-            students.push(this.studentContainer.getStudentByUID(sc.studentUID));
+            students.push(this.studentService.getStudentByUID(sc.studentUID));
         }
       }
     }
@@ -205,9 +205,9 @@ export class CalendarService {
           }
         let newClass = new ClassModel(
           dbClass.uid,
-          this.professionalContainer.getProfessionalByUID(dbClass.professionalUID),
+          this.professionalService.getProfessionalByUID(dbClass.professionalUID),
           cloneStTime, cloneEndTime,
-          this.modalityContainer.getModalityByUID(dbClass.modalityUID),
+          this.modalityService.getModalityByUID(dbClass.modalityUID),
           [], dbClass.studentQt
         );
         newClass.students = newClass.students.concat(this.checkStudentsOfClass(newClass));

@@ -5,7 +5,7 @@ import { AngularFirestore } from '@angular/fire/firestore';
 @Injectable({
   providedIn: 'root'
 })
-export class UserContainerService {
+export class UserService {
   private currentUser: UserModel;
 
   constructor(private afs: AngularFirestore) { }

@@ -5,7 +5,7 @@ import { AngularFirestoreCollection, AngularFirestore } from '@angular/fire/fire
 @Injectable({
   providedIn: 'root'
 })
-export class ProfessionalContainerService {
+export class ProfessionalService {
   private professionals: UserModel[];
   private usersRef: AngularFirestoreCollection<UserModel>;
 

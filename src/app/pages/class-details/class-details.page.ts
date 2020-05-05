@@ -1,7 +1,7 @@
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { ClassModel } from 'src/app/models/event.model';
 import { ModalController, AlertController } from '@ionic/angular';
-import { StudentContainerService } from 'src/app/services/student-container.service';
+import { StudentService } from 'src/app/services/student.service';
 import { CalendarService } from 'src/app/services/calendar.service';
 import { UserModel } from 'src/app/models/user.model';
 
@@ -15,7 +15,7 @@ export class ClassDetailsPage implements AfterViewInit {
   private availableStudents: UserModel[] = new Array();
 
   constructor(private modalController: ModalController, private alertController: AlertController,
-    private studentsContainer: StudentContainerService, private calendarService: CalendarService) { }
+    private studentsService: StudentService, private calendarService: CalendarService) { }
 
   ngAfterViewInit() {
     this.updateAvailableStudents();
@@ -26,7 +26,7 @@ export class ClassDetailsPage implements AfterViewInit {
   }
 
   private updateAvailableStudents() {
-    for (let student of this.studentsContainer.getStudents()) {
+    for (let student of this.studentsService.getStudents()) {
       if (!this.availableStudents.find(element => element == student) && !this.event.students.find(element => element == student)) {
         this.availableStudents.push(student);
       }
