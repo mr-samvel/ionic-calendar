@@ -5,7 +5,7 @@ import { AngularFirestoreCollection, AngularFirestore } from '@angular/fire/fire
 @Injectable({
   providedIn: 'root'
 })
-export class ModalityContainerService {
+export class ModalityService {
   private modalities: ModalityModel[];
   private modalitiesRef: AngularFirestoreCollection<ModalityModel>;
 

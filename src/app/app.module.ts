@@ -17,13 +17,13 @@ import { environment } from 'src/environments/environment';
 import { AngularFireModule } from '@angular/fire';
 import { AngularFireAuthModule } from '@angular/fire/auth';
 import { AuthenticationService } from './services/authentication.service';
-import { UserContainerService } from './services/user-container.service';
+import { UserService } from './services/user.service';
 import { CalendarService } from './services/calendar.service';
 import { ClassDetailsPageModule } from './pages/class-details/class-details.module';
 import { NewEventFormPageModule } from './pages/new-event-form/new-event-form.module';
-import { ProfessionalContainerService } from './services/professional-container.service';
-import { StudentContainerService } from './services/student-container.service';
-import { ModalityContainerService } from './services/modality-container.service';
+import { ProfessionalService } from './services/professional.service';
+import { StudentService } from './services/student.service';
+import { ModalityService } from './services/modality.service';
 import { IonicSelectableModule } from 'ionic-selectable';
 import { ChangePeriodPageModule } from './pages/change-period/change-period.module';
 import { AlocateStudentsPageModule } from './pages/alocate-students/alocate-students.module';
@@ -50,10 +50,10 @@ registerLocaleData(ptBr);
     StatusBar,
     SplashScreen,
     AuthenticationService,
-    UserContainerService,
-    ProfessionalContainerService,
-    StudentContainerService,
-    ModalityContainerService,
+    UserService,
+    ProfessionalService,
+    StudentService,
+    ModalityService,
     CalendarService,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     { provide: LOCALE_ID, useValue: 'pt' },

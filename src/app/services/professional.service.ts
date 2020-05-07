@@ -5,43 +5,43 @@ import { AngularFirestoreCollection, AngularFirestore } from '@angular/fire/fire
 @Injectable({
   providedIn: 'root'
 })
-export class StudentContainerService {
-  private students: UserModel[];
+export class ProfessionalService {
+  private professionals: UserModel[];
   private usersRef: AngularFirestoreCollection<UserModel>;
 
-  constructor(private afStore: AngularFirestore) {
+  constructor(private afStore: AngularFirestore) { 
     this.usersRef = this.afStore.collection<UserModel>('Users');
-    this.subscribeToStudentsFromDB();
-   }
-  
-  private subscribeToStudentsFromDB() {
+    this.subscribeToProfessionalsFromDB();
+  }
+
+  private subscribeToProfessionalsFromDB() {
     this.usersRef.snapshotChanges().subscribe((retrieved) => {
       let tmpArray: UserModel[] = new Array();
       for(let u of retrieved) {
         let user: UserModel = {uid: u.payload.doc.id, ...u.payload.doc.data()};
-        if (user.roles.includes(UserModel.STUDENT_PROFILE))
+        if (user.roles.includes(UserModel.PROFESSIONAL_PROFILE))
           tmpArray.push(user);
       }
-      this.students = tmpArray;
+      this.professionals = tmpArray;
     });
   }
 
-  getStudents() {
-    return this.students;
+  getProfessionals() {
+    return this.professionals;
   }
-  getStudentByUID(uid: string): UserModel {
-    return this.students.find(e => e.uid == uid);
+  getProfessionalByUID(uid: string): UserModel {
+    return this.professionals.find(p => p.uid == uid);
   }
-  getStudentsByUID(uids: string[]): UserModel[] {
+  getProfessionalsByUID(uids: string[]): UserModel[] {
     let tmpArray = new Array();
     for(let uid of uids){
-      tmpArray.push(this.getStudentByUID(uid));
+      tmpArray.push(this.getProfessionalByUID(uid));
     }
     return tmpArray;
   }
 
-  addStudent(stud: any) {
+  addProfessional(prof: any) {
     console.log("TODO");
-    // this.students.push(stud);
+    // this.professionals.push(prof);
   }
 }

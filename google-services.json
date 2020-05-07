@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "319929636357",
+    "firebase_url": "https://crazyjupter.firebaseio.com",
+    "project_id": "crazyjupter",
+    "storage_bucket": "crazyjupter.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:319929636357:android:749d59b1b1f2ed83f12e6c",
+        "android_client_info": {
+          "package_name": "br.com.crazyjupter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "319929636357-q2vlvkbeg5c9cf5tf8t7d0p7sbc172vn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "br.com.crazyjupter",
+            "certificate_hash": "ff73775bfafa1678b2e64c8d8d7c74a500144188"
+          }
+        },
+        {
+          "client_id": "319929636357-ruhkal5n3ohhhp2mmgc9nt71ks1psik4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBClkXep7a1u1dACdQuYs481bkcOYhFKFU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "319929636357-ruhkal5n3ohhhp2mmgc9nt71ks1psik4.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "319929636357-ggo76ali8peq26ln5lcv83fujtv7ks41.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "br.com.crazyjupter"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

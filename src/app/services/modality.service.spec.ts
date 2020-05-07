@@ -1,12 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 
-import { UserContainerService } from './user-container.service';
+import { ModalityService } from './modality.service';
 
-describe('UserContainerService', () => {
+describe('ModalityService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
-    const service: UserContainerService = TestBed.get(UserContainerService);
+    const service: ModalityService = TestBed.get(ModalityService);
     expect(service).toBeTruthy();
   });
 });

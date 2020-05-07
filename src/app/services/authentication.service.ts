@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { UserContainerService } from './user-container.service';
+import { UserService } from './user.service';
 import { UserModel } from '../models/user.model';
 import { NavController, LoadingController } from '@ionic/angular';
 import { Router } from '@angular/router';
@@ -15,7 +15,7 @@ export class AuthenticationService {
   private usersRef: AngularFirestoreCollection<UserModel>;
   private recentlyLoggedIn: boolean = false;
 
-  constructor(private userContainerService: UserContainerService, private navCtrl: NavController, private afAuth: AngularFireAuth,
+  constructor(private userService: UserService, private navCtrl: NavController, private afAuth: AngularFireAuth,
     private afStore: AngularFirestore, private loadingController: LoadingController) {
       this.usersRef = this.afStore.collection<UserModel>('Users');
       this.monitorUserStateChanges();
@@ -34,13 +34,13 @@ export class AuthenticationService {
         this.userState = true;
         if (!this.recentlyLoggedIn) {
           this.presentLoader();
-          let dbUser = await this.userContainerService.retrieveUserFromServer(user.uid);
-          this.userContainerService.storeCurrentUser(dbUser);
+          let dbUser = await this.userService.retrieveUserFromServer(user.uid);
+          this.userService.storeCurrentUser(dbUser);
           this.dismissLoader();
         }
       } else {
         this.userState = false;
-        this.userContainerService.deleteCurrentUser();
+        this.userService.deleteCurrentUser();
       }
     });
   }
@@ -51,7 +51,7 @@ export class AuthenticationService {
       let uid = userCredential.user.uid;
       let email = userCredential.user.email;
       let user = new UserModel(username, uid, [UserModel.STUDENT_PROFILE], email);
-      this.userContainerService.storeCurrentUser(user);
+      this.userService.storeCurrentUser(user);
       this.usersRef.doc(uid).get().toPromise().then(snap => {
         let retrievedUser: UserModel = {uid: snap.id, ...snap.data()} as UserModel;
         let clone = Object.assign({}, user);

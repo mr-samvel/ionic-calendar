@@ -1,12 +1,12 @@
 import { Component, ViewChildren, AfterViewInit, ViewChild } from '@angular/core';
 import { ModalController, ToastController, AlertController } from '@ionic/angular';
 import { CalendarService } from 'src/app/services/calendar.service';
-import { StudentContainerService } from 'src/app/services/student-container.service';
+import { StudentService } from 'src/app/services/student.service';
 import { IonicSelectableComponent } from 'ionic-selectable';
 import { CalendarComponent } from 'ionic2-calendar/calendar';
 import { ClassModel } from 'src/app/models/event.model';
-import { ProfessionalContainerService } from 'src/app/services/professional-container.service';
-import { ModalityContainerService } from 'src/app/services/modality-container.service';
+import { ProfessionalService } from 'src/app/services/professional.service';
+import { ModalityService } from 'src/app/services/modality.service';
 import { UserModel } from 'src/app/models/user.model';
 
 @Component({
@@ -33,8 +33,8 @@ export class AlocateStudentsPage implements AfterViewInit {
   public loaded: boolean = false;
 
   constructor(private modalController: ModalController, private calendarService: CalendarService,
-    private studentsContainer: StudentContainerService, private professionalsContainer: ProfessionalContainerService,
-    private modalitiesContainer: ModalityContainerService,
+    private studentsService: StudentService, private professionalsService: ProfessionalService,
+    private modalityService: ModalityService,
     private toastController: ToastController, private alertController: AlertController) {
     this.resetAll();
     this.calendarService.getEventSourceObservable().subscribe(eventSrc => {
@@ -92,7 +92,7 @@ export class AlocateStudentsPage implements AfterViewInit {
   }
 
   addStudent(email: string) {
-    this.studentsContainer.addStudent(email);
+    this.studentsService.addStudent(email);
   }
 
   validateStudentSelectable() {
@@ -233,7 +233,7 @@ export class AlocateStudentsPage implements AfterViewInit {
       let exc = null;
       if (sendEvent.exceptions.length > 0)
         exc = sendEvent.exceptions;
-      this.calendarService.addStudentsToClasses(this.selectedStudents, sendEvent.uid, sendEvent.dayRep, sendEvent.weekdayRep, exc);
+      this.studentsService.addStudentsToClasses(this.selectedStudents, sendEvent.uid, sendEvent.dayRep, sendEvent.weekdayRep, exc);
     }
     this.resetAll();
     this.presentToast('Feito!', 'success');
