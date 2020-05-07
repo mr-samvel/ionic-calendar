@@ -78,12 +78,12 @@ export class ClassDetailsPage implements AfterViewInit {
         {
           text: 'Não, apenas essa',
           handler: () => {
-            this.calendarService.addStudentsToClasses([stud], this.event.uid, this.event.startTime, null, null);
+            this.studentsService.addStudentsToClasses([stud], this.event.uid, this.event.startTime, null, null);
           }
         }, {
           text: 'Sim',
           handler: () => {
-            this.calendarService.addStudentsToClasses([stud], this.event.uid, null, this.event.startTime.getDay(), null);
+            this.studentsService.addStudentsToClasses([stud], this.event.uid, null, this.event.startTime.getDay(), null);
           }
         }
       ]
@@ -101,13 +101,13 @@ export class ClassDetailsPage implements AfterViewInit {
         {
           text: 'Não, apenas dessa',
           handler: () => {
-            this.calendarService.removeStudentsFromClasses([stud], this.event.uid, this.event.startTime, null);
+            this.studentsService.removeStudentsFromClasses([stud], this.event.uid, this.event.startTime, null);
             this.availableStudents.push(stud);
           }
         }, {
           text: 'Sim',
           handler: () => {
-            this.calendarService.removeStudentsFromClasses([stud], this.event.uid, null, this.event.startTime.getDay());
+            this.studentsService.removeStudentsFromClasses([stud], this.event.uid, null, this.event.startTime.getDay());
             this.availableStudents.push(stud);
           }
         }

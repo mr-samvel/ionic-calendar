@@ -233,7 +233,7 @@ export class AlocateStudentsPage implements AfterViewInit {
       let exc = null;
       if (sendEvent.exceptions.length > 0)
         exc = sendEvent.exceptions;
-      this.calendarService.addStudentsToClasses(this.selectedStudents, sendEvent.uid, sendEvent.dayRep, sendEvent.weekdayRep, exc);
+      this.studentsService.addStudentsToClasses(this.selectedStudents, sendEvent.uid, sendEvent.dayRep, sendEvent.weekdayRep, exc);
     }
     this.resetAll();
     this.presentToast('Feito!', 'success');
