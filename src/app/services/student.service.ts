@@ -4,7 +4,6 @@ import { AngularFirestoreCollection, AngularFirestore } from '@angular/fire/fire
 import { StudentClassModel } from '../models/student-class.model';
 import { ClassModel } from '../models/event.model';
 import * as firebase from 'firebase';
-import { CalendarService } from './calendar.service';
 
 @Injectable({
   providedIn: 'root'
