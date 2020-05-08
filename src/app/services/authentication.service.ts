@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import { UserService } from './user.service';
 import { UserModel } from '../models/user.model';
-import { NavController, LoadingController } from '@ionic/angular';
-import { Router } from '@angular/router';
+import { NavController, LoadingController, Platform } from '@ionic/angular';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { auth, User } from 'firebase';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
+import { GooglePlus } from '@ionic-native/google-plus/ngx';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -15,8 +16,9 @@ export class AuthenticationService {
   private usersRef: AngularFirestoreCollection<UserModel>;
   private recentlyLoggedIn: boolean = false;
 
-  constructor(private userService: UserService, private navCtrl: NavController, private afAuth: AngularFireAuth,
-    private afStore: AngularFirestore, private loadingController: LoadingController) {
+  constructor(private userService: UserService, private navCtrl: NavController,
+    private afStore: AngularFirestore, private loadingController: LoadingController,
+    private gplus: GooglePlus, private platform: Platform, private afAuth: AngularFireAuth,) {
       this.usersRef = this.afStore.collection<UserModel>('Users');
       this.monitorUserStateChanges();
   }
@@ -45,28 +47,53 @@ export class AuthenticationService {
     });
   }
 
-  googleLogin() {
-    this.afAuth.auth.signInWithPopup(new auth.GoogleAuthProvider()).then((userCredential: auth.UserCredential) => {
-      let username = userCredential.user.displayName;
-      let uid = userCredential.user.uid;
-      let email = userCredential.user.email;
-      let user = new UserModel(username, uid, [UserModel.STUDENT_PROFILE], email);
-      this.userService.storeCurrentUser(user);
-      this.usersRef.doc(uid).get().toPromise().then(snap => {
-        let retrievedUser: UserModel = {uid: snap.id, ...snap.data()} as UserModel;
-        let clone = Object.assign({}, user);
-        delete clone.uid;
-        if (!snap.exists) {
-          this.usersRef.doc(uid).set(clone);
-        }
+  private async nativeGoogleLogin(): Promise<auth.UserCredential> {
+    try {
+      const gplusUser = await this.gplus.login({
+        'webClientId': environment.googleWebClientID,
+        'offline': true,
+        'scopes': 'profile email'
       });
-      this.recentlyLoggedIn = true;
-      this.navCtrl.navigateRoot('/tabs/tab1');
+      return await this.afAuth.auth.signInWithCredential(auth.GoogleAuthProvider.credential(gplusUser.idToken));
+    } catch(err) {
+      console.error(err);
+    }
+  }
+  private async webGoogleLogin(): Promise<auth.UserCredential> {
+    try {
+      const provider = new auth.GoogleAuthProvider();
+      return await this.afAuth.auth.signInWithPopup(provider);
+    } catch(err) {
+      console.error(err);
+    }
+  }
+
+  async googleLogin() {
+    let googleCredential: auth.UserCredential;
+    if (this.platform.is('cordova'))
+      googleCredential = await this.nativeGoogleLogin();
+    else
+      googleCredential = await this.webGoogleLogin();
+    
+    const googleUser = googleCredential.user;
+    const user = new UserModel(googleUser.displayName, googleUser.uid, [UserModel.STUDENT_PROFILE], googleUser.email);
+    this.userService.storeCurrentUser(user);
+    this.usersRef.doc(user.uid).get().toPromise().then(snap => {
+      let retrievedUser: UserModel = {uid: snap.id, ...snap.data()} as UserModel;
+      let clone = Object.assign({}, user);
+      delete clone.uid;
+      if (!snap.exists)
+        this.usersRef.doc(user.uid).set(clone);
     });
+    
+    this.recentlyLoggedIn = true;
+    this.navCtrl.navigateRoot('/tabs/tab1');
   }
 
   logoff() {
     this.afAuth.auth.signOut();
+    if (this.platform.is('cordova'))
+      this.gplus.logout();
   }
 
   isLoggedIn(): boolean {
