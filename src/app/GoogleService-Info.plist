@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>319929636357-ggo76ali8peq26ln5lcv83fujtv7ks41.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.319929636357-ggo76ali8peq26ln5lcv83fujtv7ks41</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>319929636357-q2vlvkbeg5c9cf5tf8t7d0p7sbc172vn.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyA60TxBiXIXEaFuK0jdPLqgqezo0qiarVI</string>
+	<key>GCM_SENDER_ID</key>
+	<string>319929636357</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>br.com.crazyjupter</string>
+	<key>PROJECT_ID</key>
+	<string>crazyjupter</string>
+	<key>STORAGE_BUCKET</key>
+	<string>crazyjupter.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:319929636357:ios:41b2fbe048b9b54af12e6c</string>
+	<key>DATABASE_URL</key>
+	<string>https://crazyjupter.firebaseio.com</string>
+</dict>
+</plist>

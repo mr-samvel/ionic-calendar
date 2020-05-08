@@ -17,6 +17,7 @@ import { environment } from 'src/environments/environment';
 import { AngularFireModule } from '@angular/fire';
 import { AngularFireAuthModule } from '@angular/fire/auth';
 import { AuthenticationService } from './services/authentication.service';
+import { GooglePlus } from '@ionic-native/google-plus/ngx';
 import { UserService } from './services/user.service';
 import { CalendarService } from './services/calendar.service';
 import { ClassDetailsPageModule } from './pages/class-details/class-details.module';
@@ -50,6 +51,7 @@ registerLocaleData(ptBr);
     StatusBar,
     SplashScreen,
     AuthenticationService,
+    GooglePlus,
     UserService,
     ProfessionalService,
     StudentService,
