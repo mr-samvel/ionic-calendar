@@ -1,14 +1,10 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { tap, first } from 'rxjs/operators';
 import { ClassModel, DBClassTemplate } from '../models/event.model';
-import { ModalController } from '@ionic/angular';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
-import { UserModel } from '../models/user.model';
 import { ProfessionalService } from './professional.service';
 import { StudentService } from './student.service';
 import { ModalityService } from './modality.service';
-import { StudentClassModel } from '../models/student-class.model';
 import * as firebase from 'firebase';
 
 

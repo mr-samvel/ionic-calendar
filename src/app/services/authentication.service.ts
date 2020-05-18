@@ -11,10 +11,12 @@ import { environment } from 'src/environments/environment';
 @Injectable({
   providedIn: 'root'
 })
+
+// Serviço responsável pela autenticação/observação do estado do usuário.
 export class AuthenticationService {
-  private userState: boolean;
-  private usersRef: AngularFirestoreCollection<UserModel>;
-  private recentlyLoggedIn: boolean = false;
+  private userState: boolean; // Se true, usuário está logado
+  private usersRef: AngularFirestoreCollection<UserModel>; // Referencia da coleção 'Users' no firebase
+  private recentlyLoggedIn: boolean = false; // Se true, usuário fez login manual nessa seção
 
   constructor(private userService: UserService, private navCtrl: NavController,
     private afStore: AngularFirestore, private loadingController: LoadingController,
@@ -30,6 +32,7 @@ export class AuthenticationService {
     this.loadingController.getTop().then(loader => loader.dismiss());
   }
 
+  // monitora e atualiza this.userState de acordo com o estado do usuário (logado ou nao)
   private monitorUserStateChanges() {
     this.afAuth.authState.subscribe(async (user: User) => {
       if (user) {
@@ -47,6 +50,8 @@ export class AuthenticationService {
     });
   }
 
+  // chama um popup dentro do aplicativo usando o app da Google p/ fazer login
+  // feito o login, retorna a credencial do usuário
   private async nativeGoogleLogin(): Promise<auth.UserCredential> {
     try {
       const gplusUser = await this.gplus.login({
@@ -59,6 +64,8 @@ export class AuthenticationService {
       console.error(err);
     }
   }
+  // redireciona a uma pagina no navegador que faz o login com uma conta google
+  // feito o login, retorna a credencial do usuário
   private async webGoogleLogin(): Promise<auth.UserCredential> {
     try {
       const provider = new auth.GoogleAuthProvider();
@@ -68,6 +75,8 @@ export class AuthenticationService {
     }
   }
 
+  // chama um método de login de acordo com a plataforma (mobile ou web);
+  // feito o login, cadastra o usuário (se for o primeiro login) no firebase e redireciona à pagina inicial.
   async googleLogin() {
     let googleCredential: auth.UserCredential;
     if (this.platform.is('cordova'))

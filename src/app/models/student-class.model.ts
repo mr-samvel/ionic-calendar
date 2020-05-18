@@ -1,13 +1,13 @@
 import * as firebase from 'firebase';
 
+// faz a relação entre estudantes e aulas
 export class StudentClassModel {
-    uid: string;
-    classUID: string;
-    studentUID: string;
-    // professionalUID: string; // exceção?
-    daysRep: firebase.firestore.Timestamp[]; // se null então deve repetir indefinidamente de acordo com weekdaysRep
-    weekdaysRep: number[]; // repete nos dias de numero 0 a 6, se null então só se aplica aos dias em daysRep
-    daysException: firebase.firestore.Timestamp[];
+    uid: string; // id do objeto adquirido pelo firebase
+    classUID: string; // uid da aula
+    studentUID: string; // uid do estudante
+    daysRep: firebase.firestore.Timestamp[]; // dias em que essa relação se aplica; se null então deve repetir indefinidamente de acordo com weekdaysRep
+    weekdaysRep: number[]; // dias da semana em que essa relação se aplica; repete nos dias de numero 0 a 6, se null então só se aplica aos dias em daysRep
+    daysException: firebase.firestore.Timestamp[]; // dias em que essas regras nao se aplicam
 
     constructor(uid: string, classUID: string, studentUID: string, daysRep: Date[], weekdaysRep: number[], daysException: Date[]) {
         this.uid = uid;
