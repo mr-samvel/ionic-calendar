@@ -1,26 +1,29 @@
 import { Injectable } from '@angular/core';
 import { UserModel } from '../models/user.model';
 import { AngularFirestoreCollection, AngularFirestore } from '@angular/fire/firestore';
-import { StudentClassModel } from '../models/student-class.model';
+import { StudentAlocationModel } from '../models/student-alocation.model';
 import { ClassModel } from '../models/event.model';
 import * as firebase from 'firebase';
 
 @Injectable({
   providedIn: 'root'
 })
-export class StudentService {
-  private students: UserModel[];
-  private usersRef: AngularFirestoreCollection<UserModel>;
 
-  private studentClassesRef: AngularFirestoreCollection<StudentClassModel>;
-  private studentClassArray: Array<StudentClassModel> = new Array();
+// Serviço responsável pelo gerenciamento de alunos.
+export class StudentService {
+  private students: UserModel[]; // Vetor com todos os users com perfil de alunos resgatados do firebase
+  private usersRef: AngularFirestoreCollection<UserModel>; // Referencia da coleção 'Users' no firebase
+
+  private studentAlocationsRef: AngularFirestoreCollection<StudentAlocationModel>; // Referencia da coleção 'StudentAlocation' no firebase
+  private studentAlocationsArray: Array<StudentAlocationModel> = new Array(); // Vetor com todos os objetos StudentAlocationModel resgatados do firebase
 
   constructor(private afStore: AngularFirestore) {
     this.usersRef = this.afStore.collection<UserModel>('Users');
     this.subscribeToStudentsFromDB();
-    this.studentClassesRef = this.afStore.collection<StudentClassModel>('StudentClass');
+    this.studentAlocationsRef = this.afStore.collection<StudentAlocationModel>('StudentAlocation');
    }
   
+  // Se inscreve no observable da coleção 'Users'. Checa os usuários resgatados e adiciona ao vetor alunos se tiver papel de aluno.
   private subscribeToStudentsFromDB() {
     this.usersRef.snapshotChanges().subscribe((retrieved) => {
       let tmpArray: UserModel[] = new Array();
@@ -33,12 +36,15 @@ export class StudentService {
     });
   }
 
+  // Retorna todos os estudantes
   getStudents() {
     return this.students;
   }
+  // Retorna o aluno com aquele uid, se houver
   getStudentByUID(uid: string): UserModel {
     return this.students.find(e => e.uid == uid);
   }
+  // Retorna um vetor com os profissionais de acordo com os uids de entrada
   getStudentsByUID(uids: string[]): UserModel[] {
     let tmpArray = new Array();
     for(let uid of uids){
@@ -47,39 +53,45 @@ export class StudentService {
     return tmpArray;
   }
 
+  //
   addStudent(stud: any) {
     console.log("TODO");
     // this.students.push(stud);
   }
 
+  // Se inscreve no observable da coleção 'StudentAlocation' e atualiza studentAlocationsArray
+  // Com o vetor atualizado, chama aloca os alunos nos eventos que são passados no argumento
   monitorAlocatedStudents(evSrc: ClassModel[]) {
-    this.studentClassesRef.snapshotChanges().subscribe((retrieved) => {
+    this.studentAlocationsRef.snapshotChanges().subscribe((retrieved) => {
       for (let sc of retrieved) {
-        let scObject: StudentClassModel = { uid: sc.payload.doc.id, ...sc.payload.doc.data() } as StudentClassModel;
-        if (!this.studentClassArray.some(e => e == scObject)) {
-          this.updateStudentClassArray(scObject);
+        let scObject: StudentAlocationModel = { uid: sc.payload.doc.id, ...sc.payload.doc.data() } as StudentAlocationModel;
+        if (!this.studentAlocationsArray.some(e => e == scObject)) {
+          this.updateStudentAlocationArray(scObject);
         }
       }
       this.alocateStudents(evSrc);
     });
   }
+  // Checa e adiciona os alunos pertencentes às aulas passadas no argumento
   private alocateStudents(eventSource: ClassModel[]) {
     for (let ev of eventSource) {
       ev.students = new Array();
       ev.students = ev.students.concat(this.checkStudentsOfClass(ev));
     }
   }
-  private updateStudentClassArray(scObject: StudentClassModel) {
-    let oldSCIndex = this.studentClassArray.findIndex(e => e.uid == scObject.uid);
+  // Atualiza studentAlocationsArray, comparando o argumento com os objetos do vetor, removendo duplicados
+  private updateStudentAlocationArray(scObject: StudentAlocationModel) {
+    let oldSCIndex = this.studentAlocationsArray.findIndex(e => e.uid == scObject.uid);
     if (oldSCIndex !== -1)
-      this.studentClassArray.splice(oldSCIndex, 1);
+      this.studentAlocationsArray.splice(oldSCIndex, 1);
     let clone = Object.assign({}, scObject);
-    this.studentClassArray.push(clone);
+    this.studentAlocationsArray.push(clone);
   }
 
+  // Retorna os alunos pertencentes a aula passada no argumento
   checkStudentsOfClass(event: ClassModel): UserModel[] {
     let students: UserModel[] = new Array();
-    for (let sc of this.studentClassArray) {
+    for (let sc of this.studentAlocationsArray) {
       if (sc.classUID != event.uid)
         continue;
       let exceptions: Date[] = new Array();
@@ -112,9 +124,15 @@ export class StudentService {
     return students;
   }
 
+  // Esse método aloca alunos em uma determinada turma (podendo ser um ou vários dias das aulas de mesmo tipo).
+  // Instancia e adiciona um novo objeto de StudentAlocationModel/atualiza um já existente, no firebase de acordo com os argumentos passados:
+  // studentsArray são os estudantes que vão ser adicionados as aulas (objetos DBClassTemplate no firebase) com o uid correspondente a eventUID
+  // se day != null, os alunos são alocados a aula daquele dia específico
+  // se weekday != null, os alunos são alocados as aulas que ocorrem no dia com aquele número (0=Domingo, 1=Segunda, etc)
+  // se exceptions != null, os alunos não serão alocados nos dias passados neste vetor
   addStudentsToClasses(studentsArray: Array<UserModel>, eventUID: string, day: Date, weekday: number, exceptions: Date[]) {
     for (let student of studentsArray) {
-      let scArray = this.studentClassArray.filter(e => e.studentUID == student.uid);
+      let scArray = this.studentAlocationsArray.filter(e => e.studentUID == student.uid);
       let scEvent = scArray.find(e => e.classUID == eventUID);
       if (scEvent) { // update
         if (day) {
@@ -144,19 +162,24 @@ export class StudentService {
       } else { // create
         let uid = this.afStore.createId();
         if (day)
-          scEvent = new StudentClassModel(uid, eventUID, student.uid, [day], null, exceptions);
+          scEvent = new StudentAlocationModel(uid, eventUID, student.uid, [day], null, exceptions);
         else if (weekday)
-          scEvent = new StudentClassModel(uid, eventUID, student.uid, null, [weekday], exceptions);
+          scEvent = new StudentAlocationModel(uid, eventUID, student.uid, null, [weekday], exceptions);
       }
       let clone = Object.assign({}, scEvent);
       delete clone.uid;
-      this.studentClassesRef.doc(scEvent.uid).set(clone);
+      this.studentAlocationsRef.doc(scEvent.uid).set(clone);
     }
   }
 
+  // Esse método desaloca os alunos de uma turma (podendo ser de um ou vários dias das aulas de mesmo tipo).
+  // Procura no firebase o objeto StudentAlocationModel correspondente a cada estudante àquela aula e o atualiza de acordo com os argumentos passados:
+  // studentsArray são os estudantes que vão ser removidos das aulas (objetos DBClassTemplate no firebase) com o uid correspondente a eventUID
+  // se exceptionDay != null, os alunos são desalocados da aula daquele dia específico
+  // se exceptionWeekday != null, os alunos são desalocados das aulas que ocorrem no dia com aquele número (0=Domingo, 1=Segunda, etc)
   removeStudentsFromClasses(studentsArray: UserModel[], eventUID: string, exceptionDay: Date, exceptionWeekday: number) {
     for (let student of studentsArray) {
-      let scArray = this.studentClassArray.filter(e => e.studentUID == student.uid);
+      let scArray = this.studentAlocationsArray.filter(e => e.studentUID == student.uid);
       let scEvent = scArray.find(e => e.classUID == eventUID);
       if (scEvent) {
         if (exceptionDay) {
@@ -195,7 +218,7 @@ export class StudentService {
       }
       let clone = Object.assign({}, scEvent);
       delete clone.uid;
-      this.studentClassesRef.doc(scEvent.uid).set(clone);
+      this.studentAlocationsRef.doc(scEvent.uid).set(clone);
     }
   }
 }

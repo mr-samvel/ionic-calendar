@@ -5,15 +5,18 @@ import { AngularFirestoreCollection, AngularFirestore } from '@angular/fire/fire
 @Injectable({
   providedIn: 'root'
 })
+
+// Serviço responsável pelo gerenciamento das modalidades
 export class ModalityService {
-  private modalities: ModalityModel[];
-  private modalitiesRef: AngularFirestoreCollection<ModalityModel>;
+  private modalities: ModalityModel[]; // Vetor com todas as modalidades resgatadas do firebase
+  private modalitiesRef: AngularFirestoreCollection<ModalityModel>; // Referencia da coleção 'Modalities' no firebase
 
   constructor(private afStore: AngularFirestore) { 
     this.modalitiesRef = this.afStore.collection<ModalityModel>('Modalities');
     this.subscribeToModalitiesFromDB();
   }
 
+  // Se inscreve no observable da coleção modalidades e atualiza o vetor modalities de acordo com as mudanças no servidor
   private subscribeToModalitiesFromDB() {
     this.modalitiesRef.snapshotChanges().subscribe((retrieved) => {
       let tmpArray: ModalityModel[] = new Array();
@@ -25,12 +28,15 @@ export class ModalityService {
     })
   }
 
+  // Retorna o vetor modalities
   getModalities() {
     return this.modalities;
   }
+  // Retorna a modalidade com o uid igual ao passado no argumento, se existir
   getModalityByUID(uid: string): ModalityModel {
     return this.modalities.find(m => m.uid == uid);
   }
+  // Retorna um vetor de modalidades com os uids correspondentes ao vetor de strings de entrada
   getModalitiesByUID(uids: string[]): ModalityModel[] {
     let tmpArray = new Array();
     for(let uid of uids){
@@ -39,6 +45,7 @@ export class ModalityService {
     return tmpArray;
   }
 
+  // Instancia e adiciona uma nova modalidade ao firebase
   addModality(name: string) {
     const nUID = this.afStore.createId();
     let newMod = new ModalityModel(nUID, name);

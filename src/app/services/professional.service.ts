@@ -5,15 +5,18 @@ import { AngularFirestoreCollection, AngularFirestore } from '@angular/fire/fire
 @Injectable({
   providedIn: 'root'
 })
+
+// Serviço responsável pelo gerenciamento de profissionais
 export class ProfessionalService {
-  private professionals: UserModel[];
-  private usersRef: AngularFirestoreCollection<UserModel>;
+  private professionals: UserModel[]; // Vetor com todos os users com perfil de profissionais resgatados do firebase
+  private usersRef: AngularFirestoreCollection<UserModel>; // Referencia da coleção 'Users' no firebase
 
   constructor(private afStore: AngularFirestore) { 
     this.usersRef = this.afStore.collection<UserModel>('Users');
     this.subscribeToProfessionalsFromDB();
   }
 
+  // Se inscreve no observable da coleção 'Users'. Checa os usuários resgatados e adiciona ao vetor professionals se tiver papel de profissional.
   private subscribeToProfessionalsFromDB() {
     this.usersRef.snapshotChanges().subscribe((retrieved) => {
       let tmpArray: UserModel[] = new Array();
@@ -26,12 +29,15 @@ export class ProfessionalService {
     });
   }
 
+  // Retorna todos os profissionais
   getProfessionals() {
     return this.professionals;
   }
+  // Retorna o profissional com aquele uid, se houver
   getProfessionalByUID(uid: string): UserModel {
     return this.professionals.find(p => p.uid == uid);
   }
+  // Retorna um vetor com os profissionais de acordo com os uids de entrada
   getProfessionalsByUID(uids: string[]): UserModel[] {
     let tmpArray = new Array();
     for(let uid of uids){
@@ -40,6 +46,7 @@ export class ProfessionalService {
     return tmpArray;
   }
 
+  //
   addProfessional(prof: any) {
     console.log("TODO");
     // this.professionals.push(prof);
