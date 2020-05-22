@@ -25,7 +25,7 @@ export class ClassModel {
     startTime: Date; // Date de início da aula
     endTime: Date; // Date de término da aula
     modality: ModalityModel; // modalidade assinalada a aula através da tradução de DBClassTemplate
-    students: Array<UserModel>; // estudantes assinalados a aula através da tradução de StudentClassModel
+    students: Array<UserModel>; // estudantes assinalados a aula através da tradução de StudentAlocationModel
     studentQt: number; // quantidade máxima de estudantes na aula
 
     constructor(uid: string, prof: UserModel, start: Date, end: Date, modality: ModalityModel, students: UserModel[], studentQt: number) {

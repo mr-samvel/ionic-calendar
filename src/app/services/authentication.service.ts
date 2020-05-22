@@ -40,7 +40,7 @@ export class AuthenticationService {
         if (!this.recentlyLoggedIn) {
           this.presentLoader();
           let dbUser = await this.userService.retrieveUserFromServer(user.uid);
-          this.userService.storeCurrentUser(dbUser);
+          this.userService.setCurrentUser(dbUser);
           this.dismissLoader();
         }
       } else {
@@ -86,7 +86,7 @@ export class AuthenticationService {
     
     const googleUser = googleCredential.user;
     const user = new UserModel(googleUser.displayName, googleUser.uid, [UserModel.STUDENT_PROFILE], googleUser.email);
-    this.userService.storeCurrentUser(user);
+    this.userService.setCurrentUser(user);
     this.usersRef.doc(user.uid).get().toPromise().then(snap => {
       let retrievedUser: UserModel = {uid: snap.id, ...snap.data()} as UserModel;
       let clone = Object.assign({}, user);

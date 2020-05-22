@@ -1,7 +1,7 @@
 import * as firebase from 'firebase';
 
 // faz a relação entre estudantes e aulas
-export class StudentClassModel {
+export class StudentAlocationModel {
     uid: string; // id do objeto adquirido pelo firebase
     classUID: string; // uid da aula
     studentUID: string; // uid do estudante
