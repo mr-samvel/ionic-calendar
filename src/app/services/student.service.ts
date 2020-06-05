@@ -131,9 +131,11 @@ export class StudentService {
   // se weekday != null, os alunos são alocados as aulas que ocorrem no dia com aquele número (0=Domingo, 1=Segunda, etc)
   // se exceptions != null, os alunos não serão alocados nos dias passados neste vetor
   addStudentsToClasses(studentsArray: Array<UserModel>, eventUID: string, day: Date, weekday: number, exceptions: Date[]) {
+    console.log(eventUID);
     for (let student of studentsArray) {
       let scArray = this.studentAlocationsArray.filter(e => e.studentUID == student.uid);
       let scEvent = scArray.find(e => e.classUID == eventUID);
+      console.log(scEvent);
       if (scEvent) { // update
         if (day) {
           if (!scEvent.daysRep)

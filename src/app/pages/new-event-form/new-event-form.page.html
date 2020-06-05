@@ -30,7 +30,7 @@
           <ion-item>
             <ion-label>Modalidade:</ion-label>
             <ionic-selectable #modSelectable [(ngModel)]="this.inputTemplate.modality" [canAddItem]="true"
-              [items]="this.modalityContainer.getModalities()" [canSearch]="true" itemTextField="name"
+              [items]="this.modalityService.getModalities()" [canSearch]="true" itemTextField="name"
               placeholder="Ex.: Pilates">
               <ng-template ionicSelectableSearchFailTemplate>
                 <ion-card (click)="modSelectable.showAddItemTemplate()">
@@ -70,7 +70,7 @@
           <ion-item>
             <ion-label>Profissional:</ion-label>
             <ionic-selectable #proSelectable [(ngModel)]="this.inputTemplate.professional" [canAddItem]="true"
-              [items]="this.professionalContainer.getProfessionals()" [canSearch]="true" itemTextField="username"
+              [items]="this.professionalService.getProfessionals()" [canSearch]="true" itemTextField="username"
               placeholder="Ex.: Maria">
               <ng-template ionicSelectableSearchFailTemplate>
                 <ion-card (click)="proSelectable.showAddItemTemplate()">

@@ -194,8 +194,10 @@ export class AlocateStudentsPage implements AfterViewInit {
           handler: () => {
             this.events.set(ev, false);
             let i = this.eventsRep.findIndex(e => e.uid == ev.uid && (e.dayRep == ev.startTime || e.weekdayRep == ev.startTime.getDay()));
-            if (this.eventsRep[i].weekdayRep)
+            if (this.eventsRep[i].weekdayRep != null){
               this.eventsRep[i].exceptions.push(ev.startTime);
+              console.log(this.eventsRep[i]);
+            }
             else if (this.eventsRep[i].dayRep)
               this.eventsRep.splice(i, 1);
           }

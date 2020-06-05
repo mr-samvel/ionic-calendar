@@ -21,7 +21,7 @@
       <ion-item>
         <ion-label>Alunos:</ion-label>
         <ionic-selectable #studSelectable [(ngModel)]="this.selectedStudents" (onChange)="validateStudentSelectable()"
-          [canAddItem]="true" [items]="this.studentsContainer.getStudents()" [canSearch]="true" itemTextField="username"
+          [canAddItem]="true" [items]="this.studentsService.getStudents()" [canSearch]="true" itemTextField="username"
           [isMultiple]="true" [canClear]="true">
           <ng-template ionicSelectableSearchFailTemplate>
             <ion-card (click)="studSelectable.showAddItemTemplate()">
